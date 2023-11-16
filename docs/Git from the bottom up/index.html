@@ -1,0 +1,1008 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html dir="ltr">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+<meta content="blogger" name="generator">
+<link href="http://keijinsonyaban.blogspot.jp/favicon.ico" rel="icon" type="image/x-icon">
+<link href="http://keijinsonyaban.blogspot.com/2011/05/git.html" rel="canonical">
+<link rel="alternate" type="application/atom+xml" title="見えないチカラ - Atom" href="http://keijinsonyaban.blogspot.com/feeds/posts/default">
+<link rel="alternate" type="application/rss+xml" title="見えないチカラ - RSS" href="http://keijinsonyaban.blogspot.com/feeds/posts/default?alt=rss">
+<link rel="service.post" type="application/atom+xml" title="見えないチカラ - Atom" href="http://www.blogger.com/feeds/2310485404319956884/posts/default">
+
+<link rel="alternate" type="application/atom+xml" title="見えないチカラ - Atom" href="http://keijinsonyaban.blogspot.com/feeds/3874428817606243758/comments/default">
+<link rel="image_src" href="http://2.bp.blogspot.com/-JV1wRmXO4Jw/TdOfCqbqRbI/AAAAAAAAASw/YTQRDGhbzWE/s72-c/4_ja.png">
+<!--[if IE]> <script> (function() { var html5 = ("abbr,article,aside,audio,canvas,datalist,details," + "figure,footer,header,hgroup,mark,menu,meter,nav,output," + "progress,section,time,video").split(','); for (var i = 0; i < html5.length; i++) { document.createElement(html5[i]); } try { document.execCommand('BackgroundImageCache', false, true); } catch(e) {} })(); </script> <![endif]-->
+<title>見えないチカラ: 【翻訳】Gitをボトムアップから理解する</title>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="index.css" media="all">
+</head>
+<body>
+<div class="navbar section" id="navbar"><div class="widget Navbar" id="Navbar1">
+<div id="navbar-iframe-container"><iframe src="index_1.html" name="navbar-iframe" id="navbar-iframe" vspace="0" tabindex="0" style="" marginwidth="0" marginheight="0" hspace="0" frameborder="0" scrolling="no" width="100%"></iframe></div>
+
+
+</div></div>
+<div id="outer-wrapper">
+<div class="main section" id="main"><div class="widget HTML" id="HTML1">
+<div class="widget-content">
+
+
+
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=2310485404319956884&amp;widgetType=HTML&amp;widgetId=HTML1&amp;action=editWidget&amp;sectionId=main" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML1&quot;));" target="configHTML1" title="編集">
+<img alt="" src="http://img1.blogblog.com/img/icon18_wrench_allbkg.png" height="18" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget Header" id="Header1">
+<div id="header-inner">
+<div class="titlewrapper">
+<h1 class="title">
+<a href="http://keijinsonyaban.blogspot.jp/">見えないチカラ</a>
+</h1>
+</div>
+<div class="descriptionwrapper">
+<p class="description"><span>
+</span></p>
+</div>
+</div>
+</div><div class="widget Blog" id="Blog1">
+<div class="blog-posts hfeed">
+<!-- google_ad_section_start(name=default) -->
+
+          <div class="date-outer">
+        
+<h2 class="date-header"><span>2011年5月18日水曜日</span></h2>
+
+          <div class="date-posts">
+        
+<div class="post-outer">
+<div class="post hentry uncustomized-post-template" itemprop="blogPost" itemscope="itemscope" itemtype="http://schema.org/BlogPosting">
+<meta content="http://2.bp.blogspot.com/-JV1wRmXO4Jw/TdOfCqbqRbI/AAAAAAAAASw/YTQRDGhbzWE/s581/4_ja.png" itemprop="image_url">
+<meta content="2310485404319956884" itemprop="blogId">
+<meta content="3874428817606243758" itemprop="postId">
+<a name="3874428817606243758"></a>
+<h3 class="post-title entry-title" itemprop="name">
+【翻訳】Gitをボトムアップから理解する
+</h3>
+<div class="post-header">
+<div class="post-header-line-1"></div>
+</div>
+<div class="post-body entry-content" id="post-body-3874428817606243758" itemprop="description articleBody">
+John Wiegleyさんの "Git from the bottom up" を翻訳しました。<br>
+元PDFはこちらからダウンロードできます： <a href="http://newartisans.com/2008/04/git-from-the-bottom-up/">http://newartisans.com/2008/04/git-from-the-bottom-up/</a><br>
+<br>
+元記事のライセンスがクリエイティブコモンズのBY-SAであったため、この翻訳もBY-SAとなります。<br>
+ライセンスを守って自由にご利用ください。（詳しくは記事内の最初にも書いてあります）<br>
+<br>
+翻訳ミスの指摘や改善の提案等があればブログコメントやTwitter(<a href="http://twitter.com/oshow">@oshow</a>)などで遠慮なくどうぞ。<br>
+<br>
+<div style="background-color: rgb(255, 255, 255); border-radius: 10px 10px 10px 10px; width: 750px; margin: 0px auto; padding: 0px 25px 20px; box-shadow: 1px 1px 3px rgb(0, 0, 0); border: 2px solid black; line-height: 1.5em;"><h1 class="jw_h">Git をボトムアップから理解する</h1><br>
+<div style="text-align: center;">Wed, 2 Dec 2009<br>
+by John Wiegley<br>
+</div><br>
+　私が Git を理解しようと調査した時、高級なコマンドの視点から眺めるよりボトムアップ式に理解することが役立った。そしてボトムアップ視点で見る Git がこんなにも美しくシンプルであるなら、私が調べたことを他の人も興味を持って読んでくれるのではないか、そうして私が経験した苦労を避けられるのではと考えた。<br>
+<br>
+この文書にある例には、Git 1.5.4.5 を使用している。<br>
+<br>
+<h2 class="jw_h">目次</h2><ol style="width: 350px;"><a href="#ct1">
+<li>ライセンス</li>
+</a> <a href="#ct2">
+<li>導入</li>
+</a> <a href="#ct3">
+<li>リポジトリ：ディレクトリ内容の追跡</li>
+</a> <ul><a href="#ct3_1">
+<li>blob の紹介</li>
+</a> <a href="#ct3_2">
+<li>blob は tree が保管する</li>
+</a> <a href="#ct3_3">
+<li>tree はどのように作られるか</li>
+</a> <a href="#ct3_4">
+<li>コミットの美</li>
+</a> <a href="#ct3_5">
+<li>コミットを別名で言うと…</li>
+</a> <a href="#ct3_6">
+<li>ブランチングと rebase の力</li>
+</a> </ul><a href="#ct4">
+<li>インデックス：仲介者を知ろう</li>
+</a> <ul><a href="#ct4_1">
+<li>一歩先のインデックス</li>
+</a> </ul><a href="#ct5">
+<li>リセットすること、またはリセットしないこと</li>
+</a> <ul><a href="#ct5_1">
+<li>mixed reset の実行</li>
+</a> <a href="#ct5_2">
+<li>soft reset の実行</li>
+</a> <a href="#ct5_3">
+<li>hard reset の実行</li>
+</a> </ul><a href="#ct6">
+<li>鎖をつなぐ最後の輪：stash と reflog</li>
+</a> <a href="#ct7">
+<li>まとめ</li>
+</a> <a href="#ct8">
+<li>参考文献</li>
+</a> </ol><br>
+<br>
+<h2 class="jw_h" id="ct1">1. ライセンス</h2><br>
+　この文書は米国クリエイティブ・コモンズライセンス 3.0 の BY-SA 条件下で提供される。以下の URL を参照のこと：<br>
+<div style="text-align: center;"><a href="http://creativecommons.org/licenses/by-sa/3.0/us/">http://creativecommons.org/licenses/by-sa/3.0/us/</a><br>
+</div><br>
+要するに、著者情報が維持される限り、あなたはこの文書のコンテンツを個人目的、商業目的、その他のどんな目的にも利用できる。同様に、オリジナルの文書と同じ条件で頒布される限り、この文書の改変、派生作品の制作、翻訳は自由に行える。<br>
+（訳注：ということで、この翻訳も CC 3.0 の BY-SA で提供されます。すなわち、あなたはこの翻訳を上の条件で扱って良いということです。翻訳者名は O-Show でお願いします）<br>
+<br>
+<br>
+<h2 class="jw_h" id="ct2">2. 導入</h2><br>
+　Git の世界へようこそ。本文書がこの強力なコンテンツ・トラッキングシステムをより理解するための助けになること、そしてその根底にあるちょっとしたシンプルさ――外側から見たら目眩がしそうなオプション群だけれど――を明らかにする助けになるのを願っている。<br>
+<br>
+本題に入る前にまず、本稿中で繰り返し現れる、触れておくべき用語がいくつかある：<br>
+<br>
+<strong style="text-decoration: underline;">repository</strong><br>
+　<strong>リポジトリ</strong> (repository) はコミットの集合であり、各コミットはプロジェクトにおいて過去に存在したワーキングツリーのアーカイブだ。コミットは過去あなたのマシン上にあったのか、それとも他の誰かのマシン上にあったかは関係ない。またリポジトリは、現在のワーキングツリーがどのブランチまたはコミットから由来しているのかを特定する、HEAD (以下で触れる) というものを定義する。さらに、ブランチやタグという、コミットを名前で把握するためのものも含んでいる。<br>
+<br>
+<strong style="text-decoration: underline;">the index</strong><br>
+　あなたが使用してきたであろう他の似たツールと違い、Git はワーキングツリーからリポジトリへ変更を直接コミットしない。代わりに、変更はまず<strong>インデックス</strong> (index) と呼ばれる場所へ登録される。コミットする (あなたが承認した変更をいっぺんに全て記録する) 前に、一つずつ、あなたの変更を「確認する」方法だと考えるといい。インデックスと呼ぶ代わりに「ステージングエリア」と呼ぶほうが理解の助けになるかもしれない。<br>
+<br>
+<strong style="text-decoration: underline;">working tree</strong><br>
+　<strong>ワーキングツリー</strong> (working tree) は、それに関連するリポジトリを持った、ファイルシステム上のあるディレクトリのことだ (普通は中に .git という名前のサブディレクトリが存在することでわかる)。ワーキングツリーには全てのファイルとサブディレクトリが含まれている。<br>
+<br>
+<strong style="text-decoration: underline;">commit</strong><br>
+　<strong>コミット</strong>はある時点でのワーキングツリーのスナップショットだ。そのコミットをする時点の HEAD (以下で見る) の状態が、そのコミットの親になる。これこそが「リビジョン履歴」という概念を作成することにあたる。<br>
+<br>
+<strong style="text-decoration: underline;">branch</strong><br>
+　<strong>ブランチ</strong>はコミットのただの別名であり (かつそれ以上に、ある時点のコミット群について述べるための物でもあるだろう)、またリファレンスとも呼ばれる。リポジトリの歴史を定義するコミットの系統図であり、従って「開発における枝分かれ」を表現する典型的概念である。<br>
+<br>
+<strong style="text-decoration: underline;">tag</strong><br>
+　<strong>タグ</strong>もまたブランチと同様にコミットの別名であるが、常に同じコミットを指すということと、自身を説明するテキストを持ちうるという点が異なる。<br>
+<br>
+<strong style="text-decoration: underline;">master</strong><br>
+　ほとんどのリポジトリにおける開発のメインラインは <strong>「master」</strong> と呼ばれるブランチ上で行われる。通常これがデフォルトだが、決して特殊なブランチではない。<br>
+<br>
+<strong style="text-decoration: underline;">HEAD</strong><br>
+　<strong>HEAD</strong> は現在チェックアウトされているものを定義するために、リポジトリで使われる。<br>
+<ul><li>もしブランチをチェックアウトしているなら、HEAD はそのブランチ (名) を指し、次のコミット操作の後ではその名前のブランチがアップデートされることを表す。</li>
+<li>もし特定のコミットをチェックアウトしているなら、HEAD はただそのコミットだけを指す。これは detached HEAD と呼ばれ、例えば、タグ名でチェックアウトするとそういうことが起こる。</li>
+</ul><br>
+Git における一般的な流れはこうだ。リポジトリを作成した後、あなたの作業はワーキングツリーで行われる。仕事が1段落したら――バグ修正が完了したり、労働時間の終わりだったり、全てのコンパイルが通った時などに――逐次変更をインデックスに追加する。コミットしたい全てのものがインデックスに追加されたら、その内容をリポジトリに記録する。通常のプロジェクトのライフサイクルを示す簡単な図は以下のとおりだ：<br>
+<br>
+<div style="text-align: center;"><img src="http://2.bp.blogspot.com/-JV1wRmXO4Jw/TdOfCqbqRbI/AAAAAAAAASw/YTQRDGhbzWE/s581/4_ja.png" alt="repository-workingtree-index" height="309" width="581"><br>
+</div><br>
+この基本的な構図を頭に置きながら (*1)、以下のセクションでは Git の操作においてこれらの各実体の違いが如何に重要かを説明したいと思う。<br>
+<br>
+(*1) 本当は、チェックアウトはリポジトリからインデックスへのコピーを引き起こし、それからワーキングツリーへ書きだされる。しかしチェックアウト操作におけるこのインデックスの使われ方をまだ見ていないので、それは図の中であまり分かりやすい表現にならないと思った (ので省いた)。<br>
+<br>
+<br>
+<h2 class="jw_h" id="ct3">3. リポジトリ：ディレクトリ内容の追跡</h2><br>
+　以上のように、Git がすることはかなり原始的だ。「ディレクトリのスナップショットを保全する」。この基本的なタスクを見ていくことで、多くの内部的デザインが理解可能だ。<br>
+<br>
+Git リポジトリのデザインは様々な点で Unix ファイルシステムの構造を反映している。すなわち、ファイルシステムはルートディレクトリから始まり、ルート以下にはさらに他のディレクトリがあり、それらディレクトリのほとんどが葉となるノード、つまりファイル (これがデータを含んでいる) を持つ。これらのファイルの内容に関するメタデータとしては、まずディレクトリ名があり、さらに i-node というファイルの内容への参照 (ファイルサイズ、ファイルタイプ、権限) に保管される。各 i-node は関連するファイルの内容を識別する一意の数字を持つ。そして複数のディレクトリエントリがある特定の i-node を指すこともある (例：ハードリンク) 。ファイルシステム上に保存された内容を「所有している」のは i-node だと言えるだろう。<br>
+<br>
+内部的に Git の構造は著しく Unix ファイルシステムに似ているものの、１・２個の主要な違いがある。第一に、ファイルの内容を blob というもので表現する。blob はまた、ディレクトリによく似た tree と呼ばれるものにとっての葉にあたるノードにもなる。ちょうど i-node が、システムが振った数字で一意に特定されるように、blob は自身のサイズと内容から計算される SHA-1 ハッシュによって名付けられる。これは i-node と同じくただの任意の数字だが、2つの追加的な特性がある。一つは、blob の内容が変更されていないことを証明する。もう一つは、同じ内容ならば常に同じ blob として表現される。それがどこに現れたとしてもだ。コミットをまたいでも、リポジトリをまたいでも――インターネット越しだとしても。もし複数の tree が同じ blob を参照していたら、これはまさにハードリンクに似ている。その blob は、少なくとも一つのリンクが残っている限り、あなたのリポジトリから削除されたりはしない。<br>
+<br>
+Git の blob と、ファイルシステムにおけるファイルの違いは、blob は自身の内容についてのメタデータを一切保管しないことだ。そのような情報は全て、その blob を保持する tree の方が持つ。ある tree は、その blob の内容で "foo" という名前のファイルが 2004 年の 8 月に作成されたということを知っており、また他の tree は同じ内容が "bar" という名前で 5 年前に作成されたと知っているかもしれない。普通のファイルシステムでは、同じ内容だがそのような異なるメタデータを持つ２つのファイルは、常に２つの独立したファイルとして表現されるだろう。この違いはなぜだろう？　主として、ファイルシステムは変更されるファイルをサポートするようデザインされているが、Git はそうではないからだ。Git リポジトリではデータが不変 (immutable) であるという事実が、これら全ての動作と、そのような異なるデザイン要請を決めている。そして結局のところ、このデザインが遥かにコンパクトな収容力をもたらす。一意の内容を持つ全てのオブジェクトは、それがどこに位置していたとしても共有され得るからだ。<br>
+<br>
+<h3 class="jw_h" id="ct3_1">blobの紹介</h3>　基本的な構想は見えたので、いくつかの実例に入っていく。まずサンプルの Git リポジトリを作成する事から始め、そのリポジトリで Git がどのように動作するかをボトムアップからお見せするつもりだ。　以下、必要ならば適宜読み替えて欲しい。<br>
+<pre class="waku_a">$ mkdir sample; cd sample
+$ echo 'Hello, world!' &gt; greeting 
+</pre>ここではファイルシステム上に "sample" という名前の新しいディレクトリを作成し、そこに平凡な内容のファイルを入れた。まだリポジトリ作成すらしていないが、Git が何をしていくかを理解するために、もう Git コマンドを使い始めることもできる。まず、Git がどんなハッシュ ID を使って greeting というテキストを格納するのかを知りたいとしよう：<br>
+<pre class="waku_a">$ git hash-object greeting
+<span class="jw_output">af5626b4a114abcb82d63db7c8082c3c4756e51b</span>
+</pre>あなたのシステム上でこのコマンドを走らせたら、あなたの方も同じハッシュ ID が表示されるはずだ。私たちは２つの異なるリポジトリ (もしかしたら別世界に存在するかも) を作成しているのだが、２つのリポジトリ中の greeting blob は同じハッシュ ID を持つことになる。私はあなたのリポジトリから私の方へコミットを引っ張って来ることができるし、Git は私たちが同じ内容を追跡しているのだと気づくだろう――つまり1つのコピーだけが格納される！　とてもクールだ。<br>
+<br>
+次のステップは、新しいリポジトリを初期化してそれにファイルをコミットすることだ。今はオールインワンのやり方でこれを実行するが、水面下で何が起っているか理解するため、またここへ戻ってくるつもりだ。<br>
+<pre class="waku_a">$ git init
+$ git add greeting
+$ git commit -m "Added my greeting"
+</pre>ここでのポイントは、blob はまさに私たちが期待するように、上記で決定されたハッシュ ID を持ってシステム上に保存されるということだ。また Git が必要とするハッシュ ID の桁数は、リポジトリ中でそれを一意に特定できる長さだけとなる。通常はたった 6 桁か 7 桁で充分だ：<br>
+<br>
+<pre class="waku_a">$ git cat-file -t af5626b
+<span class="jw_output">blob</span>
+</pre><pre class="waku_a">$ git cat-file blob af5626b
+<span class="jw_output">Hello, world!</span>
+</pre><br>
+そらきた！　私はあの blob がどのコミットに保持されているのかも、何の tree の中にあるかも調べていない。でも、仮定されていた唯一の情報 (ハッシュ ID) に基づいて、存在することが確認できた。リポジトリがどれだけ長く存在しても、ファイルがその中のどこに格納されていても、この blob は常に同じ識別子を持つだろう。これらの内容は、今や確認可能な形で保存されている。そう永遠にだ。<br>
+<br>
+このように、blob は Git での基本的なデータ単位を表す。言ってみれば、Git の全てのシステムは blob を管理するためにあるのだ。<br>
+<br>
+<h3 class="jw_h" id="ct3_2">blob は tree が保管する</h3>　あなたのファイルの内容は blob に格納されるが、blob には何か特徴があるわけではない。blob は名前を持たず、構造も持たない――まさに「blob (カタマリ)」というわけだ。<br>
+<br>
+Git はファイルの構造と名前を表現するために、blob を tree へ葉ノードとしてくっつける。今のところちょっと見ただけでは、どの tree に目的の blob があるのかを見つけることはできない。多くの、とても多くの所有者 (tree) がいるかもしれないからだ。しかし、さっきの blob はたった今作ったコミットが保持する tree のどこかに必ず存在するはずだ：<br>
+<pre class="waku_a">$ git ls-tree HEAD
+<span class="jw_output">100644 blob af5626b4a114abcb82d63db7c8082c3c4756e51b greeting</span>
+</pre>そらきた！　この最初のコミットは greeting ファイルをリポジトリへ追加したものだ。このコミットは、Git の tree を一つ含み、それはたった1つの葉を持つ。つまり greeting の内容を表す blob だ。<br>
+<br>
+<span class="jw_in">ls-tree</span> に HEAD を渡すことで、件の blob を含んだ tree があるということはわかったが、その HEAD コミットによって参照される実際の tree オブジェクトはまだ見ることができていない。以下のように、違う部分にライトを当てるコマンドならば tree オブジェクトを見つけられる：<br>
+<pre class="waku_a">$ git rev-parse HEAD
+<span class="jw_output">588483b99a46342501d99e3f10630cfc1219ea32</span> <span class="jw_cm"># これはあなたのシステム上では別物になる</span>
+</pre><pre class="waku_a">$ git cat-file -t HEAD
+<span class="jw_output">commit</span>
+</pre><pre class="waku_a">$ git cat-file commit HEAD
+<span class="jw_output">tree 0563f77d884e4f79ce95117e2d686d7d6e282887
+author John Wiegley &lt;johnw@newartisans.com&gt; 1209512110 -0400
+committer John Wiegley &lt;johnw@newartisans.com&gt; 1209512110 -0400
+
+Added my greeting </span>
+</pre>最初のコマンドは HEAD というエイリアスをそれが参照するコミットへとデコードし、二番目のコマンドはオブジェクトの種類を確認する。三番目のコマンドはそのコミットが保持する tree のハッシュ ID を表示しているが、同様にコミットに格納された他の情報も見せている。コミットのハッシュ ID は私のリポジトリ特有のものだ――なぜならばそれは、私の名前と、コミットを作成した時の日付を含むからだ――しかし、tree のハッシュ ID はあなたの手元と私のものは共通であるはずだ。同じ内容の blob を同じ名前で保持しているのだから。<br>
+<br>
+これが本当に同じ tree オブジェクトであるということを確かめてみよう：<br>
+<pre class="waku_a">$ git ls-tree 0563f77
+<span class="jw_output">100644 blob af5626b4a114abcb82d63db7c8082c3c4756e51b greeting</span>
+</pre><br>
+以上、ご覧の通りだ。私のリポジトリはただ一つのコミットを含み、そのコミットは 1 個の blob を持つ 1 個の tree を参照している――blob は私が記録したい内容を含んでいる。これが本当にそうであるか確かめられるコマンドがもう一つある：<br>
+<pre class="waku_a">$ find .git/objects -type f | sort
+<span class="jw_output">.git/objects/05/63f77d884e4f79ce95117e2d686d7d6e282887
+.git/objects/58/8483b99a46342501d99e3f10630cfc1219ea32
+.git/objects/af/5626b4a114abcb82d63db7c8082c3c4756e51b </span>
+</pre>この出力からわかるのは、私のリポジトリは全体で3つのオブジェクトを含んでおり、それぞれが以前の例で現れたハッシュ ID を持っているということだ。好奇心を満たすために、最後にこれらのオブジェクトのタイプを調べてみよう：<br>
+<pre class="waku_a">$ git cat-file -t 588483b99a46342501d99e3f10630cfc1219ea32
+<span class="jw_output">commit</span>
+$ git cat-file -t 0563f77d884e4f79ce95117e2d686d7d6e282887
+<span class="jw_output">tree</span>
+$ git cat-file -t af5626b4a114abcb82d63db7c8082c3c4756e51b
+<span class="jw_output">blob</span>
+</pre>これらのオブジェクトのそれぞれの簡単な内容を見る <span class="jw_in">git show</span> コマンドを使うこともできたが、それは読者の練習のために残しておくこととしよう。<br>
+<br>
+<h3 class="jw_h" id="ct3_3">tree はどのように作られるか</h3>　あらゆるコミットが tree を1つは保持するが、tree はどのように作られるのだろうか？　私たちは blob が、ファイルの内容をその中へと詰め込むことで作成されるということを知っている――そして blob は tree に所有されることも知っている――わけだが、blob を保持する tree がどう作られるか、あるいは tree がその親となるコミットへどうリンクされるか、というのはまだ見たことがない。<br>
+<br>
+再び新しいサンプルリポジトリを始めよう。ただし、今度は手作業でだ。そうすれば裏側で何が起っているのか正確に掴むことができるだろう：<br>
+<pre class="waku_a">$ rm -fr greeting .git
+$ echo 'Hello, world!' &gt; greeting
+$ git init
+$ git add greeting
+</pre>あなたが index へファイルを追加するとき、全ては始まる。さしあたり、index はファイルから blob を作成するために最初に使われるものだと思って欲しい。greeting ファイルを追加した時、リポジトリには変化が起っている。この変化はまだコミットとして見ることはできないが、何が起っているかを確認することはできる：<br>
+<pre class="waku_a">$ git log <span class="jw_cm"># これは失敗する。まだコミットは存在しない！</span>
+<span class="jw_output">fatal: bad default revision 'HEAD'</span>
+</pre><pre class="waku_a">$ git ls-files --stage <span class="jw_cm"># index によって参照される blob を一覧表示する</span>
+<span class="jw_output">100644 af5626b4a114abcb82d63db7c8082c3c4756e51b 0 greeting</span>
+</pre>これはなんだろう？　私はまだリポジトリへ何もコミットしていないが、オブジェクトが既に一つ生まれている。このオブジェクトは私がこの記事の始めでやったのと同じハッシュ ID を持っているから、きっと greeting ファイルの内容を表しているはずだ。この時点でハッシュ ID に対して <span class="jw_in">cat-file -t</span> を使うこともでき、そうしたらそれが blob であることもわかっただろう。実際それは、さっきのサンプルリポジトリを作ったときに最初に手に入れたと同じ物だ。同じファイルは常に同じ blob になる (万が一私が充分に伝えきれていなかった場合のために、もう一度強調しておこう)。<br>
+<br>
+この blob はまだ tree によって参照されていないし、どのコミットにも属していない。現在、.git/index という名前のファイル (現在の index にまとめられている blob と tree を参照するファイル) から参照されているだけだ。なので、この中ぶらりの blob のために tree を作成しよう：<br>
+<pre class="waku_a">$ git write-tree <span class="jw_cm"># 一つの tree として index の内容を記録する</span>
+<span class="jw_output">0563f77d884e4f79ce95117e2d686d7d6e282887</span>
+</pre>この値は見たことがあるだろう。同じ blob (とサブtree) を含んだ tree は、常に同じハッシュ ID を持つ。まだコミットオブジェクトはないのだが、blob を保持した tree オブジェクトがもうリポジトリの中に存在している。低レベルの <span class="jw_in">write-tree</span> コマンドの目的は、index の内容を全て取り、コミットを作るために新しい tree の中へそれらを詰め込むことだ。<br>
+<br>
+この tree を直接使用して、新しいコミットオブジェクトを手動で作成することができる。<span class="jw_in">commit-tree</span> コマンドを走らせるのだ：<br>
+<pre class="waku_a">$ echo "Initial commit" | git commit-tree 0563f77
+<span class="jw_output">5f1bc85745dcccce6121494fdd37658cb4ad441f</span>
+</pre>生の <span class="jw_in">commit-tree</span> コマンドは tree のハッシュ ID を取り、それを保持するコミットオブジェクトを作成する。もしコミットに親を持たせたかったら、<span class="jw_in">-p</span> オプションを使って、明示的に親のコミットのハッシュ ID を指定しなければならない。またここで注意することは、ハッシュ ID はあなたのシステム上に現れるものと異なるということだ。これは、私のコミットオブジェクトには私の名前とコミットを作成した日付が使われているからであり、これら二つの詳細は常にあなたのものとは違うはずだ。<br>
+<br>
+しかし、まだ作業は終っていない。現在のブランチの新しい HEAD としてそのコミットを登録していないからだ：<br>
+<pre class="waku_a">$ echo 5f1bc85745dcccce6121494fdd37658cb4ad441f &gt; .git/refs/heads/master</pre>このコマンドは Git に「"master" という名前のブランチはさきほどの最新のコミットを指すようにしてくれ」と伝える。これとは別のもっと安全な方法は、<span class="jw_in">update-ref</span> コマンドを使うことだ：<br>
+<pre class="waku_a">$ git update-ref refs/heads/master 5f1bc857</pre>master を作成した後、それに対して私たちのワーキングツリーを関連付けなければならない。通常、これはブランチをチェックアウトした時はいつも起こることだ：<br>
+<pre class="waku_a">$ git symbolic-ref HEAD refs/heads/master</pre>このコマンドは master ブランチに対して、シンボリックに HEAD を関連付ける。これが重要で、なぜなら、ワーキングツリーからの将来のどのコミットも自動的に refs/heads/master の値を更新することになるからだ。<br>
+<br>
+こんなに単純であるとは信じ難いのだが、もう私の真新しいコミットを見るために <span class="jw_in">git log</span> を使うことができる：<br>
+<pre class="waku_a">$ git log
+<span class="jw_output">commit 5f1bc85745dcccce6121494fdd37658cb4ad441f
+Author: John Wiegley &lt;johnw@newartisans.com&gt;
+Date: Mon Apr 14 11:14:58 2008 -0400
+
+Initial commit </span>
+</pre><br>
+傍注：もし refs/heads/master が新しいコミットを指すように私がセットしなかったら、そのコミットは "unreachable (到達不可能)" になると考えられる。現在そのコミットを参照しているものが何もないし、到達可能なコミットの親でもないからだ。このような場合、コミットオブジェクトはそれが持つ tree と全ての blob と一緒に、いつかの時点でリポジトリから削除されるだろう (これは <span class="jw_in">git gc</span> と呼ばれるコマンドによって自動的に行われ、あなたが手でやることは滅多にない)。refs/heads の中に名前をリンクさせたコミット、つまり上でやったようものは reachable (到達可能) なコミットになるので、その時点からリポジトリに保管されることが確実になる。<br>
+<br>
+<h3 class="jw_h" id="ct3_4">コミットの美</h3>　いくつかのバージョン管理システムでは "ブランチ" を特別なものとして作成し、しばしば "メインライン" や "trunk" といったものからはっきり区別する。またブランチはまるでコミットとは非常に異なるものであるかのようにその概念を議論する。しかし、Git ではブランチは異なった実体として存在するわけではない。ただ blob、tree、そしてコミット (*2) があるだけだ。コミットは一つ以上の親を持てるし、それらの親コミットも親を持てるので、これはある単独のコミットがブランチのように扱われることを許可する。なぜならばそれは、そこに至るまでの全ての履歴を知っているからだ。<br>
+<br>
+(*2) ああ、Git にはタグもあるが、これはただのコミットへの参照であり、ここでは無視する。<br>
+<br>
+あなたは <span class="jw_in">branch</span> コマンドを使うことで、いつでも、一番最新として参照されているコミットを調べることができる：<br>
+<pre class="waku_a">$ git branch -v
+<span class="jw_output">* master 5f1bc85 Initial commit</span>
+</pre>さあご一緒に。「ブランチはコミットに対する参照名以外の何者でもない」。このように、ブランチとタグは (タグの方は自身についての説明を持つことができるということだけを除いて) 同一であり、まさにそれらは参照されるコミットだ。ブランチはただの名前だが、タグは説明的だ…そう、”タグ” なのだ。<br>
+<br>
+だが本来は、私たちはエイリアスを使う必要は全くない。例えば、もしそうしたいなら、コミットのハッシュ ID だけを使ってリポジトリ内の全てを参照できる。さて試しに、指定したコミットへワーキングツリーをセットしなおしてみよう：<br>
+<pre class="waku_a">$ git reset --hard 5f1bc85</pre><span class="jw_in">--hard</span> オプションはワーキングツリーの現在の全ての変更内容を、それが次のコミットのために登録されているかどうかに関係なく、消去する (このコマンドについては後でより詳しく触れる)。同じことをするもっと安全な方法としては、<span class="jw_in">git checkout</span> がある：<br>
+<pre class="waku_a">$ git checkout 5f1bc85</pre>ここでの違いは、ワーキングツリーの変更されたファイルは保護されることだ。もし <span class="jw_in">checkout</span> コマンドに <span class="jw_in">-f</span> オプションを渡したら、<span class="jw_in">reset --hard</span> をしたのと同じことになる。ただし、<span class="jw_in">checkout</span> がワーキングツリーだけを変更するのに対して、<span class="jw_in">reset --hard</span> は現在のブランチの HEAD を、指定したバージョンの tree を参照するように変更する、という点を除けば。<br>
+<br>
+コミットベースのシステムの他の嬉しさは、最も複雑なバージョン管理の用語でさえ、一つの語彙を使って言い直すことができることだ。例えば、コミットが複数の親を持つなら、それは "マージコミット" だ――複数のコミットを一つのコミットへマージしたのだから。あるいは、あるコミットが複数の子を持つなら、それは "branch" の祖先であることを表す、など。実際、こういうものと Git の間には違いがない。つまり Git では、世界はシンプルなコミットオブジェクトの集合であり、それぞれのコミットオブジェクトが他の tree や blob を参照する tree を保持し、blob にはデータが保管されている。これよりも複雑な全ては、単に用語的な飾りにすぎない。<br>
+<br>
+ここに、これら全てのピースがどう組合わさるかの図がある：<br>
+<br>
+<div style="text-align: center;"><img src="http://4.bp.blogspot.com/-y3ZcprOwfT0/TdOfCxJnjhI/AAAAAAAAAS4/E7LaTVVBwK0/s514/12_ja.png" alt="commit-tree-blob" height="391" width="514"><br>
+</div><br>
+<h3 class="jw_h" id="ct3_5">コミットを別名で言うと...</h3>　コミットを理解することは Git を理解する鍵だ。あなたの心がコミットのトポロジをただ受容する時、ブランチ、タグ、ローカル＆リモートリポジトリ等の混乱は置き去りにされ、あなたは叡智ある禅・ブランチングの地平へと達したのを知るだろう。願わくばその体験があなたの腕を切り落とす (*3) 必要がないことを――もし今頃それを考えていたならば、だけれども。<br>
+<br>
+(*3) 参照：密教僧の恵果（空海の師）のエピソードより。<br>
+<br>
+コミットが鍵ならば、コミットの指定方法を把握することが熟達への入り口だ。コミットの呼び方にはたくさんの、本当にたくさんの方法があり、コミットの範囲や、コミットによって保持されるオブジェクトさえも Git コマンドのほとんどで受け付けられる。基本以上の使い方の一覧を見てみよう：<br>
+<br>
+<strong style="text-decoration: underline;">ブランチ名</strong><br>
+　以前述べたように、どのブランチ名も "branch" 上の最新コミットへの単なるエイリアスにすぎない。そのブランチがチェックアウトされているなら、これは HEAD という単語を使うのと同じである。<br>
+<br>
+<strong style="text-decoration: underline;">タグ名</strong><br>
+　タグ名というエイリアスは、コミットの呼び名であるという観点からはブランチ名と同一だ。二つの間の主要な違いは、タグのエイリアス先は変わることがないのに対して、ブランチのエイリアス先はそのブランチで新しいコミットが作られる度に変わるということだ。<br>
+<br>
+<strong style="text-decoration: underline;">HEAD</strong><br>
+　現在チェックアウトされているコミットは常に HEAD と呼ばれる。もし特定のコミットを――ブランチ名を使う代わりに――チェックアウトしたら、HEAD はそのコミットだけを指し、現在どのブランチ上にもいないという状態になる。注意すべきはこのケースは特別なものであり、"using a detached HEAD (孤立した HEAD を使っています)" と言われてしまう。(きっといつもこれで言われているジョークがある…)<br>
+<br>
+(訳注：detached HEAD ＝ 頭がちょんぎれた！　というジョークでしょうか？)<br>
+<br>
+<strong style="text-decoration: underline;">c82a22c39cbc32...</strong><br>
+　コミットは完全な 40 文字の SHA1 ハッシュ ID を使って常に参照され得る。同じコミットを指すのならもっと他の便利な方法があるので、これは普通カットアンドペーストする時に使われる。<br>
+<br>
+<strong style="text-decoration: underline;">c82a22c</strong><br>
+　ハッシュ ID でコミットを指定するなら、リポジトリ中でそれが唯一だと参照できるだけの桁を使う必要がある。たいてい、6文字か7文字あれば充分だ。<br>
+<br>
+<strong style="text-decoration: underline;">name^</strong><br>
+　キャレット文字を使うことで、コミットの親コミットが参照される。もしコミットが2つ以上の親を持つならば、最初のものが使われる。<br>
+<br>
+<strong style="text-decoration: underline;">name^^</strong><br>
+　複数のキャレットを用いることもできる。このエイリアスは、与えられたコミット名の「親の親」を表す。<br>
+<br>
+<strong style="text-decoration: underline;">name^2</strong><br>
+　もし複数の親を持つコミット (マージコミットのような) ならば、name^N を使って N 番目の親を参照できる。<br>
+<br>
+<strong style="text-decoration: underline;">name~10</strong><br>
+　あるコミットの N 番目の祖先は、チルダ (~) のあとにその順番の数を加えたものを使うことで参照される。この用法は <span class="jw_in">rebase -i</span> において一般的だ。例えば、「最新のコミットたちを見せて欲しい」という意味で使える。また、これは name^^^^^^^^^^ と同じになる。<br>
+<br>
+<strong style="text-decoration: underline;">name:path</strong><br>
+　コミットが持つファイルツリー中のとあるファイルを参照するために、コロンの後にファイル名を指定できる。これは <span class="jw_in">git show</span>、あるいは2つのコミット間でファイル差分を見るのに役立つ：<br>
+<pre class="waku_a">$ git diff HEAD^1:Makefile HEAD^2:Makefile</pre><br>
+<strong style="text-decoration: underline;">name^{tree}</strong><br>
+　コミット自身ではなく、そのコミットが持つ tree の方を参照できる。<br>
+<br>
+<strong style="text-decoration: underline;">name1..name2</strong><br>
+　これ以降のエイリアスはコミットの範囲を示す。コミット範囲は、特定の期間のあいだで何が起こったかを見るための <span class="jw_in">git log</span> のようなコマンドでこの上なく役に立つ。<br>
+上の構文は name2 から name1 までの到達可能な全てのコミットを表すが、name1 (が指すコミット) を含まない。もし name1 か name2 が省略されたら、そこには HEAD が使用される。<br>
+<br>
+<strong style="text-decoration: underline;">name1...name2</strong><br>
+　"3ドット"の範囲は上記の2ドットバージョンとかなり違う。<span class="jw_in">git log</span> のようなコマンドでは、name1 だけ、あるいは name2 だけから参照される全てのコミットを表すが、両方から参照されるコミットは表さない。結果として (name がブランチだとすると) 両方のブランチでユニークな全てのコミットをリストすることになる。<br>
+<br>
+<span class="jw_in">git diff</span> のようなコマンドでは、表現される範囲は「name2」と「name1 と name2 の共通の祖先」の間になる。これは、<span class="jw_in">git log</span> では name1 で導入された変更が表示されないのと異なる。<br>
+<br>
+<strong style="text-decoration: underline;">master..</strong><br>
+　この用法は "master..HEAD" と同等だ。さきほどの用法にも含まれていたが、あえてここでも例として追加した。なぜならば、現在のブランチで作成した変更をレビューするときに、この種のエイリアスを頻繁に使用するからだ。<br>
+<br>
+<strong style="text-decoration: underline;">..master</strong><br>
+　これもだ。<span class="jw_in">git fetch</span> し終わって、最後にした <span class="jw_in">rebase</span> あるいは <span class="jw_in">merge</span> からどんな変更が起こったかを見たい時に特に役立つ。<br>
+<br>
+<strong style="text-decoration: underline;">--since="2 weeks ago"</strong><br>
+　指定日からの全てのコミットを指す。<br>
+<br>
+<strong style="text-decoration: underline;">--until=”1 week ago”</strong><br>
+　指定日までの全てのコミットを指す。<br>
+<br>
+<strong style="text-decoration: underline;">--grep=pattern</strong><br>
+　コミットメッセージが正規表現パターンにマッチする全てのコミットを指す。<br>
+<br>
+<strong style="text-decoration: underline;">--committer=pattern</strong><br>
+　コミッタ (コミットをした人) がパターンにマッチする全てのコミットを指す。<br>
+<br>
+<strong style="text-decoration: underline;">--author=pattern</strong><br>
+　author がパターンにマッチする全てのコミットを指す。コミットの author とは、そのコミットの変更を作成した人のことだ。ローカルな開発ではこれは常にコミッタと同じになるが、パッチが e-mail で送られている時は、author とコミッタは普通別になる。<br>
+<br>
+<strong style="text-decoration: underline;">--no-merges</strong><br>
+　指定した範囲中で、ただ一つだけの親を持つ全てのコミットを指す――すなわち、全てのマージコミットを無視する。<br>
+<br>
+これらのオプションの大半は、混ぜたりかけ合わせたりできる。ここに、以下で説明するログエントリを表示する例を示す。現在のブランチでの変更 (ブランチは master から派生している) で、かつ自分が変更したもので、過去一ヶ月の間の、"foo"というテキストをコミットメッセージに含むもの。すると以下になる。<br>
+<pre class="waku_a">$ git log --grep='foo' --author='johnw' --since="1 month ago" master..</pre><br>
+<h3 class="jw_h" id="ct3_6">ブランチングと rebase の力</h3>　コミットを操作するための最も有能な Git コマンドは、無邪気にも名付けられた <span class="jw_in">rebase</span> コマンドだ。基本的に、あなたが作業をするブランチは全て、一つ以上の「ベースコミット」を持っている。ブランチがそこで生まれたコミットのことだ。例として、以下のよくあるシナリオを見ていこう。注意しておくと、矢印は過去を遡って指している。なぜならば各コミットはその親を参照しているのであって、子ではないからだ。したがって、D と Z のコミットがそれぞれのブランチの HEAD を表している：<br>
+<br>
+<div style="text-align: center;"><img src="http://3.bp.blogspot.com/-vJbAG4LIGoM/TdOfDD-5nMI/AAAAAAAAATA/d9vAHrPjxJU/s314/15.png" alt="basic-history" height="129" width="314"><br>
+</div><br>
+この場合、稼働中のブランチは２つの「ヘッド」を示している。D と Z、両方のブランチが A という共通の親を持つ。<span class="jw_in">git show-branch</span> の出力がまさにこの情報を見せてくれる：<br>
+<pre class="waku_a">$ git branch
+<span class="jw_output">  Z
+* D</span>
+</pre><pre class="waku_a">$ git show-branch
+<span class="jw_output">!  [Z] Z
+ * [D] D
+--
+ * [D] D
+ * [D^] C
+ * [D~2] B
++  [Z] Z
++  [Z^] Y
++  [Z~2] X
++  [Z~3] W
++* [D~3] A</span>
+</pre><br>
+この出力を読むには少しの慣れが必要だが、本質的には上記の図と変わるところはない。ここでは、以下のようなことを伝えている：<br>
+<ul><li>ブランチが最初の分岐を体験したのはコミット A の時だ (またそれは D~3 として知られていて、そして、あなたがそう思うなら Z~4 とも言える)。コミット^ という構文はコミットの親を指すのに使われ、コミット~3 は3つ上の親、または曾祖父を指す。</li>
+<li>これは下から上に読んで行く。最初の列 (＋の印) は Z という名前のブランチが分岐したことを示していて、それは4つのコミットを持つ。W、X、Y、そして Z だ。</li>
+<li>二番目の列 (アスタリスクの印) は現在のブランチで発生したコミットを示す。すなわち３つのコミットの B、C、そして D だ。</li>
+<li>出力の一番上、線で区切られることで下部と分離している部分は、表示されるブランチたちを識別する。ブランチにラベルされている印が、そのブランチに属するコミットへとラベルづけされるように列が配置されている。</li>
+</ul>今、実行したいと思うアクションがあり、ワーキングブランチの Z をメインブランチの D になるように持っていきたい。言い換えれば B、C そして D でやった作業を Z へ取り込みたい。<br>
+<br>
+他のバージョン管理システムでは、この手のことは「ブランチのマージ」を使用して済ます事になる。実際、ブランチのマージは Git でも実行可能だ。マージの使用は、Z が 公開されたブランチであり、そのコミット履歴を変えたくないという場合には、今も必要とされる。実行するコマンドはこうだ：<br>
+<pre class="waku_a">$ git checkout Z <span class="jw_cm"># Z ブランチへ切り替え</span>
+$ git merge D <span class="jw_cm"># B、C、Dのコミットを Z へマージ</span>
+</pre><br>
+これがその後のリポジトリの状態だ：<br>
+<br>
+<div style="text-align: center;"><img src="http://1.bp.blogspot.com/-5Xxb7NmJCjI/TdOfDMozKCI/AAAAAAAAATI/BRYEjc0_3oM/s424/16.png" alt="merged-history" height="138" width="424"><br>
+</div><br>
+いま Z ブランチをチェックアウトするなら、それは以前の Z (現在は Z^ として指す) の内容に、D の内容をマージしたものが含まれているだろう。(注意：実際のマージ操作では、D と Z の状態の間の全ての衝突を解決している必要がある)<br>
+<br>
+新しい Z ブランチは現在 D からの変更を含んでいるが、Z と D をマージしたことを表す新しいコミットも含んでいる。そのコミットは今 Z' として表示されている。これは何も新しいものを追加しないコミットだが、D と Z をまとめる操作を終えたことを表す。ある意味ではそれは「メタコミット」と言える。なぜならばその内容は単にリポジトリ中で作業したことに関係していて、ワーキングツリーには何も新しいことをしていないからだ。<br>
+<br>
+しかしながら、Z ブランチをそのまま D の上に移植し、Z が前方になるよういっぺんに移動させてしまう方法がある。パワフルな <span class="jw_in">rebase</span> コマンドを使うのだ。ここに、私たちが目指す図がある：<br>
+<br>
+<div style="text-align: center;"><img src="http://4.bp.blogspot.com/-LBCMS7ywJes/TdOfDXKNSSI/AAAAAAAAATQ/O-A6mmtcW2k/s471/17.png" alt="rebased-history" height="136" width="471"><br>
+</div><br>
+この状態は最も直接に私たちがしたいことを表している。私たちのローカルリポジトリでは、開発ブランチの Z がメインブランチ D の最新の仕事に基づくようになる。なぜ「rebase」とそのコマンドが呼ばれるのかは、それが指定したブランチのベースになるコミットを変更するからだ。もしあなたがそれを毎回のように走らせるなら、ワーキングブランチ上のパッチたちを制限なく前に進ませ、常にメインブランチと共に最新の状態に置くことができる。しかも、開発ブランチへ不必要なマージコミットを追加しなくて済む (*4)。ここでは、上で実行したマージ操作と比較できるよう、コマンドを実行している：<br>
+<pre class="waku_a">$ git checkout Z <span class="jw_cm"># Z ブランチへ切り替える</span>
+$ git rebase D <span class="jw_cm"># Z のベースコミットを D の地点へ変更する</span>
+</pre><br>
+これがなぜローカルブランチのためだけなのだろう？　なぜならあなたが <span class="jw_in">rebase</span> をする度に、ブランチ内の全てのコミットを潜在的に変更してしまうからだ。以前に、W が A を分岐元にしていた時、それは A から W へ内容を変化させるために必要な変更だけを含んでいた。しかしながら、<span class="jw_in">rebase</span> が 走ったあとは、W は D から W' へ内容を変化させるために必要な変更を含むように書き換えられてしまう。そして W から X への内容の変化すらも変更されてしまう。なぜならば A+W+X は現在 D+W'+X' だからだ――Y 以降も同じだ。もしこれが、ブランチの変更が他の人々に見られているならば、そしてあなたの下流の利用者の誰かが Z から分岐した彼ら自身のローカルブランチを作成しているならば、彼らのブランチは今、新しい Z' ではなく古い Z を指しているだろう。<br>
+<br>
+一般に、以下の経験則が利用できる。もしそこから他のブランチが分岐したことがないようなローカルブランチを持っているなら、<span class="jw_in">rebase</span> を使い、その他の全てのケースでは <span class="jw_in">merge</span> を使う。あなたのローカルブランチの変更をメインブランチへ <span class="jw_in">pull</span> し戻す用意が出来ているときも、<span class="jw_in">merge</span> は役に立つ。<br>
+<br>
+(*4) これを使用しない、そして代わりにマージを使う正当な理由が存在することに注意しよう。選択はあなたの状況に依存する。<span class="jw_in">rebase</span> の一つの悪い面は、rebase されたワーキングツリーはコンパイルに通っても、中間のコミットのコンパイルが通るかはもはや何の保証もないということだ。新しい rebase された状態でそれらがコンパイルされたことはないからだ。歴史的正当性があなたにとって重要なら、<span class="jw_in">merge</span> を好んで使うこと。(訳注：これに対する反論→<a href="http://keijinsonyaban.blogspot.com/2011/01/rebase.html">【翻訳】Rebaseは安全である</a>)<br>
+<br>
+<h4 class="jw_h">対話的リベース</h4>　上記のように <span class="jw_in">rebase</span> が実行されたとき、Z ブランチを D コミット (すなわち、D ブランチの HEAD) の上へリベースするために、W から Z までの全てのコミットが自動的に書き換えられる。しかし、どのように書き換えが行われるかをあなたが完全に取り仕切ることもできる。<span class="jw_in">rebase</span> に <span class="jw_in">-i</span> オプションを与えると、Z ローカルブランチ内のコミット毎に何が行われるかを選択するための編集バッファが開くことになる：<br>
+<br>
+<strong style="text-decoration: underline;">pick</strong><br>
+　これは、あなたが対話的モードを使わなかった場合の、ブランチ内の各コミットへ選択されるデフォルトの振る舞いだ。当該コミットは自身 (今書き換えられている) の親コミットへ再適用されることを意味する。発生したコンフリクトに関係するコミット毎に、<span class="jw_in">rebase</span> コマンドはあなたにそれらを解決する機会を与える。<br>
+<br>
+<strong style="text-decoration: underline;">squash</strong><br>
+　squash を指定されたコミットは、自身の内容を、それの一つ前のコミットの内容の中へ「折り込まれる」ことになる。これは何回でも行われる場合がある。もし上記の例のブランチを対象に、全てのコミットを squash にしたら (一番目のコミットは除く。そのコミットは <strong>squash</strong> されるために <strong>pick</strong> でなければならない)、新しい Z ブランチはただ一つだけのコミットを含んで、D の上へ追加されることになる。あなたが複数のコミットに渡って変更をばらまいているが、それら全てを一つのコミットに見せるように履歴を書き換えたいならば、これは役に立つ。<br>
+<br>
+<strong style="text-decoration: underline;">edit</strong><br>
+　<strong>edit</strong> としてコミットをマークすると、<span class="jw_in">rebase</span> のプロセスはそのコミットの所で停止し、そのコミットを反映したワーキングツリーと共に、シェルがあなたの元に残される。その時 index は、あなたがそのコミットを作成する際に登録された変更を全て含んでいる。従ってあなたはなんでもしたいように変更できる。変更のやり直し、変更を元に戻す、その他。そしてコミットをした後、<span class="jw_in">rebase --continue</span> を走らせると、そのコミットはまるで元からそういう変更だったかのように書き換えられる。<br>
+<br>
+<strong style="text-decoration: underline;">(drop)</strong><br>
+　もし対話的リベース時の編集バッファ中の一覧からコミットを削除する、あるいはコメントアウトするなら、そのコミットは単にまるでチェックインされていなかったかのように見えなくなる。ブランチ内の後ろのコミットがそれらの変更に依存していたとしたら、これはマージの衝突を起こしうることに注意すること。<br>
+<br>
+このコマンドのパワーは最初理解しにくいのだが、それはあなたにどんなブランチの形をも、事実上無制限にコントロールすることを許可する。これは以下のことに使用できる：<br>
+<ul><li>複数のコミットを一つのコミットにまとめる。</li>
+<li>コミットの順番を変える。</li>
+<li>現在は後悔している正しくない変更を取り除く。</li>
+<li>ブランチのベースを、リポジトリ中の他のコミットへ移す。</li>
+<li>あるコミットを、コミットしてだいぶ後になってから訂正する。</li>
+</ul>この時点で <span class="jw_in">rebase</span> の man ページを読むことをお勧めする。この野獣の真のパワーを開放するかもしれない方法のいくつかの良い例を含んでいるからだ。このツールがどのように潜在能力を発揮するかについての最後のセンスをあなたに与えるために、以下のシナリオを考えてみて欲しい。第二のブランチの L を新しい Z の頭に移したいのだとしたらどうするだろうか：<br>
+<br>
+<div style="text-align: center;"><img src="http://2.bp.blogspot.com/-NcaBaSfBh_Y/TdOfOuD26PI/AAAAAAAAATY/CkeaBNC2C6E/s420/19_1.png" alt="basic-history2" height="196" width="420"><br>
+</div><br>
+この図を見てみると、開発のメインラインとして D があり、その３つ前のコミットから試作開発のための Z ブランチが分岐している。これら両方の真ん中の地点、C と X がそれぞれのブランチの HEAD だったとき、最終的に L となる他の試作ブランチを開始することを決めた。現在、L のコードが良い感じだとわかったが、メインラインへマージし戻すほどにはあまり良くない。なのでそれらの変更を Z 開発ブランチへ移動させることに決め、結局そこでやった全ての事が一つのブランチになるようにする。ああ、そして今それをやろうって時に、コミット J のコピーライトの日付をすぐにでも編集したくなった。私たちがその変更を作成したとき、2008年のままだったのを忘れていたからだ！　この絡まりをほどくのに必要なコマンドはこうだ：<br>
+<pre class="waku_a">$ git checkout L
+$ git rebase -i Z
+</pre>発生する全ての衝突を解決したら、現在はこのようなリポジトリになる：<br>
+<br>
+<div style="text-align: center;"><img src="http://4.bp.blogspot.com/-LbZ4rdtbnbM/TdOfO0RHMpI/AAAAAAAAATg/iq4HIXVB_CA/s520/19_2.png" alt="rebased-history2" height="174" width="520"><br>
+</div><br>
+お分かりのように、ローカル開発での話ならば、<span class="jw_in">rebase</span> はあなたのコミットがどのようにリポジトリに現れるかを無制限にコントロールする力を与えてくれる。<br>
+<br>
+<br>
+<h2 class="jw_h" id="ct4">4. インデックス：仲介者を知ろう</h2><br>
+　ファイルシステム上に保管されているデータファイルと、リポジトリに保管されている Git の blob の間には、なにやら奇妙な存在が立ちはだかっている。Git のインデックスだ。コイツを理解することを困難にしている部分は、それが不運な名前を持っているということだろう。新しく作成された tree や blob のセット (<span class="jw_in">git add</span> を実行した時に作成される) を参照するという意味では、これは index と言える。これら新しいオブジェクトは、あなたのリポジトリへコミットするという目的で、新しい tree へすぐにまとめられるだろう――だがその時まで、それらは index にだけ参照される。もし <span class="jw_in">git reset</span> によって index から変更を取り外すと、未来のいつかの時点で削除される孤立した blob を持つことになる。<br>
+<br>
+index はただ本当に、次のコミットのためのステージングエリアであり、それがなぜ存在するかの良い理由もある。それは CVS や Subversion ユーザにとって慣れないかもしれないが、Darcs ユーザにとっては全くもって身近な開発モデルをサポートする。ステージで次のコミットを組み立てる能力だ。<br>
+<br>
+<div style="text-align: center;"><img src="http://1.bp.blogspot.com/-sY5EIAwW--k/TdOfPB7D4II/AAAAAAAAATo/P9N6FxUN7Yc/s466/20_ja.png" alt="index-is-next-commit" height="380" width="466"><br>
+</div><br>
+まず最初に、index をほぼ完全に無視する方法があると言わせて欲しい。つまり <span class="jw_in">git commit</span> に <span class="jw_in">-a</span> フラグを渡すのだ。例えば Subversion で作業する方法を考えてみよう。<span class="jw_in">svn status</span> と タイプする時、あなたが見ることになるのは、次の <span class="jw_in">svn commit</span> の呼び出しであなたのリポジトリに適用されるだろうアクションのリストだ。ある意味で、この「次のアクションのリスト」は一種の非公式の index で、ワーキングツリーの状態と HEAD の状態を比べることで決定される。もし foo.c というファイルが変更されているならば、次のコミットでそれらの変更が保存されるだろう。もしある未知のファイルの横にクエスチョンマークがあれば、それは無視される。しかし、<span class="jw_in">svn add</span> で追加された新しいファイルは、リポジトリに追加されることになる。<br>
+<br>
+これは <span class="jw_in">git commit -a</span> を使った場合に起こる事と違いがない。新しい、未知のファイルは無視されるが、<span class="jw_in">git add</span> で追加された新しいファイルなら、ファイルにしたどんな変更もリポジトリに追加される。この作用は Subversion が実行するやり方とほとんど同じだ。<br>
+<br>
+本当の違いは、Subversion の場合では、あなたの「次のアクションのリスト」は常に現在のワーキングツリーを見て決定されるということだ。Git では、「次のアクションのリスト」は index の内容であり、次の HEAD の状態になるであろうものを表現し、そしてコミットを実行する前に直接操作することができる。これは、前もってその変更をステージさせてくれることによって、何が起きるかについてコントロールする追加のレイヤーを与えてくれるということだ。<br>
+<br>
+まだ理解がクリアでないなら、以下の例について考えてみよう。あなたは信頼できるソースファイル、foo.c を持ち、それに対して無関係の二つのセットの変更を行なった。あなたがしたいことは、それらの変更を分割して二つの異なるコミットにし、それぞれに別の説明をつけたい。Subversion なら、これについてあなたがするだろう事はこうだ：<br>
+<pre class="waku_a">$ svn diff foo.c &gt; foo.patch
+$ vi foo.patch
+<span class="jw_message">＜foo.patch を編集し、後でコミットしたい変更を維持する＞</span>
+$ patch -p1 -R &lt; foo.patch <span class="jw_cm"># 二番目の変更セットを取り除く</span>
+$ svn commit -m "First commit message"
+$ patch -p1 &lt; foo.patch <span class="jw_cm"># 残りの変更を再適用する</span>
+$ svn commit -m "Second commit message"
+</pre>これが楽しく感じる？　なら今度は複雑かつ動的な変更のセットで複数回繰り返してみることだ。次は Gitで、index を使った方法だ：<br>
+<pre class="waku_a">$ git add --patch foo.c
+<span class="jw_message">＜最初にコミットしたいハンクを選択する＞</span>
+$ git commit -m "First commit message"
+$ git add foo.c <span class="jw_cm"># 残りの変更を add する</span>
+$ git commit -m "Second commit message"
+</pre>その上、これはもっと簡単にできるのだ！　もしあなたが Emacs が好きなら、Christian Neukirchan 作の最上級のツール gitsum.el (*5) がこの退屈なプロセスを美しくしてくれる。私は最近それを使って、合成されてしまっている変更を11の別のコミットへ分離した。ありがとう、Christian！<br>
+<br>
+(*5) <a href="http://chneukirchen.org/blog/archive/2008/02/introducing-gitsum.html">http://chneukirchen.org/blog/archive/2008/02/introducing-gitsum.html</a><br>
+<br>
+<h3 class="jw_h" id="ct4_1">一歩先のインデックス</h3>　なになに、index だって…。それがあれば変更のセットを事前ステージングでき、したがって、それをリポジトリへコミットする前に繰り返しパッチを組み上げることができるのか。さて、そんなコンセプトを以前もどこかで聞いたような…。<br>
+<br>
+「Quilt！」と考えているなら、あなたはまさに正しい。実際、index は Quilt (*6) と少ししか違わない。index の方は、一度にただ一つだけのパッチが構築されるという制限が追加されているだけだ。<br>
+<br>
+(*6) <a href="http://savannah.nongnu.org/projects/quilt">http://savannah.nongnu.org/projects/quilt</a><br>
+<br>
+しかし、さっきの foo.c の中に2セットの変更があるのではなく4セットあったらどうなる？　プレーンな Git では、一つ解きほぐしてコミットし、そしてまた次のを解きほぐす、としなければならないだろう。index を使えばこれははるかに簡単になるが、それらをコミットする前に、それらの変更の各々を様々な組み合わせでテストしたいとしたらどうする？　すなわち、パッチに A、B、C、D とラベル付けしたとして、どの変更が本当に正しいものか決める前に、A+B でテストし、次が A+C、次がA+D…というようにテストしたいとしたら？<br>
+<br>
+複数の変更を休みなく選んで組み合わせるような仕組みは、Git 自身には存在しない。もちろん、複数ブランチはあなたに並行的な開発をさせることができるし、index は複数の変更を一連のコミットになるようステージングさせてくれるが、その二つを一度にすることはできない。一連のパッチを、その中から同時に使用・不使用を抜粋してステージングし、最終的にそれらをコミットする前に、一斉にパッチの統合を検証すること、をだ。<br>
+<br>
+あなたがこういった事をするのに必要なものは、一度に1コミットするよりも深みのある index だろう。これはまさに Stacked Git (*7) が提供するものだ。<br>
+<br>
+(*7) <a href="http://procode.org/stgit">http://procode.org/stgit</a><br>
+<br>
+以下は、素の Git を使ってワーキングツリーの中で2つの異なるパッチをコミットする時のやり方だ：<br>
+<pre class="waku_a">$ git add -i <span class="jw_cm"># 最初の変更セットを選択する</span>
+$ git commit -m "First commit message"
+$ git add -i <span class="jw_cm"># 二番目の変更セットを選択する</span>
+$ git commit -m "Second commit message"
+</pre>これはうまく動作するが、二番目のコミットを単独でテストする目的で一番目のコミットを選択的に適用しない、ということができない。以下のようにしなければならないだろう：<br>
+<pre class="waku_a">$ git log <span class="jw_cm"># 一番目のコミットのハッシュIDを見つける</span>
+$ git checkout -b work &lt;最初のコミットのハッシュ ID&gt;^
+$ git cherry-pick &lt;２番目のコミットのハッシュ ID&gt;
+<span class="jw_message">＜...  テストを走らせる ...＞</span>
+$ git checkout master <span class="jw_cm"># master ブランチへ戻る</span>
+$ git branch -D work <span class="jw_cm"># 一時的なブランチを削除する</span>
+</pre>明らかに、もっといい方法があるはずだ！　<span class="jw_in">stg</span> コマンドがあれば、両方のパッチをキューに入れ、好きな順番でそれらを再適用でき、単独または組み合わせてのテストをしたりできる。以下で <span class="jw_in">stg</span> コマンドを使って、前の例で利用した同じ二つのパッチをキューに入れている：<br>
+<pre class="waku_a">$ stg new patch1
+$ git add -i <span class="jw_cm"># 一番目の変更セットを選択</span>
+$ stg refresh --index
+$ stg new patch2
+$ git add -i <span class="jw_cm"># 二番目の変更セットを選択</span>
+$ stg refresh --index
+</pre>今、二番目だけをテストするために一番目のパッチを選択的に非適用状態にしたいとする。それは非常に簡単だ：<br>
+<pre class="waku_a">$ stg applied
+<span class="jw_output">patch1</span>
+<span class="jw_output">patch2</span>
+<span class="jw_message">＜...  両方のパッチを使ってテスト ...＞</span>
+$ stg pop patch1
+<span class="jw_message">＜...  patch2 だけを使ってテスト ...＞</span>
+$ stg pop patch2
+$ stg push patch1
+<span class="jw_message">＜...  patch1 だけを使ってテスト ...＞</span>
+$ stg push -a
+$ stg commit -a <span class="jw_cm"># 全てのパッチをコミットする</span>
+</pre>これは、一時的なブランチを作り、コミットのハッシュ ID を指定して <span class="jw_in">cherry-pick</span> を適用するよりも確実に簡単だ。<br>
+<br>
+<br>
+<h2 class="jw_h" id="ct5">5. リセットすること、またはリセットしないこと</h2><br>
+　Git の中でマスターすることがより難しいコマンドの一つが、<span class="jw_in">git reset</span> だ。それは他のコマンドよりも使用者に噛み付きがちのように思える。名前から理解できるように、それはワーキングツリーと、HEAD の参照の両方を潜在的に変更してしまえる。なので、このコマンドの簡単なレビューが役立つだろうと思う。<br>
+<br>
+そもそも <span class="jw_in">git reset</span> は「参照エディタ」であり、「index エディタ」であり、「ワーキングツリーエディタ」だ。とてもたくさんの仕事をする能力があることが混乱の一因になっている。これら3つのモードの間の違いを調査し、そして Git のコミットのモデルの中にそれらがどうフィットするかを調べてみよう。<br>
+<br>
+<h3 class="jw_h" id="ct5_1">mixed reset の実行</h3>　もし <span class="jw_in">--mixed</span> オプションを使うなら (あるいは、これがデフォルトなので、何もオプションをつけないなら)、<span class="jw_in">git reset</span> は与えられたコミットにマッチするように HEAD の参照を切り替えるとともに、index の部分を取り消すだろう。<span class="jw_in">--soft</span> オプションとの主な違いは、<span class="jw_in">--soft</span> では HEAD の 意味だけを変更し、index には何も触らないことだ。<br>
+<pre class="waku_a">$ git add foo.c <span class="jw_cm"># 新しい blob として index へ変更を追加する</span>
+$ git reset HEAD <span class="jw_cm"># index にステージされた全ての変更を削除する</span>
+$ git add foo.c <span class="jw_cm"># 間違えていたので add をやり直し</span>
+</pre><br>
+<h3 class="jw_h" id="ct5_2">soft reset の実行</h3>　<span class="jw_in">git reset</span> で <span class="jw_in">--soft</span> オプションを使うと、異なるコミットへ HEAD の参照を単に変更する (そこは先ほどの効果と同じだ)。ワーキングツリーでやった変更は、触れられずに残される。これは、以下の2つのコマンドが同等ということを意味する：<br>
+<pre class="waku_a">$ git reset --soft HEAD^ <span class="jw_cm"># 自身の親へ HEAD を戻す。最後のコミットを事実上無視することになる</span>
+$ git update-ref HEAD HEAD^ <span class="jw_cm"># 手動ではあるが、同じことをする</span>
+</pre>どっちの場合でも、現在のワーキングツリーはより古い HEAD の上に存在するので、もし <span class="jw_in">git status</span> を走らせたら多くの変更が見えることになる。あなたのファイルは変更されてはおらず、単にそれらは現在古いバージョンと比較されているということだ。この状況は古いコミットを置き換えるように新しいコミットを作成するチャンスを与えてくれる。実際には、あなたが変更したいと思うコミットがもっとも最後にコミットされたものならば、あなたは最後のコミットに対して最新の変更を追加するために <span class="jw_in">git commit --amend</span> を使うこともできる。まるでそれらを一緒にコミットしていたかのようにね。<br>
+<br>
+しかし、以下に注意しよう。あなたの下流に作業者がいて、その人たちがあなたの以前の HEAD――もう捨ててしまったものだ――を元に作業をしていたら、このような HEAD の変更は、その人たちの次の <span class="jw_in">pull</span> の後で、自動的な強制マージを引き起こす。以下は soft reset してから新しいコミットをした後、こうなるだろうというコミット履歴だ：<br>
+<br>
+<div style="text-align: center;"><img src="http://3.bp.blogspot.com/-HEfgLA-sVLQ/TdOfPNTBqcI/AAAAAAAAATw/kS1DmjQ-O4U/s495/25_1_ja.png" alt="new-head-and-old-head" height="181" width="495"><br>
+</div><br>
+そしてこっちが、下流の作業者が再び <span class="jw_in">pull</span> をした後の彼らの HEAD がこうなるだろうという図だ (同色のコミットが同じものを意味している)：<br>
+<br>
+<div style="text-align: center;"><img src="http://3.bp.blogspot.com/-u85FnhAzKbc/TdOfPQI4IyI/AAAAAAAAAT4/1gXoSNrVY0M/s526/25_2.png" alt="downstream-concumser's-history" height="156" width="526"><br>
+</div><br>
+<h3 class="jw_h" id="ct5_3">hard reset の実行</h3>　hard reset (<span class="jw_in">--hard</span> オプション) は非常に危険である可能性がある。一度に二つの異なることができるからだ。最初の例として、現在の HEAD に対して hard reset を行うなら、ワーキングツリー内の全ての変更が消去され、ワーキングツリーのファイルが HEAD の内容と一致するようになる。<br>
+<br>
+こういう事をするなら、もう一つ別のコマンドがある。<span class="jw_in">git checkout</span> だ。それは index が空ならば、<span class="jw_in">git reset --hard</span> とほぼ似た操作をする。そうでないなら、ワーキングツリーを index と一致させる。<br>
+<br>
+次の例として、もっと以前のコミットに対して hard reset をしたならば、まず最初に soft reset をしてから、<span class="jw_in">git reset --hard</span> を使ってワーキングツリーをリセットしたのと同じになる。したがって、以下のコマンドは同等だ：<br>
+<pre class="waku_a">$ git reset --hard HEAD~3 <span class="jw_cm"># 変更を捨てて、過去に遡る</span>
+
+$ git reset --soft HEAD~3 <span class="jw_cm"># 以前のコミットをHEADが指すようにする</span>
+$ git reset --hard <span class="jw_cm"># ワーキングツリー内の差異を消し去る</span>
+</pre>お分かりのように、hard reset を行うことは非常に破壊的になりうる。幸い、同じ効果を達成するもっと安全な方法として、Git では <span class="jw_in">stash</span> (次のセクションで見る) を使った方法が存在する：<br>
+<pre class="waku_a">$ git stash
+$ git checkout -b new-branch HEAD~3 <span class="jw_cm"># head を遡る！</span>
+</pre>あなたがたった今現在のブランチを本当に修正したいのかどうか確信できないというならば、このアプローチには二つの異なる利点がある：<br>
+<ol><li>stash へあなたの仕事を保存する。そして、いつでもそこに戻ることができる。注意としては、stash は各ブランチ固有のものではないから、あるブランチのツリーの状態を stash して、後でそれを他のブランチに適用してしまう可能性もある。<br>
+</li>
+<li>過去の状態へワーキングツリーを巻き戻すが、新しいブランチ上で過去の状態に対して変更をコミットすると決めたならば、あなたのオリジナルブランチは維持されたままになるだろう。<br>
+</li>
+</ol>もし new-branch への変更を作成したとして、その後それが新しい master ブランチになって欲しいと決めたなら、以下のようにコマンドを実行する：<br>
+<pre class="waku_a">$ git branch -D master <span class="jw_cm"># さようなら古い master（まだ reflog には、いる）</span>
+$ git branch -m new-branch master <span class="jw_cm"># 今や new-branch が master になる</span>
+</pre><br>
+この話の教訓は以下のとおりだ。あなたは<strong>現在のブランチ上で</strong> <span class="jw_in">git reset --soft</span> や <span class="jw_in">git reset --hard</span> (ワーキングツリーも変更する) を使って一大手術をすることもできるが、なぜそんなことをしたいのだろうか？　Git はとても簡単で安くブランチで作業させてくれる。(新しく作った) あるブランチ上で破壊的な修正をし、それから古い master の代わりとしてそのブランチを使うようにするのは、常に価値のあることだ。それはまるでフォースの暗黒面のような魅力を持っている…。<br>
+<br>
+それから、あなたが誤って <span class="jw_in">git reset --hard</span> を走らせ、現在の変更を失うだけでなく、master ブランチから積み重ねたコミットまでも削除してしまったらどうなるだろう？　そうなのだ、<span class="jw_in">git stash</span> を使ってスナップショットを取る (次のセクションで見る) という癖をつけていなかったのなら、失ったワーキングツリーを復活させる方法はない。しかし <span class="jw_in">reflog</span> (これも次のセクションで説明される) と共に <span class="jw_in">git reset --hard</span> を再び用いれば、ブランチだけは以前の状態へ復帰させることができる：<br>
+<pre class="waku_a">$ git reset --hard HEAD@{1} <span class="jw_cm"># reflog から変更前の状態へ復帰させる</span></pre><br>
+安全策でいくなら、必ず <span class="jw_in">git stash</span> を最初に走らせてから <span class="jw_in">git reset --hard</span> を使うことだ。これは後になってあなたの白髪が増えるのを防ぐだろう。<span class="jw_in">git stash</span> を走らせたなら、ワーキングツリーの変更を復帰させることにそれを使うことができる：<br>
+<pre class="waku_a">$ git stash <span class="jw_cm"># これをするのが常に良いことなので、とりあえずする</span>
+$ git reset --hard HEAD~3 <span class="jw_cm"># 以前へ遡る</span>
+
+$ git reset --hard HEAD@{1} <span class="jw_cm"># おっと、あれは間違いだった、やり直し！</span>
+$ git stash apply <span class="jw_cm"># そしてワーキングツリーの変更を呼び戻す</span>
+</pre><br>
+<br>
+<h2 class="jw_h" id="ct6">6. 鎖をつなぐ最後の輪： stash と reflog</h2><br>
+　今までで、Git の中へ blob を送り込む2段階の方法を説明してきた。blob はまず最初に index に作成され、そこではまだ親 tree と所属するコミットがない。それからリポジトリへとコミットされ、コミットが保持する tree にぶら下がる葉として存在することになる。しかし、blob をリポジトリ内へ置くことができる方法が他にもまだ2つ存在する。<br>
+<br>
+それらの内の最初の1つが Git の <span class="jw_in">reflog</span> であり、あなたがリポジトリにやった全ての変更を――コミット群の形で――記録するある種のメタリポジトリだ。これは、あなたが <span class="jw_in">git commit</span> を使って index から tree を作成しコミットとして保存したとき、そのコミットは reflog へもいつの間にか追加されることを意味する。reflog は以下のコマンドを使って確認することができる：<br>
+<pre class="waku_a">$ git reflog
+<span class="jw_output">5f1bc85...  HEAD@{0}: commit (initial): Initial commit</span>
+</pre><span class="jw_in">reflog</span> の美しいところは、リポジトリのその他の変更から独立して維持されているということだ。これは、私が上記のコミットを (<span class="jw_in">git reset</span> を使って) リポジトリのどこからもリンクされないようにしても、<span class="jw_in">reflog</span> からは30日間はいまだ参照され続け、ガーベジコレクションから守られることを意味する。コミットが本当は必要だったことがわかった場合に、これがあれば一ヶ月間はそれを取り戻すチャンスを与えてくれることになる。<br>
+<br>
+blob が存在できる他の場所は、間接的ではあるが、ワーキングツリー自身もそうだ。その意味する所は次のとおりだ。あなたが foo.c ファイルを変更したとして、だがまだ index にそれを追加していないとしよう。Git はあなたのために blob を作成しないだろうが、それらの変更は確かに存在し、blob に変換できる内容が存在することを意味する――Git リポジトリの代わりにファイルシステム中に置かれているわけだ。実際の blob が存在しないにも関わらず、ファイル自身は SHA-1 ハッシュ ID も持っている。それをこのコマンドで見ることができる：<br>
+<pre class="waku_a">$ git hash-object foo.c
+<span class="jw_output">&lt;some hash id&gt;</span>
+</pre>この事はあなたのために何をしてくれるだろう？　さて、もしあなたがワーキングツリーにハックをやり込んで、長い一日の終わりに到達したら、身につけるべき良い習慣は、変更をしまい込むことだ：<br>
+<pre class="waku_a">$ git stash</pre>これはあなたのディレクトリの内容の全て――ワーキングツリーと、index の状態の両方を含む――を取り込み、それらのための blob を Git のリポジトリ中に作成する。tree はそれらの blob を保持し、そして stash コミットはワーキングツリーと index と、あなたが <span class="jw_in">stash</span> をした時の時刻を記録する。<br>
+<br>
+これは良いプラクティスだ。なぜなら、次の日にあなたは <span class="jw_in">git stash apply</span> を使って stash から変更を戻すことになるが、毎日の終わりにはあなたが stash した全ての変更が reflog に存在するからだ。以下は、次の日の朝に作業をするために戻ってきたあと、あなたがやるはずのことだ (WIP はここでは "Work in progress＝進行中" を表す)：<br>
+<pre class="waku_a">$ git stash list
+<span class="jw_output">stash@{0}: WIP on master: 5f1bc85... Initial commit</span>
+
+$ git reflog show stash <span class="jw_cm"># 上と同じ出力＋stash コミットのハッシュ ID</span>
+<span class="jw_output">2add13e...  stash@{0}: WIP on master: 5f1bc85...  Initial commit</span>
+
+$ git stash apply
+</pre>stash されたワーキングツリーはコミットとして保管されているのだから、他のブランチと似たような扱いができる――いつでも！　これは、<span class="jw_in">log</span> を見れたり、いつ stash したかを見れたり、過去に stash した瞬間のどんなワーキングツリーもチェックアウトできることを意味する：<br>
+<pre class="waku_a">$ git stash list
+<span class="jw_output">stash@{0}: WIP on master: 73ab4c1...  Initial commit
+...
+stash@{32}: WIP on master: 5f1bc85...  Initial commit</span>
+
+$ git log stash@{32} <span class="jw_cm"># これはいつやった？</span>
+$ git show stash@{32} <span class="jw_cm"># 私がやっていたことを見せろ</span>
+
+$ git checkout -b temp stash@{32} <span class="jw_cm"># 古いワーキングツリーを見てみよう！</span>
+</pre>この最後のコマンドは特に強力だ。見よ、私は今、一ヶ月以上前のコミットされて<strong>いなかった</strong>ワーキングツリーをいじっている。私は index にさえそれらのファイルを追加しなかった。私はただ、毎日ログアウトする前に <span class="jw_in">git stash</span> を呼び (stash できるようなワーキングツリー内の変更が実際にあったならば、だが)、そして戻ってログインした時に <span class="jw_in">git stash apply</span> を使うというシンプルな手段を使っただけだ。<br>
+<br>
+stash のリストを綺麗にしたいなら――最後の30日間の分だけを維持したいとしたら――<span class="jw_in">git stash clear</span> を使わないように。代わりに <span class="jw_in">git reflog expire</span> コマンドを使おう：<br>
+<pre class="waku_a">$ git stash clear <span class="jw_cm"># やってはダメ！　全ての履歴を失ってしまう</span>
+
+$ git reflog expire --expire=30.days refs/stash
+<span class="jw_output">＜維持されていた分の stash 履歴が出力される＞</span>
+</pre><br>
+<span class="jw_in">stash</span> の美しいところは、あなたの作業プロセス自体に控えめなバージョン管理を適用させてくれるということだ。すなわち、ワーキングツリーに対する時間的な階層を持ったステージングと言えるだろう。もしやりたいなら、以下のスナップショットスクリプトのようなものを使って、定期的に <span class="jw_in">stash</span> を実行するようにさえできる：<br>
+<pre class="waku_a">$ cat &lt;&lt;EOF &gt; /usr/local/bin/git-snapshot
+#!/bin/sh
+git stash &amp;&amp; git stash apply
+EOF
+$ chmod +x $_
+$ git snapshot
+</pre><span class="jw_in">git reflog expire</span> コマンドを毎週か毎月に設定するとともに、cron ジョブを使って毎時間これを走らせない理由は、もはやないだろう。<br>
+<br>
+<br>
+<h2 class="jw_h" id="ct7">7. まとめ</h2><br>
+　過去数年、私は多くのバージョン管理システム、そして多くのバックアップ機構を使ってきた。それらは全て、過去のファイルの内容を検索する機能を持っていた。それらの大分部は、ファイルが時間が経つに連れてどう変わっていったかを見せてくれる方法を持っていた。多くが、時間を巻き戻すこと、開発ラインを分岐させ、その後そこでやった新しい作業を最新の場所に取り込むこと、などを許してくれた。一部の物は、そのプロセスに対してキメ細かいコントロールを提供し、あなたの作業を修正させてくれ、どのようにでも、あなたがベストと感じる成果物を公開させてくれた。Git はこれらの全てをあなたにさせてくれる。しかもそれらより比較的簡単に――あなたが一旦その基礎を理解したのなら。<br>
+<br>
+Git はこの種のパワーを持つ唯一のシステムではないし、そのコンセプトのための最高のインターフェースが全体に渡って用いられているわけでもない。そうであるにしても、Git が持っているものは、その上で作業するための確固とした基盤だ。将来、Git が許す柔軟性を利用する多くの新しい方法が考案されると私は想像する。私が使ってきた他のシステムの大部分が、概念的な停滞期へ到達していたと私は思う――他のシステムはこの先、私が以前見てきたような物をゆっくり洗練させていくだけだろう。だが、Git には反対の印象を受ける。その見かけによらずシンプルなデザイン上の誓約がもたらす可能性を、まだまだ見せきれていないと、私は感じる。<br>
+<br>
+THE END<br>
+<br>
+<br>
+<h2 class="jw_h" id="ct8">8. 参考文献</h2><br>
+Git を学ぶ好奇心がそそられたなら、以下の記事をチェックしてみよう：<br>
+<br>
+• A tour of Git: the basics<br>
+<a href="http://cworth.org/hgbook-git/tour/">http://cworth.org/hgbook-git/tour/</a><br>
+<br>
+• Manage source code using Git<br>
+<a href="http://www.ibm.com/developerworks/linux/library/l-git/">http://www.ibm.com/developerworks/linux/library/l-git/</a><br>
+<br>
+• A tutorial introduction to git<br>
+<a href="http://www.kernel.org/pub/software/scm/git/docs/tutorial.html">http://www.kernel.org/pub/software/scm/git/docs/tutorial.html</a><br>
+<br>
+• GitFaq — GitWiki<br>
+<a href="http://git.or.cz/gitwiki/GitFaq">http://git.or.cz/gitwiki/GitFaq</a><br>
+<br>
+• A git core tutorial for developers<br>
+<a href="http://www.kernel.org/pub/software/scm/git/docs/gitcore-tutorial.html">http://www.kernel.org/pub/software/scm/git/docs/gitcore-tutorial.html</a><br>
+<br>
+• git for the confused<br>
+<a href="http://www.gelato.unsw.edu.au/archives/git/0512/13748.html">http://www.gelato.unsw.edu.au/archives/git/0512/13748.html</a><br>
+<br>
+• The Thing About Git<br>
+<a href="http://tomayko.com/writings/the-thing-about-git">http://tomayko.com/writings/the-thing-about-git</a><br>
+<br>
+</div><br>
+<span style="color: rgb(170, 0, 0); font-weight: bold;">Gitに関する翻訳記事はこちらもどうぞ：<br>
+<br>
+・<a style="color: black; text-decoration: underline;" href="http://keijinsonyaban.blogspot.com/2010/10/successful-git-branching-model.html">A successful Git branching model を翻訳しました</a><br>
+・<a style="text-decoration: underline; color: black;" href="http://keijinsonyaban.blogspot.com/2010/11/git-tips.html">【翻訳】あなたの知らないGit Tips</a><br>
+</span><br>
+<br>
+
+<div style="clear: both;"></div>
+</div>
+<div class="post-footer">
+<div class="post-footer-line post-footer-line-1">
+<span class="post-author vcard">
+投稿者
+<span class="fn" itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person">
+<meta content="http://www.blogger.com/profile/00810605240730990712" itemprop="url">
+<a class="g-profile" href="http://www.blogger.com/profile/00810605240730990712" rel="author" title="author profile">
+<span itemprop="name">O-Show</span>
+</a>
+</span>
+</span>
+<span class="post-timestamp">
+時刻:
+<meta content="http://keijinsonyaban.blogspot.com/2011/05/git.html" itemprop="url">
+<a class="timestamp-link" href="http://keijinsonyaban.blogspot.jp/2011/05/git.html" rel="bookmark" title="permanent link"><abbr class="published" itemprop="datePublished" title="2011-05-18T19:56:00+09:00">19:56</abbr></a>
+</span>
+<span class="reaction-buttons">
+</span>
+<span class="star-ratings">
+</span>
+<span class="post-comment-link">
+</span>
+<span class="post-backlinks post-comment-link">
+</span>
+<span class="post-icons">
+<span class="item-control blog-admin pid-1501017129">
+<a href="http://www.blogger.com/post-edit.g?blogID=2310485404319956884&amp;postID=3874428817606243758&amp;from=pencil" title="投稿を編集">
+<img alt="" class="icon-action" src="http://img2.blogblog.com/img/icon18_edit_allbkg.gif" height="18" width="18">
+</a>
+</span>
+</span>
+<div class="post-share-buttons goog-inline-block">
+</div>
+</div>
+<div class="post-footer-line post-footer-line-2">
+<span class="post-labels">
+ラベル:
+<a href="http://keijinsonyaban.blogspot.jp/search/label/Git" rel="tag">Git</a>,
+<a href="http://keijinsonyaban.blogspot.jp/search/label/%E7%BF%BB%E8%A8%B3" rel="tag">翻訳</a>
+</span>
+</div>
+<div class="post-footer-line post-footer-line-3">
+<span class="post-location">
+</span>
+</div>
+</div>
+</div>
+<div class="comments" id="comments">
+<a name="comments"></a>
+<h4>0 件のコメント:</h4>
+<div id="Blog1_comments-block-wrapper">
+<dl class="avatar-comment-indent" id="comments-block">
+</dl>
+</div>
+<p class="comment-footer">
+</p><div class="comment-form">
+<a name="comment-form"></a>
+<h4 id="comment-post-message">コメントを投稿</h4>
+<p>
+</p>
+<a href="http://www.blogger.com/comment-iframe.g?blogID=2310485404319956884&amp;postID=3874428817606243758&amp;blogspotRpcToken=6078582" id="comment-editor-src"></a>
+<iframe allowtransparency="true" class="blogger-iframe-colorize blogger-comment-from-post" id="comment-editor" name="comment-editor" src="index_2.html" frameborder="0" height="271px" width="100%"></iframe>
+
+
+</div>
+<p></p>
+<div id="backlinks-container">
+<div id="Blog1_backlinks-container">
+</div>
+</div>
+</div>
+</div>
+
+        </div></div>
+      
+<!-- google_ad_section_end -->
+</div>
+<div class="blog-pager" id="blog-pager">
+<span id="blog-pager-newer-link">
+<a class="blog-pager-newer-link" href="http://keijinsonyaban.blogspot.jp/2011/12/bundler-11.html" id="Blog1_blog-pager-newer-link" title="次の投稿">次の投稿</a>
+</span>
+<span id="blog-pager-older-link">
+<a class="blog-pager-older-link" href="http://keijinsonyaban.blogspot.jp/2011/01/git.html" id="Blog1_blog-pager-older-link" title="前の投稿">前の投稿</a>
+</span>
+<a class="home-link" href="http://keijinsonyaban.blogspot.jp/">ホーム</a>
+</div>
+<div class="clear"></div>
+<div class="post-feeds">
+<div class="feed-links">
+登録:
+<a class="feed-link" href="http://keijinsonyaban.blogspot.com/feeds/3874428817606243758/comments/default" target="_top" type="application/atom+xml">コメントの投稿 (Atom)</a>
+</div>
+</div>
+
+</div><div class="widget Followers" id="Followers1">
+<h2 class="title">読者</h2>
+<div class="widget-content">
+<div id="Followers1-wrapper">
+<div style="margin-right: 2px;">
+
+
+
+
+<div class="gadgets-gadget-container" id="div-1cbr9cqvgpyhe" style="width: 100%; visibility: visible;"><div id="gfc_iframe_123832543_0_body"><iframe src="index_4.html" id="gfc_iframe_123832543_0" name="gfc_iframe_123832543_0" style="width: 100%; height: 175px;" allowtransparency="true" frameborder="0" height="260" scrolling="no"></iframe></div></div>
+
+</div>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=2310485404319956884&amp;widgetType=Followers&amp;widgetId=Followers1&amp;action=editWidget&amp;sectionId=main" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Followers1&quot;));" target="configFollowers1" title="編集">
+<img alt="" src="http://img1.blogblog.com/img/icon18_wrench_allbkg.png" height="18" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div><div class="widget BlogArchive" id="BlogArchive1">
+<h2>ブログ アーカイブ</h2>
+<div class="widget-content">
+<div id="ArchiveList">
+<div id="BlogArchive1_ArchiveList">
+<ul class="hierarchy">
+<li class="archivedate expanded">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy toggle-open">▼&nbsp;</span>
+</a>
+<a class="post-count-link" href="http://keijinsonyaban.blogspot.jp/search?updated-min=2011-01-01T00:00:00%2B09:00&amp;updated-max=2012-01-01T00:00:00%2B09:00&amp;max-results=6">2011</a>
+<span class="post-count" dir="ltr">(6)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://keijinsonyaban.blogspot.jp/2011_12_01_archive.html">12月</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate expanded">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy toggle-open">▼&nbsp;</span>
+</a>
+<a class="post-count-link" href="http://keijinsonyaban.blogspot.jp/2011_05_01_archive.html">5月</a>
+<span class="post-count" dir="ltr">(1)</span>
+<ul class="posts">
+<li><a href="http://keijinsonyaban.blogspot.jp/2011/05/git.html">【翻訳】Gitをボトムアップから理解する</a></li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://keijinsonyaban.blogspot.jp/2011_01_01_archive.html">1月</a>
+<span class="post-count" dir="ltr">(3)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://keijinsonyaban.blogspot.jp/search?updated-min=2010-01-01T00:00:00%2B09:00&amp;updated-max=2011-01-01T00:00:00%2B09:00&amp;max-results=15">2010</a>
+<span class="post-count" dir="ltr">(15)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://keijinsonyaban.blogspot.jp/2010_12_01_archive.html">12月</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://keijinsonyaban.blogspot.jp/2010_11_01_archive.html">11月</a>
+<span class="post-count" dir="ltr">(3)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://keijinsonyaban.blogspot.jp/2010_10_01_archive.html">10月</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://keijinsonyaban.blogspot.jp/2010_09_01_archive.html">9月</a>
+<span class="post-count" dir="ltr">(3)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://keijinsonyaban.blogspot.jp/2010_03_01_archive.html">3月</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+          ►&nbsp;
+        
+</span>
+</a>
+<a class="post-count-link" href="http://keijinsonyaban.blogspot.jp/2010_02_01_archive.html">2月</a>
+<span class="post-count" dir="ltr">(5)</span>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=2310485404319956884&amp;widgetType=BlogArchive&amp;widgetId=BlogArchive1&amp;action=editWidget&amp;sectionId=main" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;BlogArchive1&quot;));" target="configBlogArchive1" title="編集">
+<img alt="" src="http://img1.blogblog.com/img/icon18_wrench_allbkg.png" height="18" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div><div class="widget Profile" id="Profile1">
+<h2>自己紹介</h2>
+<div class="widget-content">
+<a href="http://www.blogger.com/profile/00810605240730990712"><img alt="自分の写真" class="profile-img" src="http://4.bp.blogspot.com/_KJLBBSxY7xs/TMnppi5-sBI/AAAAAAAAAN8/ELJQCsfGCOM/S220/kin_normal.png" height="48" width="48"></a>
+<dl class="profile-datablock">
+<dt class="profile-data">
+<a class="profile-name-link g-profile" href="http://www.blogger.com/profile/00810605240730990712" rel="author" style="background-image: url('');">
+O-Show
+</a>
+</dt>
+<dd class="profile-textblock"><a href="http://twitter.com/oshow">http://twitter.com/oshow</a> <br>
+mail: oshow@crux.ocn.ne.jp <br>
+              
+<a href="http://www.amazon.co.jp/registry/wishlist/3JDZL0HTIRHPU/">ウィッシュリスト</a> <br></dd>
+</dl>
+<a class="profile-link" href="http://www.blogger.com/profile/00810605240730990712" rel="author">詳細プロフィールを表示</a>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=2310485404319956884&amp;widgetType=Profile&amp;widgetId=Profile1&amp;action=editWidget&amp;sectionId=main" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Profile1&quot;));" target="configProfile1" title="編集">
+<img alt="" src="http://img1.blogblog.com/img/icon18_wrench_allbkg.png" height="18" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div></div>
+</div><iframe src="index_5.html" style="height: 0px; width: 0px; position: absolute;" name="google_top_static_frame" id="google_top_static_frame" frameborder="0"></iframe>
+
+
+
+
+</body>
+</html>

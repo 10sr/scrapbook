@@ -1,0 +1,1610 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - gawk に関するまとめ</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_18.html">前</A>, <A HREF="gawk_20.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC180" HREF="gawk_toc.html#SEC180"><CODE>gawk</CODE> に関するまとめ</A></H1>
+
+<P>
+この付録には<CODE>gawk</CODE>のコマンドラインと、<CODE>gawk</CODE>言語の要約がある。これ
+は"クイックリファレンス"としてデザインされたものである。簡潔ではあるけれど
+も、抜けはない。
+
+</P>
+
+
+
+<H2><A NAME="SEC181" HREF="gawk_toc.html#SEC181">コマンドラインオプションのまとめ</A></H2>
+
+<P>
+コマンドラインは<CODE>gawk</CODE>自身へのオプションと、<CODE>awk</CODE>プログラムのテキ
+スト(<SAMP>`-f'</SAMP>オプションが指定されていない場合)、そしてあらかじめ定義されて
+いる<CODE>awk</CODE>の変数、 <CODE>ARGC</CODE> や <CODE>ARGV</CODE>に反映される値からなる。
+
+</P>
+
+<PRE>
+gawk [<VAR>POSIX or GNU style options</VAR>] -f <VAR>source-file</VAR> [<CODE>--</CODE>] <VAR>file</VAR> ...
+gawk [<VAR>POSIX or GNU style options</VAR>] [<CODE>--</CODE>] '<VAR>program</VAR>' <VAR>file</VAR> ...
+</PRE>
+
+<P>
+<CODE>gawk</CODE>が受け付けるオプションは以下の通り。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>-F <VAR>fs</VAR></CODE>
+<DD>
+<DT><CODE>--field-separator <VAR>fs</VAR></CODE>
+<DD>
+<VAR>fs</VAR>を入力フィールドセパレータとして使用する(あらかじめ定義されてい 
+る変数<CODE>FS</CODE>の値となる)
+
+<DT><CODE>-f <VAR>program-file</VAR></CODE>
+<DD>
+<DT><CODE>--file <VAR>program-file</VAR></CODE>
+<DD>
+<CODE>awk</CODE>プログラムのソースを、最初のコマンドライン引数ではなく<VAR>pro
+gram-file</VAR>から読み取る。
+
+<DT><CODE>-mf <VAR>NNN</VAR></CODE>
+<DD>
+<DT><CODE>-mr <VAR>NNN</VAR></CODE>
+<DD>
+<SAMP>`f'</SAMP>フラグはフィールドの最大数をセットし、<SAMP>`r'</SAMP>フラグは最大レコー
+ドサイズをセットする。これらのオプションは、<CODE>gawk</CODE>がこれら数字に関 
+してのあらかじめ決まった限界値を持っていないので、<CODE>gawk</CODE>では無視さ 
+れる。これはBell研究所のUNIXバージョンの<CODE>awk</CODE>に対する互換性のためだ
+けにある。
+
+<DT><CODE>-v <VAR>var</VAR>=<VAR>val</VAR></CODE>
+<DD>
+<DT><CODE>--assign <VAR>var</VAR>=<VAR>val</VAR></CODE>
+<DD>
+プログラムが実行される前に、変数<VAR>var</VAR>に<VAR>val</VAR>という値をセットする。
+
+<DT><CODE>-W traditional</CODE>
+<DD>
+<DT><CODE>-W compat</CODE>
+<DD>
+<DT><CODE>--traditional</CODE>
+<DD>
+<DT><CODE>--compat</CODE>
+<DD>
+<CODE>gawk</CODE>の拡張機能を禁止する互換モードを使用する。
+
+<DT><CODE>-W copyleft</CODE>
+<DD>
+<DT><CODE>-W copyright</CODE>
+<DD>
+<DT><CODE>--copyleft</CODE>
+<DD>
+<DT><CODE>--copyright</CODE>
+<DD>
+ショートバージョンの 一般公有許諾書(Geneal Public Licence)を標準エラー出力に
+出力し、実行を終了する。
+このオプションは将来の<CODE>gawk</CODE>ではなくなるかもしれない。
+
+<DT><CODE>-W help</CODE>
+<DD>
+<DT><CODE>-W usage</CODE>
+<DD>
+<DT><CODE>--help</CODE>
+<DD>
+<DT><CODE>--usage</CODE>
+<DD>
+使用可能なオプション一覧を標準エラー出力に出力し、実行を終了する。
+
+<DT><CODE>-W lint</CODE>
+<DD>
+<DT><CODE>--lint</CODE>
+<DD>
+疑わしかったり、移植性に欠ける<CODE>awk</CODE>プログラムの部分に対して警告を発
+する。
+
+<DT><CODE>-W lint-old</CODE>
+<DD>
+<DT><CODE>--lint-old</CODE>
+<DD>
+オリジナルの UNIX Version7上の<CODE>awk</CODE>で使えない機能に対して警告を発す
+る。
+
+<DT><CODE>-W posix</CODE>
+<DD>
+<DT><CODE>--posix</CODE>
+<DD>
+<CODE>gawk</CODE>特有の拡張機能を禁止し、さらに幾つかの制限を
+追加する。
+
+<DT><CODE>-W re-interval</CODE>
+<DD>
+<DT><CODE>--re-interval</CODE>
+<DD>
+正規表現にinterval expressionを使うことを許可する
+(セクション <A HREF="gawk_5.html#SEC28">正規表現演算子</A>を参照)。
+
+<DT><CODE>-W source=<VAR>program-text</VAR></CODE>
+<DD>
+<DT><CODE>--source <VAR>program-text</VAR></CODE>
+<DD>
+<CODE>awk</CODE>プログラムのソースコードとして<VAR>program-text</VAR>を使う。このオプシ
+ョンはコマンドライン上に置かれたソースコードとファイル中のソースコードを
+一緒に使うことを許し、特にコマンドライン上のプログラムからライブラリ関数を
+使うときに便利である。
+
+<DT><CODE>-W version</CODE>
+<DD>
+<DT><CODE>--version</CODE>
+<DD>
+使用している<CODE>gawk</CODE>に関するバージョン情報を標準エラー出力に出力する。
+
+<DT><CODE>--</CODE>
+<DD>
+オプションの終わりを示す。これは<CODE>awk</CODE>プログラム自身に
+<SAMP>`-'</SAMP>で始まる引数を渡すのに便利である。
+これはPOSIXの引数解析の規約に従っている。
+</DL>
+
+<P>
+以上のもの以外のオプションは不正なものであるが、無視される。
+詳しくはセクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照。
+
+</P>
+
+
+<H2><A NAME="SEC182" HREF="gawk_toc.html#SEC182">言語のまとめ</A></H2>
+
+<P>
+<CODE>awk</CODE>プログラムは、パターン・アクションの並びと (省略可能な)関数の定義
+から構成される。パターンかアクションのいずれかを省略することもできる。
+
+</P>
+
+<PRE>
+<VAR>pattern</VAR>    { <VAR>action statements</VAR> }
+<VAR>pattern</VAR>
+          { <VAR>action statements</VAR> }
+
+function <VAR>name</VAR>(<VAR>parameter list</VAR>)     { <VAR>action statements</VAR> }
+</PRE>
+
+<P>
+<CODE>gawk</CODE>は最初に、ソースプログラムをコマンドラインで指定されていれば
+<VAR>program-file</VAR>から、そうでなければオプションでない最初の引数から読み
+込む。 <SAMP>`-f'</SAMP>オプションはコマンドラインで複数回使うこともできる。
+<CODE>gawk</CODE>はすべての<VAR>program-file</VAR>ファイルからプログラムを読み込む（こ
+のとき、指定された順番通に行なわれる）。このような動作は<CODE>awk</CODE>関数のライ
+ブラリを作成するのに有効であり、新しく<CODE>awk</CODE>プログラムを書くたびにそういっ
+たライブラリを直接プログラム中にいちいち書かないで良い。コマンドライン上でタ
+イプされたライブラリ関数を使うには、コマンドライン上に<SAMP>`-f /dev/tty'</SAMP>を書
+いてそのあとにプログラムをタイプし、 <KBD>Control-d</KBD>で終れば良い
+セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照。
+
+</P>
+<P>
+環境変数<CODE>AWKPATH</CODE>は<SAMP>`-f'</SAMP>で指定したファイルを探すパスを指定する。
+<CODE>AWKPATH</CODE>がセットされていないときには、デフォルトのパスである
+<SAMP>`.:/usr/lib/awk:/usr/local/lib/awk'</SAMP>
+<A NAME="FOOT27" HREF="gawk_foot.html#FOOT27">(27)</A>
+が使われる。
+<SAMP>`-f'</SAMP> で指定したファイル名に<SAMP>`/'</SAMP>が含まれていた場合には、パスを使った
+サーチは行なわれない
+セクション <A HREF="gawk_15.html#SEC137"><CODE>AWKPATH</CODE>環境変数</A>を参照.。
+
+</P>
+<P>
+<CODE>gawk</CODE>はプログラムを内部形式にコンパイルし、<CODE>ARGV</CODE>という配列中
+のファイルから読み込みを行なう。もし、ファイルがコマンドラインで指定され
+ていなければ、<CODE>gawk</CODE>は標準入力から読み込みを行なう。
+
+</P>
+<P>
+もしコマンドラインで "ファイル"が<SAMP>`<VAR>var</VAR>=<VAR>val</VAR>'</SAMP>という形であれ
+ば、それは<VAR>var</VAR>に<VAR>val</VAR>を代入するという代入式として扱われる。 ARGVの
+ある要素が空文字列であれば、その要素はスキップされる。
+
+</P>
+<P>
+入力された行ごとに、<CODE>gawk</CODE>は<CODE>awk</CODE>プログラム中の<VAR>パターン</VAR>とマッチ
+するかをテストし、適用すべき<VAR>アクション</VAR>を実行する。
+
+</P>
+
+
+<H2><A NAME="SEC183" HREF="gawk_toc.html#SEC183">変数とフィールド</A></H2>
+
+<P>
+<CODE>awk</CODE>の変数は(使用する前に)宣言する必要はなく、最初に使用されるとき
+に作り出される。その値は浮動小数点数か文字列かのいずれかである。 <CODE>awk</CODE>
+はまた、一次元の配列を持ち、多次元配列をエミュレートする。 <CODE>awk</CODE>が
+実行時にあらかじめ決められた値をセットするようないくつかの変数があるが、
+それはこのあとで説明する。
+
+</P>
+
+
+
+<H3><A NAME="SEC184" HREF="gawk_toc.html#SEC184">Fields</A></H3>
+
+<P>
+行が読み込まれるごとに、<CODE>gawk</CODE>はフィールドセパレータに<CODE>FS</CODE>
+の値を使って行を<VAR>フィールド</VAR>に分割する。 <CODE>FS</CODE>が一つのキャラクタ
+であれば、フィールドはそのキャラクタで分割される。そうでない場合、<CODE>FS</CODE>
+は正規表現であるとみなされる。特殊なケースとして、<CODE>FS</CODE>が一つの空白で
+あった場合には、フィールドは空白、タブ、改行のいずれか、あるいはそのすべて
+で分割される。<A NAME="FOOT28" HREF="gawk_foot.html#FOOT28">(28)</A> 
+また、<CODE>FS</CODE>が空文字列(<CODE>""</CODE>)であった場合には、レコード 
+の各キャラクタが別々のフィールドとなる。
+<CODE>IGNORECASE</CODE> (セクション <A HREF="gawk_5.html#SEC30">大小文字を区別するマッチング</A>を参照)
+の値は<CODE>FS</CODE>が正規表現であるときに、どのようにフィールドが分割
+されるかに影響を与える。
+
+</P>
+<P>
+入力行のフィールドはそれぞれ、その（入力行中の）位置で参照することができ、
+<CODE>$1</CODE>, <CODE>$2</CODE>のように記述する。 <CODE>$0</CODE>は行全体である。フィールドの
+値は代入することもできる。フィールド番号は定数でなくてもよく、
+
+</P>
+
+<PRE>
+n = 5
+print $n
+</PRE>
+
+<P>
+上記のプログラムは入力行の5番目のフィールドを出力する。<CODE>NF</CODE>という変数
+には入力行にあるフィールドの数がセットされる。
+
+</P>
+<P>
+存在しないフィールド(<CODE>$NF</CODE>より後ろのフィールド)を参照すると空文字列
+が返ってくる。しかし、存在しないフィールドに対して代入を行うと(例えば 
+<CODE>$(NF+2) = 5</CODE>)、<CODE>NF</CODE>の値を増やし、間にあるフィールドを空文字列で
+作成し、さらに<CODE>$0</CODE>を、<CODE>OFS</CODE>の値をフィールドセパレータとして再 
+構成する。
+<CODE>NF</CODE>を減じることによって、それによって範囲からはみ出たフィールドの
+値が失われることになり、さらに<CODE>$0</CODE>の値が<CODE>OFS</CODE>によって区切られ
+ているフィールドの集合として再構成される。
+セクション <A HREF="gawk_6.html#SEC33">入力ファイルの読み込み</A>を参照.
+
+</P>
+
+
+<H3><A NAME="SEC185" HREF="gawk_toc.html#SEC185">Built-in Variables</A></H3>
+
+<P>
+<CODE>gawk</CODE>の組込み変数には以下のものがある。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>ARGC</CODE>
+<DD>
+<CODE>ARGV</CODE>の要素の数。<CODE>ARGV</CODE>に実際に含まれるのものについては
+後述する。
+
+<DT><CODE>ARGIND</CODE>
+<DD>
+現在処理しているARGVの要素へのインデックス。<SAMP>`FILENAME == ARGV[ARGIND]'</SAMP>が
+常に成り立つ。
+
+<DT><CODE>ARGV</CODE>
+<DD>
+コマンドライン引数の配列。配列の添え字は0から<CODE>ARGC</CODE> - 1まで。
+<CODE>ARGV</CODE>の内容を動的に変更する事によって、データとして使うファイルを制御
+することができる。<CODE>ARGV</CODE>の空の要素は無視される。<CODE>ARGV</CODE>には
+<CODE>awk</CODE>に対するオプションや、<CODE>awk</CODE>プログラムそのものには
+含まれていない。
+
+<DT><CODE>CONVFMT</CODE>
+<DD>
+数値を文字列に変換するときに使われるフォーマット。
+
+<DT><CODE>FIELDWIDTHS</CODE>
+<DD>
+固定長の入力データを記述する数字の、スペースで区切られたリスト。
+
+<DT><CODE>ENVIRON</CODE>
+<DD>
+環境変数からなる配列。配列の添字は環境変数名で、配列要素の値は(添字に使われ
+ている)環境変数の値である。したがって、環境変数<CODE>HOME</CODE>の値は
+<CODE>ENVIRON["HOME"]</CODE> とすることで取得できる。その値は<TT>`/home/arnold'</TT>
+といった形式であろう。
+
+この配列を変更しても <CODE>gawk</CODE>がリダイレクションや<CODE>system</CODE>関数で起動
+したプログラムが参照する環境変数には影響しない (これは将来の<CODE>gawk</CODE>で
+は変わるかもしれない)。
+
+一部のオペレーティングシステムでは環境変数がない。そういったシステムでは
+<CODE>ENVIRON</CODE>は実行時には空となる。
+
+<DT><CODE>ERRNO</CODE>
+<DD>
+<CODE>getline</CODE> や<CODE>close</CODE>を実行したときに起きたエラーのシステムエラーメッ
+セージ。
+
+<DT><CODE>FILENAME</CODE>
+<DD>
+現在の入力ファイルのファイル名。コマンドラインで入力ファイルの指定がされてい
+ないときには、<CODE>FILENAME</CODE>は空文字列である。
+
+<DT><CODE>FNR</CODE>
+<DD>
+現在の入力ファイルから入力したレコードの数。
+
+<DT><CODE>FS</CODE>
+<DD>
+入力フィールドセパレータ。デフォルトではブランク。
+
+<DT><CODE>IGNORECASE</CODE>
+<DD>
+正規表現オペレーション時に大小文字を区別するかどうかのフラグ。
+<CODE>IGNORECASE</CODE>に0でない値が設定されていると、ルールのパターンマッチン
+グ、<CODE>RS</CODE>によるレコード分割、<CODE>FS</CODE>によるフィールド分割、<SAMP>`~'</SAMP>
+や<SAMP>`!~'</SAMP>による正規表現マッチングや、<CODE>gsub</CODE>, <CODE>index</CODE>,
+<CODE>match</CODE>, <CODE>split</CODE>, <CODE>sub</CODE> といった組込み関数の全て正規表現オ
+ペレーション時や文字列比較の際に大小文字を無視する。
+<CODE>IGNORECASE</CODE>の値は、配列の添え字付けには影響しない。
+
+<DT><CODE>NF</CODE>
+<DD>
+カレント入力レコードのフィールドの数。
+
+<DT><CODE>NR</CODE>
+<DD>
+現在まで入力されたレコード数の合計。
+
+<DT><CODE>OFMT</CODE>
+<DD>
+<CODE>print</CODE> 文で数値を出力するときのフォーマット。
+デフォルトでは<CODE>"%.6g"</CODE>。
+
+<DT><CODE>OFS</CODE>
+<DD>
+出力フィールドのセパレータ。デフォルトではブランク。
+
+<DT><CODE>ORS</CODE>
+<DD>
+出力レコードのセパレータ。デフォルトでは改行。
+
+<DT><CODE>RS</CODE>
+<DD>
+入力レコードセパレータで、デフォルトでは改行。<CODE>RS</CODE>が空文字列であれ 
+ば、レコードは空行によって分割される。<CODE>RS</CODE>が空文字にセットされたと 
+き、改行キャラクタは <CODE>FS</CODE>に設定されている値に加えて、常にフィールド
+セパレータとして振る舞う。<CODE>RS</CODE>に複数のキャラクタがセットされている 
+場合、それは正規表現として扱われ、入力テキストは正規表現にマッチしたとこ
+ろでレコードに分割を行う。
+
+<DT><CODE>RT</CODE>
+<DD>
+<CODE>RS</CODE>で示されたテキストにマッチし、
+レコードセパレータとなった入力テキスト。
+
+<DT><CODE>RSTART</CODE>
+<DD>
+<CODE>match</CODE>でマッチした文字列の先頭の位置。マッチしなかったときには0が入る。
+
+<DT><CODE>RLENGTH</CODE>
+<DD>
+<CODE>match</CODE>でマッチした文字列の長さ。マッチしなかったときは-1が入る。
+
+<DT><CODE>SUBSEP</CODE>
+<DD>
+多次元配列の要素の添え字を区切るのに使用される文字列。デフォルトでは
+<CODE>"\034"</CODE>である。
+</DL>
+
+<P>
+詳しい説明はセクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照. にある。
+
+</P>
+
+
+<H3><A NAME="SEC186" HREF="gawk_toc.html#SEC186">Arrays</A></H3>
+
+<P>
+配列はブラケット(<SAMP>`['</SAMP> と <SAMP>`]'</SAMP>)に囲まれた式によって添え字付けされる。
+配列の添え字は<EM>常に</EM>文字列であり、数値は必要に応じて以下の変換ルールに
+従って文字列に変換される
+(セクション <A HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>を参照)。
+
+</P>
+<P>
+ブラケットの内側でカンマで区切られた複数の式を使った場合、配列の添字は添字の
+区切り(<CODE>SUBSEP</CODE>の値)によって区切られた文字列に変換され、それを内部的な
+添字の値とする。
+
+</P>
+<P>
+特殊な演算子<CODE>in</CODE>は<CODE>if</CODE>文や<CODE>while</CODE>文のなかで配列中に含まれる特
+定の値を取り出すために使われる。
+
+</P>
+
+<PRE>
+if (val in array)
+        print array[val]
+</PRE>
+
+<P>
+配列が多次元の添字を持っていたならば、<CODE>(i, j, ...) in array</CODE>を存在
+する要素のテストのために使用する。
+
+</P>
+<P>
+<CODE>in</CODE>は<CODE>for</CODE>ループのなかで、配列要素すべてに対する繰り返しを行なう
+ときに使うことができる。
+セクション <A HREF="gawk_12.html#SEC117">Scanning All Elements of an Array</A>を参照.
+
+</P>
+<P>
+<CODE>delete</CODE>文を使って配列要素を配列から削除することができる。
+
+</P>
+<P>
+<SAMP>`delete <VAR>array</VAR>'</SAMP>を使って、配列全体をクリアすることができる。
+
+</P>
+<P>
+セクション <A HREF="gawk_12.html#SEC112"><CODE>awk</CODE>における配列</A>を参照.
+
+</P>
+
+
+<H3><A NAME="SEC187" HREF="gawk_toc.html#SEC187">Data Types</A></H3>
+
+<P>
+<CODE>awk</CODE>での式の値は常に数値か、文字列のいずれかである。
+
+</P>
+<P>
+一部の(算術演算子のような)文脈では数値が要求される。
+そのような文脈では数字のならんだ文字列のテキストに対して、
+インタープリタが文字列から数値への変換を行う。
+もし、変換対象となった文字列が数値のようなものでなければ、
+0に変換される。
+
+</P>
+<P>
+その他の文脈(連接のような)では、文字列値が要求される。
+数値データであれば<CODE>sprintf</CODE>で
+出力したような文字列に変換される。
+詳しくは
+セクション <A HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>を参照.
+
+</P>
+<P>
+強制的に文字列データを数値に変換するには、単に0を加えれば良い。ただし、文字
+列がすでに数値データである場合には変換動作は行われない。
+
+</P>
+<P>
+逆に強制的に数値データを文字列に変換するには、空文字列を連結すれば良い。
+
+</P>
+<P>
+<CODE>awk</CODE>言語ではオペランドが両方とも数値であるか、少なくとも一方が数値
+で、他方が数値文字列であれば数値として比較を行なうように定義している。そ
+うではなく、少なくとも一方のオペランドが文字列に変換されていたら文字列同
+士の比較が行なわれる。フィールド、!code{getline}による入力、<CODE>FILENAME</CODE>、
+<CODE>ARGV</CODE>の要素、<CODE>ENVIRONMET</CODE>の要素、<CODE>split</CODE>によって作 
+成された配列の要素といったものだけが、数値文字列となることができる。
+<CODE>"3.1415927"</CODE>のようなものは、数値文字列ではなく文字列である。
+比較の際のルールは
+セクション <A HREF="gawk_8.html#SEC82">Variable Typing and Comparison Expressions</A>を参照.
+で全て説明されている。
+
+</P>
+<P>
+初期化されていない変数は文字列値<CODE>""</CODE>(空文字列)を持つ。数値が要求され
+る文脈では0に等しい。
+
+</P>
+<P>
+変数の名前付けと初期化についてはセクション <A HREF="gawk_8.html#SEC73">Variables</A>を参照、
+変数の値がどのように解釈されるかは
+セクション <A HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>を参照。
+
+</P>
+
+
+<H2><A NAME="SEC188" HREF="gawk_toc.html#SEC188">パターン</A></H2>
+
+<P>
+<CODE>awk</CODE>プログラムは、その大部分がアクションが後に続いているパターンか
+ら構成されるルールからなる。アクションは<SAMP>`{'</SAMP> と<SAMP>`}'</SAMP>に囲まれて 
+いる。アクションかパターンのどちらかを省略する事ができる（もちろん両方を
+省略するという事はできない）。パターンが省略されると、全ての入力に対して
+アクションが実行される。アクション部が省略された場合には、行全体を出力す
+る<SAMP>`{ print }'</SAMP>と同じことになる。
+
+</P>
+<P>
+コメントは<SAMP>`#'</SAMP> で始まり、行末まで続く。空行は文の区切りのために使われる
+だろう。通常は文の終わりは改行であるけれども、<SAMP>`,'</SAMP>, <SAMP>`{'</SAMP>,  
+<SAMP>`?'</SAMP>,  <SAMP>`:'</SAMP>, <SAMP>`&#38;&#38;'</SAMP>, <SAMP>`||'</SAMP>が行の最後にきているときにはその限
+りではない。また、<CODE>do</CODE> あるいは <CODE>else</CODE>が行末にきている場合、自動的
+に次の行以降に対応する文があるとみなされる。別のケースとして、行末に改行を無
+視するための<SAMP>`\'</SAMP>がある場合、行が継続しているものとみなされる。
+
+</P>
+<P>
+マルチステートメントは同一行上で<SAMP>`;'</SAMP>を使って文を区切る事で使う事ができる
+ようになる。これはルールのアクション部(通常の場合)ステートメントと、ルール
+部のステートメントの両方に適用できる。
+
+</P>
+<P>
+<CODE>awk</CODE>コメントについてはセクション <A HREF="gawk_3.html#SEC17"><CODE>awk</CODE>プログラム中のコメント</A>を参照.に、
+<CODE>awk</CODE>の行継続のメカニズムについては
+セクション <A HREF="gawk_3.html#SEC21"><CODE>awk</CODE> の文と行</A>を参照.に
+説明されている。
+
+</P>
+
+
+<H3><A NAME="SEC189" HREF="gawk_toc.html#SEC189">Pattern Summary</A></H3>
+
+<P>
+<CODE>awk</CODE>でのパターンは次のうちのいずれか一つである。
+
+</P>
+
+<PRE>
+/<VAR>regular expression</VAR>/
+<VAR>relational expression</VAR>
+<VAR>pattern</VAR> &#38;&#38; <VAR>pattern</VAR>
+<VAR>pattern</VAR> || <VAR>pattern</VAR>
+<VAR>pattern</VAR> ? <VAR>pattern</VAR> : <VAR>pattern</VAR>
+<VAR>pattern</VAR>
+<VAR>pattern1</VAR>, <VAR>pattern2</VAR>
+BEGIN
+END
+</PRE>
+
+<P>
+<CODE>BEGIN</CODE> と <CODE>END</CODE>は、入力に対してテストを行わない特殊なパターンであ
+る。全ての<CODE>BEGIN</CODE>ルールのアクション部分はあたかも一つの<CODE>BEGIN</CODE> ルー
+ルで記述されたかのようにまとめられ、入力を開始する以前にルールの実行が行われ
+る。同様に全ての<CODE>END</CODE>もまとめられて、入力が全て終了したとき（もしくは
+<CODE>exit</CODE> 文が実行されたときに）ルールの実行が行われる。 <CODE>BEGIN</CODE> と
+<CODE>END</CODE>の二つのパターンはもう一方のパターンと一緒にされる事はない。
+<CODE>BEGIN</CODE> パターンも <CODE>END</CODE>パターンもアクション部の省略はできない。
+
+</P>
+<P>
+<SAMP>`/<VAR>regular-expression</VAR>/'</SAMP>というパターンは各入力行に対して正規表現が
+マッチするかどうかを実行する仮想的な(?)文である。正規表現は<CODE>egrep</CODE>の拡
+張になっており、以下に挙げられる通りである。
+
+</P>
+<P>
+<VAR>relational expression</VAR>は以下で定義される演算子を、アクション中で使うこ
+とができる。これらは通常あるフィールドとある正規表現がマッチするかをテストす
+る。
+
+</P>
+<P>
+<SAMP>`&#38;&#38;'</SAMP>, <SAMP>`||'</SAMP>, <SAMP>`!'</SAMP>といった演算子はそれぞれ、 Cと同じ様に論理積、
+論理和、論理否定の演算子である。これらの演算子はまた、これもCと同じ様に式の
+評価をするときにショートサーキット評価を行う。また、これらの演算子を組み合
+わせて式を構成する事もできる。多くの言語でそうであるように、括弧を式の評価
+の順序を変更するために使う事ができる。
+
+</P>
+<P>
+<SAMP>`?:'</SAMP>という演算子はCでのそれと同じである。最初のパターンにマッチすると、
+入力レコードに対して二番目のパターンが適用され、そうでなければ三番目のパタ
+ーンが適用される。二番目か、三番目のいずれか一つだけが適用される。
+
+</P>
+<P>
+<SAMP>`<VAR>pattern1</VAR>, <VAR>pattern2</VAR>'</SAMP>の様な形式のパターンは範囲指定パターン
+と呼ばれる。このパターンは<VAR>pattern1</VAR>にマッチした行から<VAR>pattern2</VAR>にマッ
+チした行まで(<VAR>pattern2</VAR>も含まれる)の全ての行にマッチする。範囲指定パター
+ンは他のパターンのオペレータとして使用する事はできない。
+
+</P>
+<P>
+セクション <A HREF="gawk_9.html#SEC88">Pattern Elements</A>を参照.
+
+</P>
+
+
+<H3><A NAME="SEC190" HREF="gawk_toc.html#SEC190">Regular Expressions</A></H3>
+
+<P>
+正規表現はPOSIXの拡張正規表現に基づいている。エスケープシーケンスは文字 
+列定数や正しい正規表現定数の中に含めることができる(セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照)。
+正規表現は以下に挙げるキャラクタの組み合わせである。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE><VAR>c</VAR></CODE>
+<DD>
+<VAR>c</VAR>というキャラクタにマッチする(ここで、<VAR>c</VAR>が
+以下に挙げるキャラクタリストに含まれていないものとする)。
+
+<DT><CODE>\<VAR>c</VAR></CODE>
+<DD>
+<VAR>c</VAR>というキャラクタそのものにマッチする。
+
+<DT><CODE>.</CODE>
+<DD>
+改行も<EM>含めて</EM>、任意のキャラクタにマッチする。
+厳密なPOSIXモードでは、<SAMP>`.'</SAMP>は
+ビットが全て0であるNULキャラクタにはマッチしない。
+
+<DT><CODE>^</CODE>
+<DD>
+文字列の先頭にマッチする。
+
+<DT><CODE>$</CODE>
+<DD>
+文字列の末尾にマッチする。
+
+<DT><CODE>[<VAR>abc</VAR>...]</CODE>
+<DD>
+<VAR>abc</VAR>...(キャラクタリスト)のいずれかのキャラクタにマッチする。
+
+<DT><CODE>[[:<VAR>class</VAR>:]]</CODE>
+<DD>
+<VAR>class</VAR>というキャラクタクラスに含まれる任意のキャラクタに
+マッチする。使用できるキャラクタクラスには、
+<CODE>alnum</CODE>, <CODE>alpha</CODE>, <CODE>blank</CODE>, <CODE>cntrl</CODE>,
+<CODE>digit</CODE>, <CODE>graph</CODE>, <CODE>lower</CODE>, <CODE>print</CODE>, <CODE>punct</CODE>,
+<CODE>space</CODE>, <CODE>upper</CODE>, <CODE>xdigit</CODE>がある。
+
+<DT><CODE>[[.<VAR>symbol</VAR>.]]</CODE>
+<DD>
+マルチキャラクタの照合シンボル<VAR>symbol</VAR>にマッチする。
+<CODE>gawk</CODE>は現在この照合シンボルをサポートしていない。
+
+<DT><CODE>[[=<VAR>classname</VAR>=]]</CODE>
+<DD>
+カレントのロカールにおいて<VAR>classname</VAR>という名前の
+クラスに含まれる等価のキャラクタにマッチする。
+<CODE>gawk</CODE>は現在この等価クラスをサポートしていない。
+
+<DT><CODE>[^<VAR>abc</VAR>...]</CODE>
+<DD>
+<VAR>abc</VAR>...の中にない任意のキャラクタに
+マッチする(キャラクタリストの補集合)。
+
+<DT><CODE><VAR>r1</VAR>|<VAR>r2</VAR></CODE>
+<DD>
+<VAR>r1</VAR>もしくは<VAR>r2</VAR>にマッチする(選択)。
+
+<DT><CODE><VAR>r1r2</VAR></CODE>
+<DD>
+<VAR>r1</VAR>、<VAR>r2</VAR>という並びにマッチする(連結)。
+
+<DT><CODE><VAR>r</VAR>+</CODE>
+<DD>
+<VAR>r</VAR>の一回以上の繰り返しにマッチする。
+
+<DT><CODE><VAR>r</VAR>*</CODE>
+<DD>
+<VAR>r</VAR>のゼロ回以上の繰り返しにマッチする。
+
+<DT><CODE><VAR>r</VAR>?</CODE>
+<DD>
+ゼロ個、もしくは一個の<VAR>r</VAR>とマッチする。
+
+<DT><CODE>(<VAR>r</VAR>)</CODE>
+<DD>
+<VAR>r</VAR>にマッチする(グルーピング)。
+
+<DT><CODE><VAR>r</VAR>{<VAR>n</VAR>}</CODE>
+<DD>
+<DT><CODE><VAR>r</VAR>{<VAR>n</VAR>,}</CODE>
+<DD>
+<DT><CODE><VAR>r</VAR>{<VAR>n</VAR>,<VAR>m</VAR>}</CODE>
+<DD>
+それぞれ、<VAR>r</VAR>の<VAR>n</VAR>回の繰り返し、<VAR>n</VAR>回以上の繰り返し、
+<VAR>n</VAR>から<VAR>m</VAR>回までの繰り返しにマッチする(interval expression)。
+
+<DT><CODE>\y</CODE>
+<DD>
+ある単語の先頭、もしくは末尾にある空文字列にマッチする。
+
+<DT><CODE>\B</CODE>
+<DD>
+単語中にある空文字列にマッチする。
+
+<DT><CODE>\&#60;</CODE>
+<DD>
+ある単語の先頭にある空文字列にマッチする。
+
+<DT><CODE>\&#62;</CODE>
+<DD>
+ある単語の末尾にある空文字列にマッチする。
+
+<DT><CODE>\w</CODE>
+<DD>
+単語を構成するキャラクタ(アルファベット、数字とアンダースコア)に
+マッチする。
+
+<DT><CODE>\W</CODE>
+<DD>
+単語の構成要素にならないキャラクタにマッチする。
+
+<DT><CODE>\`</CODE>
+<DD>
+バッファ(<CODE>gawk</CODE>での文字列と同じようなもの)の先頭にある空文字列と
+マッチする。
+
+<DT><CODE>\'</CODE>
+<DD>
+バッファの末尾にある空文字列とマッチする。
+</DL>
+
+<P>
+<CODE>gawk</CODE>が正規表現中にあるキャラクタをどのように
+解釈するかを制御するコマンドラインオプションが幾つかある。
+
+</P>
+<DL COMPACT>
+
+<DT>No options
+<DD>
+デフォルトでは、前述した<CODE>gawk</CODE>はPOSIXの正規表現演算子と
+GNUの正規表現演算子のすべての機能を提供する。
+しかし、interval expressionはサポートされない。
+
+<DT><CODE>--posix</CODE>
+<DD>
+POSIXの正規表現のみをサポートする。GNUの演算子は特殊なものではなく(例え 
+ば<SAMP>`\w'</SAMP>は <SAMP>`w'</SAMP>という文字そのものにマッチする)、interval 
+expressionを使うことができる。
+
+<DT><CODE>--traditional</CODE>
+<DD>
+伝統的なUNIX<CODE>awk</CODE>の正規表現がマッチする。GNUの演算子は特別でなく、
+interval expressionとPOSIXのキャラクタクラス(<CODE>[[:alnum:]]</CODE>など)も使 
+用不可である。八進や十六進のエスケープシーケンスで表わされたキャラクタは、
+それが正規表現のメタキャラクタであってもキャラクタそのものとして扱われる。
+
+<DT><CODE>--re-interval</CODE>
+<DD>
+正規表現中でinterval expressionを使うことを許可する。
+これは<SAMP>`--traditional'</SAMP>が指定されているときも有効である。
+</DL>
+
+<P>
+セクション <A HREF="gawk_5.html#SEC25">正規表現</A>を参照.
+
+</P>
+
+
+<H2><A NAME="SEC191" HREF="gawk_toc.html#SEC191">アクション</A></H2>
+
+<P>
+実行文(action statement)はブレース（<SAMP>`{'</SAMP> と <SAMP>`}'</SAMP>）に囲まれている。
+省略された実行文は<SAMP>`{ print }'</SAMP>と等価である。
+
+</P>
+<P>
+他の多くの言語と同じように、実行文は通常、代入文、条件文、ループなどから
+なる。演算子、制御文、入出力文はCと同じ様に記述できる。
+
+</P>
+<P>
+コメントは<SAMP>`#'</SAMP> で始まり、行末まで続く。空行は文の区切りのために使われる
+だろう。通常は文の終わりは改行であるけれども、<SAMP>`,'</SAMP>, <SAMP>`{'</SAMP>,  
+<SAMP>`?'</SAMP>,  <SAMP>`:'</SAMP>, <SAMP>`&#38;&#38;'</SAMP>, <SAMP>`||'</SAMP>が行の最後にきているときにはその限
+りではない。また、<CODE>do</CODE> あるいは <CODE>else</CODE>が行末にきている場合、自動的
+に次の行以降に対応する文があるとみなされる。別のケースとして、行末に改行を無
+視するための<SAMP>`\'</SAMP>がある場合、行が継続しているものとみなされる。
+
+</P>
+<P>
+マルチステートメントは同一行上で<SAMP>`;'</SAMP>を使って文を区切る事で使う事ができる
+ようになる。これはルールのアクション部(通常の場合)ステートメントと、ルール
+部のステートメントの両方に適用できる。
+
+</P>
+<P>
+<CODE>awk</CODE>コメントについてはセクション <A HREF="gawk_3.html#SEC17"><CODE>awk</CODE>プログラム中のコメント</A>を参照.に、
+<CODE>awk</CODE>の行継続のメカニズムについては
+説明されている。
+
+</P>
+
+
+
+<H3><A NAME="SEC192" HREF="gawk_toc.html#SEC192">演算子</A></H3>
+
+<P>
+<CODE>awk</CODE>の演算子を、優先順位の高い順に挙げる。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>(...)</CODE>
+<DD>
+グルーピング
+
+<DT><CODE>$</CODE>
+<DD>
+フィールドの参照。
+
+<DT><CODE>++ --</CODE>
+<DD>
+インクリメントとデクリメント。それぞれ前置と後置がある。
+
+<DT><CODE>^</CODE>
+<DD>
+べき乗(<SAMP>`**'</SAMP>を使うこともできる。<SAMP>`**='</SAMP>という代入演算子もあるが
+これらはPOSIXの標準では規定されていない)。
+
+<DT><CODE>+ - !</CODE>
+<DD>
+単項のプラス、単項のマイナス、論理否定。
+
+<DT><CODE>* / %</CODE>
+<DD>
+乗算、除算、剰余
+
+<DT><CODE>+ -</CODE>
+<DD>
+加算と減算
+
+<DT><CODE><VAR>space</VAR></CODE>
+<DD>
+文字列連接
+
+<DT><CODE>&#60; &#60;= &#62; &#62;= != ==</CODE>
+<DD>
+関係演算子
+
+<DT><CODE>~ !~</CODE>
+<DD>
+正規表現のマッチ、非マッチ
+
+<DT><CODE>in</CODE>
+<DD>
+Array membership.
+
+<DT><CODE>&#38;&#38;</CODE>
+<DD>
+論理的な"かつ"。
+
+<DT><CODE>||</CODE>
+<DD>
+論理的な"または"
+
+<DT><CODE>?:</CODE>
+<DD>
+条件式。これは <CODE><VAR>expr1</VAR> ? <VAR>expr2</VAR> : <VAR>expr3</VAR></CODE>の様に
+記述される。 <VAR>expr1</VAR>が真であれば式の値は<VAR>expr2</VAR>に、そうでなければ
+<VAR>expr3</VAR>になる。<VAR>expr2</VAR> と <VAR>expr3</VAR>のうち、どちらか一つだけが評価
+される。
+
+<DT><CODE>= += -= *= /= %= ^=</CODE>
+<DD>
+代入。通常の代入文(<CODE><VAR>var</VAR>=<VAR>value</VAR></CODE>)と代入演算子
+(それ以外のもの)の両方がサポートされている。
+</DL>
+
+<P>
+セクション <A HREF="gawk_8.html#SEC68">式</A>を参照.
+
+</P>
+
+
+<H3><A NAME="SEC193" HREF="gawk_toc.html#SEC193">制御文</A></H3>
+
+<P>
+制御文には以下に挙げるものがある。
+
+</P>
+
+<PRE>
+if (<VAR>condition</VAR>) <VAR>statement</VAR> [ else <VAR>statement</VAR> ]
+while (<VAR>condition</VAR>) <VAR>statement</VAR>
+do <VAR>statement</VAR> while (<VAR>condition</VAR>)
+for (<VAR>expr1</VAR>; <VAR>expr2</VAR>; <VAR>expr3</VAR>) <VAR>statement</VAR>
+for (<VAR>var</VAR> in <VAR>array</VAR>) <VAR>statement</VAR>
+break
+continue
+delete <VAR>array</VAR>[<VAR>index</VAR>]
+delete <VAR>array</VAR>
+exit [ <VAR>expression</VAR> ]
+{ <VAR>statements</VAR> }
+</PRE>
+
+<P>
+セクション <A HREF="gawk_10.html#SEC98">アクション中の制御文</A>を参照.
+
+</P>
+
+
+<H3><A NAME="SEC194" HREF="gawk_toc.html#SEC194">I/O Statements</A></H3>
+
+<P>
+入出力文には以下のものがある。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>getline</CODE>
+<DD>
+次の入力レコードを<CODE>$0</CODE>にセットする。 <CODE>NF</CODE>, <CODE>NR</CODE>, <CODE>FNR</CODE>が
+再設定される。
+セクション <A HREF="gawk_6.html#SEC46"><CODE>getline</CODE>を使った入力</A>を参照.
+
+<DT><CODE>getline &#60;<VAR>file</VAR></CODE>
+<DD>
+<VAR>file</VAR>の次の入力レコードを<CODE>$0</CODE>にセットし、<CODE>NF</CODE>が再設定される。
+
+<DT><CODE>getline <VAR>var</VAR></CODE>
+<DD>
+次の入力レコードを<VAR>var</VAR>にセットし、同時に<CODE>NR</CODE>, <CODE>FNR</CODE> が再設定
+される。
+
+<DT><CODE>getline <VAR>var</VAR> &#60;<VAR>file</VAR></CODE>
+<DD>
+<VAR>file</VAR>の次の入力レコードを<VAR>var</VAR>にセットする。
+
+<DT><CODE><VAR>command</VAR> | getline</CODE>
+<DD>
+<VAR>command</VAR>を実行し、その出力を<CODE>getline</CODE>へパイプを通して送る。
+そのとき<CODE>$0</CODE>, <CODE>NF</CODE>, <CODE>NR</CODE>が再設定される。
+
+<DT><CODE><VAR>command</VAR> | getline <CODE>var</CODE></CODE>
+<DD>
+<VAR>command</VAR>を実行し、その出力を<CODE>getline</CODE>へパイプを通して送る。
+<VAR>var</VAR>が再設定される。
+
+<DT><CODE>next</CODE>
+<DD>
+現在の入力レコードに対する処理を中断する。次の入力レコードを読み込み、(その
+レコードに対して)<CODE>awk</CODE>プログラムの最初のパターンから処理を始める。入力
+データがファイルの終端に達したならば<CODE>END</CODE> ルールが実行される
+セクション <A HREF="gawk_10.html#SEC105">The <CODE>next</CODE> Statement</A>を参照。
+
+<DT><CODE>nextfile</CODE>
+<DD>
+カレント入力ファイルの処理を中止する。次の入力レコードは次の入力ファイル
+から読み込みが行われる。<CODE>FILENAME</CODE>は更新され、<CODE>FNR</CODE>は1にリセッ
+トされ、<CODE>ARGIND</CODE>はインクリメントされる。また、新たな入力レコードは
+<CODE>awk</CODE>プログラムの最初のパターンから処理が開始される。入力データが終 
+わりに達した場合、(もしあれば)<CODE>END</CODE>ルールが実行される、以前のバージ
+ョンの<CODE>gawk</CODE>では<CODE>next file</CODE>を使っていた。これは現バージョンで 
+も使えるが好ましくない。
+セクション <A HREF="gawk_10.html#SEC106">The <CODE>nextfile</CODE> Statement</A>を参照.
+
+<DT><CODE>print</CODE>
+<DD>
+カレントレコードを出力する。
+セクション <A HREF="gawk_7.html#SEC55">出力を行う</A>を参照.
+
+<DT><CODE>print <VAR>expr-list</VAR></CODE>
+<DD>
+式を出力する
+
+<DT><CODE>print <VAR>expr-list</VAR> &#62; <VAR>file</VAR></CODE>
+<DD>
+式を<VAR>file</VAR>に対して出力する。もし<VAR>file</VAR>が存在していなければ
+作成され、既に存在していた場合にはファイルの容が
+最初にその<CODE>print</CODE>文が実行されたときに削除される。
+
+<DT><CODE>print <VAR>expr-list</VAR> &#62;&#62; <VAR>file</VAR></CODE>
+<DD>
+式を<VAR>file</VAR>に対して出力する。以前の<VAR>file</VAR>の内容は残され、
+<CODE>print</CODE>による出力はファイルに追加する形で行われる。
+
+<DT><CODE>print <VAR>expr-list</VAR> | <VAR>command</VAR></CODE>
+<DD>
+式を出力し、それを<VAR>command</VAR>にパイプを通して送る。
+パイプラインは<CODE>close</CODE>関数が呼び出させるまで存在し続ける。
+
+<DT><CODE>printf <VAR>fmt, expr-list</VAR></CODE>
+<DD>
+整形して出力する。
+
+<DT><CODE>printf <VAR>fmt, expr-list</VAR> &#62; file</CODE>
+<DD>
+整形し、出力を<VAR>file</VAR>に行う。<VAR>file</VAR>が存在しない場合には
+作成される。すでに存在していた場合は最初に<CODE>printf</CODE>が実行された
+ときにファイルの内容が削除される。
+
+<DT><CODE>printf <VAR>fmt, expr-list</VAR> &#62;&#62; <VAR>file</VAR></CODE>
+<DD>
+整形し、出力を<VAR>file</VAR>に行う。<VAR>file</VAR>の以前の内容は残され、
+<CODE>printf</CODE>の出力はファイルに追加される。
+
+<DT><CODE>printf <VAR>fmt, expr-list</VAR> | <VAR>command</VAR></CODE>
+<DD>
+整形して出力し、その出力を<VAR>command</VAR>にパイプを通して送る。
+パイプラインは<CODE>close</CODE>関数が呼び出させるまで存在し続ける。
+
+</DL>
+
+<P>
+<CODE>getline</CODE> は、ファイルの終端に達したときに0を返し、エラーが発生した
+場合には-1 を返し、<CODE>ERRNO</CODE>にエラーの内容を示す(システム依存
+の)文字列を格納する。
+
+</P>
+
+
+<H3><A NAME="SEC195" HREF="gawk_toc.html#SEC195"><CODE>printf</CODE> Summary</A></H3>
+
+<P>
+変換指定は次のような形式である。
+<CODE>%</CODE>[<VAR>flag</VAR>][<VAR>width</VAR>][<CODE>.</CODE><VAR>prec</VAR>]<VAR>format</VAR>.
+ここで、ブラケットに囲まれているアイテムは省略可能である。
+
+</P>
+<P>
+<CODE>awk</CODE>の<CODE>printf</CODE> 文と<CODE>sprintf</CODE>関数は
+以下にあるような変換指定の書式を受け付ける。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>%c</CODE>
+<DD>
+一文字のASCIIキャラクタ。数値データに対して使われるとその数値をキャラクタコ
+ードとみなして対応するキャラクタを出力する。そうでない場合は対応する引数を文
+字列とみなし、その先頭の文字を出力する。
+
+<DT><CODE>%d</CODE>
+<DD>
+<DT><CODE>%i</CODE>
+<DD>
+10進数値(の整数部分)
+
+<DT><CODE>%e</CODE>
+<DD>
+<DT><CODE>%E</CODE>
+<DD>
+<SAMP>`[-]d.dddddde[+-]dd'</SAMP>
+の形式の浮動小数点数値。<SAMP>`%E'</SAMP>の場合は、
+<SAMP>`e'</SAMP>の代わりに<SAMP>`E'</SAMP>を使う。
+
+<DT><CODE>%f</CODE>
+<DD>
+[<CODE>-</CODE>]<CODE>ddd.dddddd</CODE>.
+の形式の浮動小数点数値。
+
+<DT><CODE>%g</CODE>
+<DD>
+<DT><CODE>%G</CODE>
+<DD>
+<SAMP>`%e'</SAMP> か <SAMP>`%f'</SAMP>で変換後の文字列の長さが短い方を使用して変換し、同時に
+0抑制を行う。<SAMP>`%G'</SAMP>は<SAMP>`%e'</SAMP>ではなく<SAMP>`%E'</SAMP>を使用する。
+
+<DT><CODE>%o</CODE>
+<DD>
+符号なしの8進数値(繰り返すが、整数部分)
+
+<DT><CODE>%s</CODE>
+<DD>
+文字列
+
+<DT><CODE>%x</CODE>
+<DD>
+<DT><CODE>%X</CODE>
+<DD>
+符号なしの16進数値(整数)。
+<SAMP>`%X'</SAMP>は<SAMP>`a'</SAMP>から<SAMP>`f'</SAMP>ではなく<SAMP>`A'</SAMP> から<SAMP>`F'</SAMP>を
+使って10進の10から15を表す。
+
+<DT><CODE>%%</CODE>
+<DD>
+文字としての<SAMP>`%'</SAMP>。引数の変換は行わない。
+</DL>
+
+<P>
+以下のものはオプションである。
+付け加えられたパラメータは、<SAMP>`%'</SAMP>と制御文字の間に置かれる。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>-</CODE>
+<DD>
+式をフィールド中で左寄せする。
+
+<DT><CODE><VAR>space</VAR></CODE>
+<DD>
+数値変換において、それが正の数値であればスペースを前置し、
+負の数であればマイナス記号を前置する。
+
+<DT><CODE>+</CODE>
+<DD>
+プラス記号は修飾子(後で説明する)の前に置いて、
+数値変換の際に、その結果が正であったとしても符号を常に置くように
+指定する。<SAMP>`+'</SAMP>はスペース修飾子による指定をオーバーライドする
+
+<DT><CODE>#</CODE>
+<DD>
+制御文字に応じたフォームを提供する。
+<SAMP>`o'</SAMP>に対してはゼロを前に置き、<SAMP>`x'</SAMP>や<SAMP>`X'</SAMP>に対しては
+非0を出力するときに<SAMP>`0x'</SAMP> or <SAMP>`0X'</SAMP>を前置する。
+<SAMP>`e'</SAMP>、<SAMP>`E'</SAMP>、<SAMP>`f'</SAMP>では、その結果に常に小数点がある
+ようにする。<SAMP>`g'</SAMP>、 <SAMP>`G'</SAMP>の場合は結果から末尾のゼロ(の連続)を
+削除しないようにする。
+
+<DT><CODE>0</CODE>
+<DD>
+前置された<SAMP>`0'</SAMP>はフラグとして作用し、出力のパディングをスペースではなく
+<SAMP>`0'</SAMP>で行うように指示する。これは非数値の出力書式の場合でも
+適用される。このフラグはフィールド幅が出力される値の幅よりも
+大きい場合にのみ効果がある。
+
+<DT><CODE><VAR>width</VAR></CODE>
+<DD>
+フィールドの幅を指定する。<VAR>width</VAR>が0で始まっていればフィールドの空いて
+いる部分は0で埋められ、そうでなければ空白で埋められる。
+
+<DT><CODE>.<VAR>prec</VAR></CODE>
+<DD>
+出力を行うときの数値の精度を指定する。
+<SAMP>`e'</SAMP>, <SAMP>`E'</SAMP>, and <SAMP>`f'</SAMP>書式指定に使用した場合には
+小数点以下の桁数を指定する。<SAMP>`g'</SAMP>, <SAMP>`G'</SAMP> で使用した場合には
+有効桁数の最大桁を指定する。
+<SAMP>`d'</SAMP>, <SAMP>`o'</SAMP>, <SAMP>`i'</SAMP>, <SAMP>`u'</SAMP>, <SAMP>`x'</SAMP>, <SAMP>`X'</SAMP>で使用した場合には
+出力する数値の最少桁数を指定する。<SAMP>`s'</SAMP>の場合は、
+出力する文字列の最大キャラクタ数を指定する。
+</DL>
+
+<P>
+<VAR>width</VAR>と <VAR>prec</VAR>のどちらか、もしくは両方の値を<SAMP>`*'</SAMP>を使って指定す
+る事ができる。この場合、実際の値は引数リストから取得される。
+
+</P>
+<P>
+セクション <A HREF="gawk_7.html#SEC60">Using <CODE>printf</CODE> Statements for Fancier Printing</A>を参照.
+
+</P>
+
+
+<H3><A NAME="SEC196" HREF="gawk_toc.html#SEC196">Special File Names</A></H3>
+
+<P>
+入出力のリダイレクトを<CODE>print</CODE> や <CODE>printf</CODE>を使ってファイルに行った
+り、<CODE>getline</CODE>を使ってファイルから入力する際に <CODE>gawk</CODE>はある特殊なファ
+イル名を内部的に認識する。これらのファイル名は<CODE>gawk</CODE>を呼出したプロセス
+(通常はシェル)から受け継いだファイルディスクリプタをアクセスできる。そして、
+そのファイル名には以下のものがある。
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`/dev/stdin'</TT>
+<DD>
+標準入力。
+
+<DT><TT>`/dev/stdout'</TT>
+<DD>
+標準出力。
+
+<DT><TT>`/dev/stderr'</TT>
+<DD>
+標準エラー出力。
+
+<DT><TT>`/dev/fd/<VAR>n</VAR>'</TT>
+<DD>
+ファイルディスクリプタ<VAR>n</VAR>で表されるオープンされているファイル。
+</DL>
+
+<P>
+以上のものに加えて、以下に挙げるファイルを読むことによって、
+<CODE>gawk</CODE>を実行しているプロセスに関連する情報を取得することができる。
+全ての返されてきたレコードは改行で終端されている。
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`/dev/pid'</TT>
+<DD>
+カレントプロセスのプロセスIDを返す。
+
+<DT><TT>`/dev/ppid'</TT>
+<DD>
+カレントプロセスの親プロセスIDを返す。
+
+<DT><TT>`/dev/pgrpid'</TT>
+<DD>
+カレントプロセスのプロセスグループIDを返す。
+
+<DT><TT>`/dev/user'</TT>
+<DD>
+少なくとも<CODE>getuid</CODE>, <CODE>geteuid</CODE>, <CODE>getgid</CODE>, <CODE>getegid</CODE>の
+四つのシステムコールの値をスペースで区切られたフィールドに置いて返す。も
+し追加されたフィールドがあるなら、それは<CODE>getgroups</CODE>システムコールが
+返したグループIDである(マルチプルグループは全てのシステムでサポートされ 
+てはいない)。
+</DL>
+
+<P>
+これらのファイルの名前はコマンドライン上でデータファイルの名前のように使われ
+るだろう。その名前はあなたの使うシステムで実際に使用できる名前でなければ単に
+内部的に認識されるだけである。
+
+</P>
+<P>
+この機能を追加するきっかけは
+セクション <A HREF="gawk_7.html#SEC66">Special File Names in <CODE>gawk</CODE></A>を参照
+に詳しく説明されている。
+
+</P>
+
+
+<H3><A NAME="SEC197" HREF="gawk_toc.html#SEC197">Built-in Functions</A></H3>
+
+<P>
+<CODE>awk</CODE>は数値演算や、文字列処理、入出力に関する操作を行う組込みの関数を
+多く持っている。
+
+</P>
+<P>
+組込みの数値関数は以下に挙げる通り。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>atan2(<VAR>y</VAR>, <VAR>x</VAR>)</CODE>
+<DD>
+<VAR>y/x</VAR> のアークタンジェントを返す(単位はラジアン)。
+
+<DT><CODE>cos(<VAR>expr</VAR>)</CODE>
+<DD>
+<VAR>expr</VAR>の余弦を返す(単位はラジアン)。
+
+<DT><CODE>exp(<VAR>expr</VAR>)</CODE>
+<DD>
+べき乗の関数 (<CODE>e ^ <VAR>expr</VAR></CODE>)。
+
+<DT><CODE>int(<VAR>expr</VAR>)</CODE>
+<DD>
+整数の丸めを行う。
+
+<DT><CODE>log(<VAR>expr</VAR>)</CODE>
+<DD>
+<CODE>expr</CODE>の自然対数を求める。
+
+<DT><CODE>rand()</CODE>
+<DD>
+0から1の間の乱数を返す
+
+<DT><CODE>sin(<VAR>expr</VAR>)</CODE>
+<DD>
+<VAR>expr</VAR>の正弦を返す(単位はラジアン)
+
+<DT><CODE>sqrt(<VAR>expr</VAR>)</CODE>
+<DD>
+平方根を求める関数である。
+
+<DT><CODE>srand([<VAR>expr</VAR>])</CODE>
+<DD>
+<VAR>expr</VAR>を新しい乱数源として使用する。<VAR>expr</VAR>を省略した場合は
+実行時の時刻を使用する。戻り値は以前の乱数源である。
+</DL>
+
+<P>
+<CODE>awk</CODE>には以下の文字列操作を行う組み込み関数がある。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>gensub(<VAR>regex</VAR>, <VAR>subst</VAR>, <VAR>how</VAR> [, <VAR>target</VAR>])</CODE>
+<DD>
+<VAR>how</VAR>が<SAMP>`g'</SAMP>か<SAMP>`G'</SAMP>で始まる文字列であった場合、<VAR>target</VAR>中 
+の<VAR>regex</VAR>にマッチする各部分を<VAR>subst</VAR>に置き換える。それ以外の場合
+には<VAR>how</VAR>番目で置き換えを行う。<VAR>target</VAR>が省略された場合には
+<CODE>$0</CODE>が使われる。関数の戻り値は変更された文字列であり、オリジナルの
+<VAR>target</VAR>は変更されない。<VAR>subst</VAR>中では、<SAMP>`\<VAR>n</VAR>'</SAMP>の表記を使
+って(<VAR>n</VAR>は1から9まで)<VAR>n</VAR>番目にマッチした(括弧でくくられた)部分文
+字列を使うことができる。この関数は<CODE>gawk</CODE>に固有のものである。
+
+<DT><CODE>gsub(<VAR>regex</VAR>, <VAR>subst</VAR> [, <VAR>target</VAR>])</CODE>
+<DD>
+文字列<VAR>target</VAR>中で正規表現<VAR>regex</VAR>に一致する部分文字列を<VAR>subst</VAR>
+に置換し、置換した回数を返す。<VAR>target</VAR>が省略されると<CODE>$0</CODE>が使われる。
+
+<DT><CODE>index(<VAR>str</VAR>, <VAR>search</VAR>)</CODE>
+<DD>
+文字列<VAR>str</VAR>での文字列<VAR>search</VAR>の位置を返す。<VAR>str</VAR>が見つからない
+場合には0が返る。
+
+<DT><CODE>length([<VAR>str</VAR>])</CODE>
+<DD>
+文字列<VAR>str</VAR>の長さを返す。もし、引数が省略されると<CODE>$0</CODE>の長さを返す。
+
+<DT><CODE>match(<VAR>str</VAR>, <VAR>regex</VAR>)</CODE>
+<DD>
+<VAR>str</VAR>中で正規表現<VAR>regex</VAR>にマッチする位置を返すが、
+マッチしない場合には0が返される。<CODE>RSTART</CODE>と<CODE>RLENGTH</CODE>にも
+それぞれ値がセットされる。
+
+<DT><CODE>split(<VAR>str</VAR>, <VAR>arr</VAR> [, <VAR>regex</VAR>])</CODE>
+<DD>
+正規表現<VAR>r</VAR>を区切りとして、文字列<VAR>str</VAR>を分解し配列<VAR>arr</VAR>に格 
+納する。関数の戻り値としてフィールドの数が返る。<VAR>rexge</VAR>が省略された 
+場合、<CODE>FS</CODE>が区切りとして使用される。<VAR>regex</VAR>は空文字列であっても
+よく、その場合には個々のキャラクタが配列要素となる。配列<VAR>arr</VAR>は最初 
+にクリアされる。
+
+<DT><CODE>sprintf(<VAR>fmt</VAR>, <VAR>expr-list</VAR>)</CODE>
+<DD>
+<VAR>expr-list</VAR>を<VAR>fmt</VAR>に従って整形し、その結果の文字列を返す。
+
+<DT><CODE>sub(<VAR>regex</VAR>, <VAR>subst</VAR> [, <VAR>target</VAR>])</CODE>
+<DD>
+これは<CODE>gsub</CODE>と似ているが、最初に一致した部分文字列だけが置き換えられる。
+
+<DT><CODE>substr(<VAR>str</VAR>, <VAR>index</VAR> [, <VAR>len</VAR>])</CODE>
+<DD>
+<VAR>s</VAR>の<VAR>i</VAR>番目から始まる長さ<VAR>n</VAR>文字の部分文字列を返す。 <VAR>n</VAR>が
+省略されると、<VAR>s</VAR>の終端までが返される。
+
+<DT><CODE>tolower(<VAR>str</VAR>)</CODE>
+<DD>
+文字列<VAR>str</VAR>中の英大文字を小文字に置き換えた文字列を返す。アルファベット
+以外の文字はそのままである。
+
+<DT><CODE>toupper(<VAR>str</VAR>)</CODE>
+<DD>
+文字列<VAR>str</VAR>中の英小文字を大文字に置き換えた文字列を返す。アルファベット
+以外の文字はそのままである。
+</DL>
+
+<P>
+入出力に関連した関数は以下の通り。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>close(<VAR>expr</VAR>)</CODE>
+<DD>
+<VAR>expr</VAR>が表す(オープンされている)ファイルもしくはパイプをクローズする。
+
+<DT><CODE>fflush([<VAR>expr</VAR>])</CODE>
+<DD>
+<VAR>expr</VAR>で指定される出力ファイルやパイプの出力バッファをフラッシュする。
+<VAR>expr</VAR>が省略された場合、標準出力がフラッシュされる。<VAR>expr</VAR>が空文
+字列<CODE>""</CODE>であった場合、すべての出力バッファがフラッシュされる。
+
+<DT><CODE>system(<VAR>cmd-line</VAR>)</CODE>
+<DD>
+コマンド<VAR>cmd-line</VAR>を実行し、その終了ステータスを返す。使用しているオ
+ペレーティングシステムが<CODE>system</CODE>をサポートしていないと、呼び出しを 
+行ったときに致命的エラーが発生する。
+
+<SAMP>`system("")'</SAMP> は強制的に<CODE>awk</CODE>に出力をフラッシュさせる
+のに遣うことができる。これは<CODE>fflush</CODE>を呼び出すよりも
+ポータブルではあるが、(出力をフラッシュするという目的が)明らかでない。
+</DL>
+
+
+
+<H3><A NAME="SEC198" HREF="gawk_toc.html#SEC198">Time Functions</A></H3>
+
+<P>
+次に挙げる二つの関数は現在の時刻を取得し、整形することができる。
+これらの関数は<CODE>gawk</CODE>に固有のものである。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>systime()</CODE>
+<DD>
+ある時刻(POSIX systemsのシステムでは1970年1月1日午前0時(UTC))から
+現在までの経過秒数を返す。
+
+<DT><CODE>strftime([<VAR>format</VAR>[, <VAR>timestamp</VAR>]])</CODE>
+<DD>
+<VAR>timestamp</VAR>を<VAR>format</VAR>の指定に従ってフォーマットする。
+<VAR>timestamp</VAR>が渡されなかった場合には、実行時の日時が使用される。
+<VAR>format</VAR>がないときのデフォルトの書式は<CODE>date</CODE>ユーティリティの
+出力と同じである。
+<CODE>strftime</CODE>が受け付ける変換指定については
+セクション <A HREF="gawk_13.html#SEC128">Functions for Dealing with Time Stamps</A>を参照
+を参照のこと。
+</DL>
+
+<P>
+<CODE>awk</CODE>の組み込み関数については
+セクション <A HREF="gawk_13.html#SEC123">組み込み関数</A>を参照. で詳述されている。
+
+</P>
+
+
+<H3><A NAME="SEC199" HREF="gawk_toc.html#SEC199">String Constants</A></H3>
+
+<P>
+<CODE>awk</CODE>での文字列はダブルクォート(二重引用符、<CODE>"</CODE>)で囲まれた
+キャラクタの並びである。文字列中にはCと同じような<STRONG>エスケーブシーケンス</STRONG>
+を含めることができる。エスケープシーケンスには以下に挙げるものがある。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>\\</CODE>
+<DD>
+バックスラッシュそのもの
+
+<DT><CODE>\a</CODE>
+<DD>
+"警告"キャラクタ。通常はASCIIのベルキャラクタ。
+
+<DT><CODE>\b</CODE>
+<DD>
+バックスペース
+
+<DT><CODE>\f</CODE>
+<DD>
+フォームフィード(改ページ)
+
+<DT><CODE>\n</CODE>
+<DD>
+改行
+
+<DT><CODE>\r</CODE>
+<DD>
+復帰(キャリッジリターン)
+
+<DT><CODE>\t</CODE>
+<DD>
+水平タブ
+
+<DT><CODE>\v</CODE>
+<DD>
+垂直タブ
+
+<DT><CODE>\x<VAR>hex digits</VAR></CODE>
+<DD>
+<SAMP>`\x'</SAMP>に続く十六進数字の文字列で表わされるキャラクタ。
+ANSI Cと同様に、=xに続く連続した十六進数字はエスケープシーケンスの
+一部としてみなされる。<CODE>"\x1B"</CODE>はASCIIのESC(エスケープ)キャラクタからなる
+文字列である。
+(<SAMP>`\x'</SAMP>エスケープシーケンスはPOSIXの<CODE>awk</CODE>では許されていない)。
+
+<DT><CODE>\<VAR>ddd</VAR></CODE>
+<DD>
+一桁から三桁までの八進数字の並びによって表わされるキャラクタ。
+したがって、<CODE>"\033"</CODE>もASCIIのエスケープキャラクタからなる文字列である。
+
+<DT><CODE>\<VAR>c</VAR></CODE>
+<DD>
+<VAR>c</VAR>がこれまでに挙げたものでなかった場合、<VAR>c</VAR>という
+キャラクタそのもの。
+</DL>
+
+<P>
+エスケープシーケンスは正規表現定数の中でも使うことができる
+(たとえば<CODE>/[ \t\f\n\r\v]/</CODE>という正規表現は
+空白キャラクタにマッチする)。
+
+</P>
+<P>
+セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照.
+
+</P>
+
+
+<H2><A NAME="SEC200" HREF="gawk_toc.html#SEC200">ユーザー定義関数</A></H2>
+
+<P>
+<CODE>awk</CODE>では関数は次のように定義する。
+
+</P>
+
+<PRE>
+function <VAR>name</VAR>(<VAR>parameter list</VAR>) { <VAR>statements</VAR> }
+</PRE>
+
+<P>
+関数呼び出し時の実引数は、関数の宣言での仮引数の実体として使われる。配列は
+参照渡し、その他の変数は値渡しで引数が渡される。
+
+</P>
+<P>
+もし、関数呼び出し時の引数が宣言されている引数の数よりも少なければ、足りな
+い引数は空文字列で関数に与えられる。そういった引数はローカル変数として扱え
+る。
+
+</P>
+<P>
+関数呼び出しの開き括弧は空白などを置かずに、関数名に続いて書かれなければな
+らない。これは文法的に連接演算子があるとみなされてしまうのを防ぐためだ。
+
+</P>
+<P>
+<CODE>func</CODE>を<CODE>function</CODE>の代わりに使う事ができる(ただし、 POSIXの
+<CODE>awk</CODE>では使えない)。
+
+</P>
+<P>
+関数から値を返すために<CODE>return</CODE>文を使う。
+
+</P>
+<P>
+セクション <A HREF="gawk_14.html#SEC129">ユーザー定義関数</A>を参照.
+
+</P>
+
+
+<H2><A NAME="SEC201" HREF="gawk_toc.html#SEC201">歴史的な機能</A></H2>
+
+<P>
+<A NAME="IDX740"></A>
+<CODE>gawk</CODE>では、<CODE>awk</CODE>の歴史的な機能を二つサポートしている。
+
+</P>
+<P>
+第一に、組み込み関数<CODE>length</CODE>の呼び出し時に引数を渡さなかったり、
+さらに括弧も省略できる!
+
+</P>
+
+<PRE>
+a = length
+</PRE>
+
+<P>
+これは次のように書いたのと同じことである。
+
+</P>
+
+<PRE>
+a = length()
+a = length($0)
+</PRE>
+
+<P>
+そのため、以下のようなことになる。
+
+</P>
+
+<PRE>
+$ echo abcdef | awk '{ print length }'
+-| 6
+</PRE>
+
+<P>
+この機能はPOSIXの標準では好ましくないものとされており、<CODE>gawk</CODE>は
+<SAMP>`--lint'</SAMP>オプションが指定されているときにこれを見つけると警告を発す
+る(このような<CODE>length</CODE>の使用法は、UNIX上のオリジナルの<CODE>awk</CODE>処理系が 
+そのような使い方を許してしまったことにある。<CODE>$0</CODE>をデフォルトの引数 
+としてとるようなすべての組込み関数は括弧なしで関数を呼び出すことができた。
+特に一般的だったのは<CODE>length</CODE>関数をこのようなスタイルで使うことであ 
+り、このような使用法が<CODE>awk</CODE>のマニュアルページに記載されていたのであ
+る)。
+
+</P>
+<P>
+もう一つは<CODE>break</CODE>文や<CODE>continue</CODE>文を<CODE>while</CODE>や <CODE>for</CODE>、
+<CODE>do</CODE> を使ったループではないところで使ったときのものである。伝統的な
+<CODE>awk</CODE>の処理系では、それは<CODE>next</CODE>文を使ったのと同じように扱われ 
+る。より新しい、Unix上の<CODE>awk</CODE>ではこれは許されない。<CODE>gawk</CODE>     
+では、<SAMP>`--traditional'</SAMP> オプションが指定されたときにこの機能をサポー 
+トする。
+
+</P>
+<P>
+<SAMP>`--posix'</SAMP> オプションと <SAMP>`--lint'</SAMP> オプションについての
+詳細は セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照.
+
+</P>
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_18.html">前</A>, <A HREF="gawk_20.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

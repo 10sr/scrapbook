@@ -1,0 +1,347 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - はじめに</TITLE>
+</HEAD>
+<BODY>
+移動先 先頭, 前, <A HREF="gawk_2.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+<P>
+"To boldly go where no man has gone before" is a
+Registered Trademark of Paramount Pictures Corporation. <BR>
+<P>
+Copyright (C) 1989, 1991, 92, 93, 96, 97, 98, 99 Free Software Foundation, Inc.
+<P>
+        
+This is Edition 1.0.4 of <CITE>Effective AWK Programming</CITE>, <BR>
+for the 3.0.4 (or later) version of the GNU implementation of AWK.
+
+</P>
+<P>
+Published jointly by:
+
+</P>
+<P>
+@multitable {Specialized Systems Consultants, Inc. (SSC)} {Boston, MA  02111-1307 USA}
+<LI>Specialized Systems Consultants, Inc. (SSC) @tab Free Software Foundation
+
+<LI>PO Box 55549 @tab 59 Temple Place -- Suite 330
+
+<LI>Seattle, WA 98155 USA @tab Boston, MA  02111-1307 USA
+
+<LI>Phone: +1-206-782-7733 @tab Phone: +1-617-542-5942
+
+<LI>Fax: +1-206-782-7191 @tab Fax: +1-617-542-2652
+
+<LI>E-mail: <CODE>sales@ssc.com</CODE> @tab E-mail: <CODE>gnu@gnu.org</CODE>
+
+<LI>URL: <CODE>http://www.ssc.com/</CODE> @tab URL: <CODE>http://www.fsf.org/</CODE>
+
+<P>
+ISBN 1-882114-26-4 <BR>
+ISBN 1-57831-000-8 <BR>
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation approved
+by the Foundation.
+<P>
+Cover art by Amy Wells Wood.
+
+ 
+<P>
+<I>To Miriam, for making me complete.</I>
+<P>
+<I>To Chana, for the joy you bring us.</I>
+<P>
+<I>To Rivka, for the exponential increase.</I>
+<P>
+<I>To Nachum, for the added dimension.</I>
+ 
+
+
+
+<H1><A NAME="SEC1" HREF="gawk_toc.html#SEC1">はじめに</A></H1>
+
+<P>
+このマニュアルでは<CODE>awk</CODE>言語そのものについてと、その効果的な使
+い方を教えるものである。<CODE>cat</CODE>や<CODE>ls</CODE>のような基本的なシステムコ 
+マンド<A NAME="FOOT1" HREF="gawk_foot.html#FOOT1">(1)</A>や、入出力リ 
+ダイレクトやパイプのような基本的なシェルの機能ついて慣れ親しんでいたほう
+がよい。
+
+</P>
+<P>
+<CODE>awk</CODE>言語の処理系は多くの異なる環境において使用可能である。この
+マニュアルでは、一般に<CODE>awk</CODE>言語全般についての説明を行い、同様に
+<CODE>gawk</CODE>(which stands for "GNU Awk")と呼ばれるある特定の<CODE>awk</CODE>の
+実装についての説明を行う。<CODE>gawk</CODE>は多くのUNIXシステム、-- 下は80386 
+搭載のPCベースのコンピュータから、上はCrayのような大きなシステムにいたる
+まで -- で稼動している。<CODE>gawk</CODE>はまたMS-DOSやOS/2が動作するPCやAtari、
+Amigaなどのマイクロコンピュータ、そしてVMSにも移植されている。
+
+</P>
+
+
+
+<H2><A NAME="SEC2" HREF="gawk_toc.html#SEC2"><CODE>awk</CODE>と<CODE>gawk</CODE>の歴史</A></H2>
+
+<P>
+<A NAME="IDX1"></A>
+<A NAME="IDX2"></A>
+<A NAME="IDX3"></A>
+<A NAME="IDX4"></A>
+<A NAME="IDX5"></A>
+<A NAME="IDX6"></A>
+<A NAME="IDX7"></A>
+<CODE>awk</CODE>の名前はその開発者達の名前、Alfred V. Aho, Peter J. Weinberger
+そして Brian W. Kernighanから来ているものである。<CODE>awk</CODE> 
+のオリジナルバージョンは1977年にAT&#38;Tのベル研究所で開発された。1985年には
+ユーザー定義関数、複数の入力ストリーム、動的正規表現の導入によってより強
+力なプログラミング言語となったバージョンが開発された。この新しいバージョ
+ンは一般的には UNIX System V Release 3.1で使えるようになった。System V  
+Release 4での新 awk では幾つかの新しい機能追加と、言語の"暗い隅"をきれ
+いにする作業が行われた。POSIXのコマンド言語およびユーティリティの標準は
+<CODE>gawk</CODE>のデザイナーとオリジナルを開発したベル研究所の<CODE>awk</CODE>開発者
+の両方からのフィードバックが反映されている。
+
+</P>
+<P>
+GNUでのインプリメンテーション、<CODE>gawk</CODE>は1986年に Paul Rubin とJay   
+Fenlason、そして Richard Stallmanからのアドバイスの元に開発された。John 
+Woodsはコードの一部分を寄付した。1988年と89年にDavid Truemanは Arnold   
+Robbinsの助けを受けつつ <CODE>gawk</CODE>に新しい <CODE>awk</CODE>との互換性を持たせ
+るための作業をおこなった。現在の開発の主たる点はバグの修正、パフォーマン
+スの向上、標準に対する準拠であり、そして随時新しい機能の追加を行っている。
+
+</P>
+
+
+<H2><A NAME="SEC3" HREF="gawk_toc.html#SEC3">The GNU Project and This Book</A></H2>
+
+<P>
+<A NAME="IDX8"></A>
+<A NAME="IDX9"></A>
+Free Software Foundation (FSF)は非営利団体であり、再配布可能なソフトウェ
+アの配布を行っている。FSFは、Emacsというエディタの作者であるRichard M.
+Stallmanによって設立された。GNU Emacsは今日使われている種々のEmacsの中で
+最も広く使われているものである。
+
+</P>
+<P>
+<A NAME="IDX10"></A>
+GNUプロジェクトはFree Software Foundationによって作業が行われている完全 
+な、自由に配布することのできるPOSIXコンパチブルなコンピューティング環境 
+の作成を目指したものである(GNUは"GNU's not Unix"、GNUはUNIXではない。 
+を表している)。FSFは"GNU General Public License-- GNU一般公有許諾 --" 
+(またはGPL)を使って、そのソフトウェアのソースコードが常にエンドユーザー 
+にとって入手可能な状態にあることを保証している。GPLのコピーはこのマニ 
+ュアルにも含まれている(セクション <A HREF="gawk_23.html#SEC230">GNU GENERAL PUBLIC LICENSE</A>を参照)。
+GPLはCで書かれた<CODE>gawk</CODE>のソースコードに適用されている。
+
+</P>
+<P>
+シェル、エディター(Emacs)、高度な移植性を備えたC、C++、Objective-C
+コンパイラー、シンボリックデバッガー、その他(<CODE>gawk</CODE>のような)
+大小たくさんのユーティリティがすでに完成しており、自由に入手できる。
+(1997年初頭に)ここで書いたように、GNUオペレーティングシステムの
+カーネル(HURD)は既にリリースされている。しかし、これはまだ
+開発の初期段階にとどまっている。
+
+</P>
+<P>
+<A NAME="IDX11"></A>
+<A NAME="IDX12"></A>
+<A NAME="IDX13"></A>
+GNUオペレーティングシステムの開発がさらに進むまでは、
+自由に配布することができ、80386、DEC alpha、 Sun SPARCなどで動作する
+UNIXに似たオペレーティングシステムであるLinuxを使うのがよいだろう。
+Linuxに関しては多くの書籍があり、その中の 一つにMatt Welshによる自由に
+入手できる(freely availabke）な
+<CITE>Linux Installation and Getting Started</CITE>がある。
+コンピュータストアやCD-ROMが添付されたLinuxに関する書籍を通じ、多くの
+Linux配布が入手可能になっている。
+(二つの自由に入手可能なUnixライクな80386等向けのオペレーティングシステム、
+NetBSDとFreeBSDがある。これらは両方とも4.4-Lite Berkeley Software       
+Distributionに基づいたものであり、それら用の<CODE>awk</CODE>として<CODE>gawk</CODE> 
+の最新バージョンが使用されている)。
+
+</P>
+<P>
+今あなたが読んでいるこのマニュアルはフリーである。
+ここにある情報や、
+このドキュメントの元となった<CODE>gawk</CODE>に付随する機械読み取り可能な
+ソースコードは誰もが自由に入手できるものであり、
+そして誰もがこのマニュアルを好きなだけコピーすることができる
+(コピーに関しての許可に関してはCopyrightページをチェックして欲しい)。
+
+</P>
+<P>
+もしあなたがこのマニュアルに対してお金を払ったのなら、それはこの
+マニュアルをきれいに印刷し、綴じるための費用であり、そして出版社が 
+作成するのにかかった費用である。我々はこの費用を手頃なものに
+する努力をしている。大部分の人達は、330ページを越える<A NAME="FOOT2" HREF="gawk_foot.html#FOOT2">(2)</A>
+コピーしたテキスト 
+がルースリーフのバインダに綴じられているよりも、きちんと製本された本を望
+むだろう(ここではコピーにかかる手間や時間については言及しない)。同じこと
+が、機械読み取り可能なソースからこのマニュアルを生成することにもい
+える。頒布価格はレーザープリンターで印刷するためのコストをほんの少し上回
+るものである。
+
+</P>
+<P>
+このマニュアルそれ自身は以前からあったいくつかの版を通しての結果で
+ある。私は1988年の秋に、Diane Close, Paul Rubin, Richard Stallmanによる
+<CITE>The GAWK Manual</CITE>を元に作業を始めた。それは90ページほどのものであり、
+オリジナルの "古い"バージョンの<CODE>awk</CODE>に関する説明がほとんどなかっ 
+た。かなりの修正の後にリリースされたバージョンは1989年10月の <CITE>The G
+AWK Manual</CITE>の Edition 0.11 Betaである。このマニュアルは第0.13版のために 
+さらに修正が行われた。David Trueman, Pat Rankin, Michal Jaegermannはこの
+マニュアルの第0.13版のためにセクションを提供した。この版は1992の始めに書
+籍として出版された。それから幾つかの細かな修正があって1992年の11月に第0.
+14版となり、これは1993年の1月にFSFから出版され、さらに第0.16版が1993年の
+8月に出版された。
+
+</P>
+<P>
+<CITE>Effective AWK Programming</CITE>の第一版は<CITE>The GAWK Manual</CITE>に多くの項目を追加す
+ることによって作成された。FSFと私（原著者）は私がprimary authorであるこ 
+とを認めている。私はより詳しく述べられたタイトルが必要であると感じている。
+
+</P>
+<P>
+<CITE>Effective AWK Programming</CITE>の開発は間違いなく続けられるだろう。その電子バージョ
+ンはFSFからの<CODE>gawk</CODE>の配布パッケージに付随している。もしこの
+マニュアルに関してエラーを見つけたら、それを知らせて欲しい
+セクション <A HREF="gawk_20.html#SEC220">問題やバグの報告</A>を参照。
+問題に関する情報は電子的にリポートするか、
+FSF気付で私(原著者)あてに手紙を書いて欲しい。
+訳注:日本語版に関しては、訳者まで。
+
+</P>
+
+
+<H2><A NAME="SEC4" HREF="gawk_toc.html#SEC4">Acknowledgements</A></H2>
+
+<P>
+<A NAME="IDX14"></A>
+ここでRichard M. Stallmanと、彼のより良き世界へのビジョン、
+そしてFSFの設立と、GNUプロジェクトを開始した彼の勇気を認めたい。
+
+</P>
+<P>
+<CITE>The GAWK Manual</CITE>の初期のドラフトでは、以下のような謝辞があった。
+
+</P>
+
+<BLOCKQUOTE>
+<P>
+このマニュアルの作成にあたって、多くの人々の協力があった。Jay Fenlasonは
+多くのアイデアと、サンプルプログラムを寄付してくれた。Richard Mlynarik  
+と Robert Chassellはこのマニュアルの草稿について有用な助言をくれた。
+
+</P>
+<P>
+UC San DiegoのChemistry DepartmentのJohn W. Pierceによる
+<CITE>A Supplemental Document for <CODE>awk</CODE></CITE>という論文は
+<CODE>awk</CODE>の実装とこのマニュアルの両方に関連した幾つかの
+問題点を指摘しており、我々にとって有益であった。
+</BLOCKQUOTE>
+
+<P>
+以下の人々は、<CITE>The GAWK Manual</CITE>の0.13版について有用なコメントを
+寄せてくれた。
+Rick Adams, Michael Brennan, Rich Burridge, Diane Close,
+Christopher ("Topher") Eliot, Michael Lijewski, Pat Rankin, Miriam Robbins,
+and Michal Jaegermann.
+
+</P>
+<P>
+以下の人々は<CITE>Effective AWK Programming</CITE>の1.0版について有用なコメントを
+寄せてくれた。
+Karl Berry, Michael Brennan, Darrel
+Hankerson, Michal Jaegermann, Michael Lijewski, and Miriam Robbins.
+Pat Rankin, Michal Jaegermann, Darrel Hankerson and Scott Deifik
+
+</P>
+<P>
+Robert J. ChassellはTexinfoの使用についての助言を
+してくれた。彼はこのマニュアルのタイトルを
+<CITE>How To Gawk Politely</CITE>というタイトルにしないよう
+助言をしてくれた。Karl Berryは
+TexinfoのTeX{}部分に際立った助力をしてくれた。
+
+</P>
+<P>
+<A NAME="IDX15"></A>
+David Truemanは特別に賞賛を受けるに値する。
+彼は<CODE>gawk</CODE>を性能がよく、バグがない
+ものとする不屈な仕事を行った。彼はもう<CODE>gawk</CODE>に関係していないが、
+このプロジェクトで彼とともに作業したことは非常に喜ばしいことであった。
+
+</P>
+<P>
+<A NAME="IDX16"></A>
+<A NAME="IDX17"></A>
+<A NAME="IDX18"></A>
+<A NAME="IDX19"></A>
+<A NAME="IDX20"></A>
+Scott Deifik, Darrel Hankerson, Kai Uwe Rommel, Pat Rankin, Michal
+Jaegermann (順不同) は長期間にわたり<CODE>gawk</CODE>の
+"crack portability team"のメンバーである。彼らの作業と助けを抜きにして
+<CODE>gawk</CODE>は今日あるような優秀なプログラムにはならなかっただろう。
+このチームの素晴らしい面々と作業を行うことは喜ばしいことであった。
+
+</P>
+<P>
+<A NAME="IDX21"></A>
+Jeffrey Friedlは<CODE>gawk</CODE>3.0の正規表現に関する問題を解決するのに
+非常に重要な手助けをしてくれた。
+
+</P>
+<P>
+<A NAME="IDX22"></A>
+<CODE>gawk</CODE>のテストとデバッグの間、貴重な助言を寄せ、言語に関する幾つか 
+の疑問点を明確にするための助けをしてくれたBell研究所のBrian Kernighanに 
+感謝する。彼の助けなくして我々は<CODE>gawk</CODE>やこのドキュメントの作業にお 
+いて良い結果は得られなかっただろう。
+
+</P>
+<P>
+<A NAME="IDX23"></A>
+Seattleの Marsharl Hartholz と Elaine Hartholz、DetroitのDr. Bert Scheiber
+と Rita Schreiberに感謝する。彼らは、彼らの家庭での安息の時間の多く 
+を費やし、このマニュアルと<CODE>gawk</CODE>の向上に協力してくれた。SSCの 
+Phil Hughesは私が家を離れている間、彼のラップトップLinuxシステムを私に貸
+してくれたので、私は多くの仕事をすることができた。
+
+</P>
+<P>
+<A NAME="IDX24"></A>
+最後に、このプロジェクトを通して我慢し続け、原稿の校正を行い、コンピュー
+タと私とを共有した私の素晴らしき妻Miriamに、私を育て教育してくれた両親と
+その愛に感謝する。そして私の進むべき道を示し、導き給うた神に感謝する。
+<P>
+Arnold Robbins <BR>
+Atlanta, Georgia <BR>
+February, 1997
+
+</P>
+
+<HR>
+移動先 先頭, 前, <A HREF="gawk_2.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

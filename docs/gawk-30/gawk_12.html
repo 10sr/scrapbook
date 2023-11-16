@@ -1,0 +1,851 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - awkにおける配列</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_11.html">前</A>, <A HREF="gawk_13.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC112" HREF="gawk_toc.html#SEC112"><CODE>awk</CODE>における配列</A></H1>
+
+<P>
+<STRONG>配列</STRONG>は<STRONG>要素</STRONG>と呼ばれる値のテーブルであり、配列の要素は、その添え
+字によって区別される。<STRONG>添え字</STRONG>は数値でも文字列でも良い。
+<CODE>awk</CODE>は変数に使える名前と、配列や関数
+(セクション <A HREF="gawk_14.html#SEC129">ユーザー定義関数</A>を参照)
+につかえる名前をひとまとめに管理している。
+そのため、変数と配列で同じ名前を持つものを同時に使用することはできない。
+
+</P>
+
+
+
+<H2><A NAME="SEC113" HREF="gawk_toc.html#SEC113">Introduction to Arrays</A></H2>
+
+<P>
+<A NAME="IDX483"></A>
+<CODE>awk</CODE>には一次元の<STRONG>配列</STRONG>があり、文字列や数値を関係するグループ毎にま
+とめることができる。
+
+</P>
+<P>
+<CODE>awk</CODE>の配列は名前を持たなければならない。配列の名前は変数名と同じ文法で
+ある。つまり、変数名として正しい名前であれば配列名としても（文法的に）正しい。
+しかし、プログラム中で同時に配列と変数で同じ名前を使うことはできない。
+
+</P>
+<P>
+表面的には<CODE>awk</CODE>での配列は他のプログラミング言語の配列と似ているように見
+える。しかし、基本的な違いがある。それは、<CODE>awk</CODE>では配列の大きさを使う前
+に特定する必要がなく、それに加えて、
+連続した整数だけでなく、どんな数字や文字列でも配列
+の添字として使うことができると言うことである。
+
+</P>
+<P>
+他の多くの言語では配列と、その要素数や要素の型を<STRONG>宣言</STRONG>しなければならない。
+そういった言語では宣言によって、要求された要素数に見あうだけの連続しているメ
+モリブロックの確保が引き起こされる。配列の添字は正の整数でなければならない。
+例えば、配列中で0で添字付けされる要素はメモリブロックの先頭にある配列の一番
+目の要素であり、1で添字付けされる要素は二番目の要素であり一番目の要素の次に
+格納されている。以下は同様である。この方法では、最初に宣言された分だけの場所
+しかないので、配列に新たに要素を付け加えることはできない
+(一部の言語では、<SAMP>`15 .. 27'</SAMP>のように配列の下限と上限を指定することができ
+る。しかし、そのような言語でも配列の大きさはあらかじめ宣言した大きさに
+固定である)。
+
+</P>
+<P>
+概念的には<CODE>8</CODE>, <CODE>"foo"</CODE>, <CODE>""</CODE>, <CODE>30</CODE>という四つの要素を持つ
+配列は次のようになるだろう。
+
+</P>
+
+<P>
+値は単に格納されているだけであり、添字はその大きさの順に並んでいるという暗黙
+のルールがある。 <CODE>8</CODE>は0で添字付けされる要素の値である。なぜなら<CODE>8</CODE>
+の前には一つの要素もないからである。
+
+</P>
+<P>
+<A NAME="IDX484"></A>
+<A NAME="IDX485"></A>
+<A NAME="IDX486"></A>
+<CODE>awk</CODE>における配列は違っていて、<STRONG>連想的</STRONG>である。つまり配列が、添字と
+それが添字付けする配列要素のペアの集合であるということである。
+
+</P>
+
+<PRE>
+要素 4     値 30
+要素 2     値 "foo"
+要素 1     値 8
+要素 3     値 ""
+</PRE>
+
+<P>
+ペアはごちゃごちゃの順番で並んでいるが、それは添字による配列要素の順番付けが
+(連想配列では)意味のないことだからである。
+
+</P>
+<P>
+連想配列の有利な所は、新しいペアを任意に作り出すことができるということである。
+例えば先の配列に<CODE>"number ten"</CODE>という値を持つ10番目の要素を加えてみ
+よう。結果はこうなる。
+
+</P>
+
+<PRE>
+要素 10    値 "number ten"
+要素 4     値 30
+要素 2     値 "foo"
+要素 1     値 8
+要素 3     値 ""
+</PRE>
+
+<P>
+<A NAME="IDX487"></A>
+<A NAME="IDX488"></A>
+今この配列は<STRONG>疎</STRONG>(一部の要素がない)である。要素として1
+から4までと10を持っているが、 5,6,7,8,9 の要素は持っていない。
+
+</P>
+<P>
+連想配列でもう一つの重要な点は、添字が正の整数に限られない。ということである。
+どんな数値でもよいし、文字列であってもよい。例えば、次の例はある単語を英語か
+らフランス語に翻訳する配列である。
+
+</P>
+
+<PRE>
+要素 "dog" 値 "chien"
+要素 "cat" 値 "chat"
+要素 "one" 値 "un"
+要素 1     値 "un"
+</PRE>
+
+<P>
+ここで数字の1が"one"のように使われていても翻訳できるように
+している。つまり、同じ配列で添え字に数字と文字列を使うことができる
+ということである
+(事実、配列の添え字は常に文字列として扱われる。これに関しての詳細は
+セクション <A HREF="gawk_12.html#SEC119">Using Numbers to Subscript Arrays</A>を参照)
+
+</P>
+<P>
+<A NAME="IDX489"></A>
+<A NAME="IDX490"></A>
+<A NAME="IDX491"></A>
+<CODE>IGNORECASE</CODE> の値は、配列の添え字に関しては何の影響も
+及ぼさない。あなたは配列要素を取り出すためには、その要素に
+格納するのに使ったのと全く同じ文字列を使わなければならない。
+
+</P>
+<P>
+<CODE>awk</CODE>がユーザーのために配列を作ったとき(例えば組み込み関数の<CODE>split</CODE>
+を使ったとき)は配列の添字は1から始まる連続した整数である
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照.)。
+
+</P>
+
+
+<H2><A NAME="SEC114" HREF="gawk_toc.html#SEC114">Referring to an Array Element</A></H2>
+<P>
+<A NAME="IDX492"></A>
+<A NAME="IDX493"></A>
+<A NAME="IDX494"></A>
+
+</P>
+<P>
+配列の使用において重要な点は、その要素の一つをどのように参照するかである。配
+列の参照は次のような式で行う。
+
+</P>
+
+<PRE>
+<VAR>array</VAR>[<VAR>index</VAR>]
+</PRE>
+
+<P>
+ここで<VAR>array</VAR>は配列の名前であり、<VAR>index</VAR>は、アクセスしたい要素を
+配列中で添字付けする式である。
+
+</P>
+<P>
+配列の参照によって得られる値はその配列要素のその時点での値である。例えば、
+<CODE>foo[4.3]</CODE>は4.3で添字付けされた配列<CODE>foo</CODE>の要素を取り出す式である。
+
+</P>
+<P>
+何も値の入っていない配列要素を参照すると、空文字列<CODE>""</CODE>がその値であるとして
+取り出される。このことは何も値を代入していない配列要素や削除された配列要素にも
+言える(セクション <A HREF="gawk_12.html#SEC118">The <CODE>delete</CODE> Statement</A>を参照)。
+このような参照を行うと自動的に空文字列を値とする配列要素が自動的に作られる
+(これは<CODE>awk</CODE>内部でのメモリの浪費を招き、時として不運な結果となる)。
+
+</P>
+<P>
+<A NAME="IDX495"></A>
+<A NAME="IDX496"></A>
+配列中に、ある添字で指定される要素があるかどうかを次のようにして調べることが
+できる。
+
+</P>
+
+<PRE>
+<VAR>index</VAR> in <VAR>array</VAR>
+</PRE>
+
+<P>
+この式は（存在しない添字の要素をアクセスしようとして新たな配列要素を作ってし
+まう）副作用を引き起こすことなしに、配列中に特定の添字が存在するかどうかをテス
+トする。式の値は<CODE><VAR>array</VAR>[<VAR>index</VAR>]</CODE>が存在すれば1(真)、存在しなけ
+れば0(偽)となる。
+
+</P>
+<P>
+例えば<CODE>frequencies</CODE>という配列に<CODE>"2"</CODE>で添字付けされるものがあるかど
+うかは次のように書けばよい。
+
+</P>
+
+<PRE>
+if (2 in frequencies)
+    print "Subscript 2 is present."
+</PRE>
+
+<P>
+これは<CODE>frequencies</CODE>という配列の中に<CODE>"2"</CODE>という<STRONG>値</STRONG>を持った要
+素があるかどうかを調べるのではなく（そういったことを調べるには配列全体をスキャ
+ンする以外にない）、また、<CODE>frequencies["2"]</CODE> という要素を作るようなこと
+もしない。完全には同じではないが、次の例と同じ事である。
+
+</P>
+
+<PRE>
+if (frequencies[2] != "")
+    print "Subscript 2 is present."
+</PRE>
+
+
+
+<H2><A NAME="SEC115" HREF="gawk_toc.html#SEC115">Assigning Array Elements</A></H2>
+<P>
+<A NAME="IDX497"></A>
+<A NAME="IDX498"></A>
+
+</P>
+<P>
+配列要素は左辺値を持ち、<CODE>awk</CODE>の普通の変数と同じ様に代入することができる。
+
+</P>
+
+<PRE>
+<VAR>array</VAR>[<VAR>subscript</VAR>] = <VAR>value</VAR>
+</PRE>
+
+<P>
+ここで<VAR>array</VAR>は配列の名前であり、<VAR>subscript</VAR>という式は代入先の配列要
+素を指定するインデックスである。 <VAR>value</VAR>という式は配列要素に代入する値で
+ある。
+
+</P>
+
+
+<H2><A NAME="SEC116" HREF="gawk_toc.html#SEC116">Basic Array Example</A></H2>
+
+<P>
+次に挙げたプログラムは、行番号で始まる行のリストを入力として受け取り、行
+番号順にそれらを出力するものである。行番号は入力時には順番になっておらず、
+ごちゃごちゃになっている。このプログラムは、それらの行を行番号を添字とし
+て配列を使うことによって行のソートを行っている。そのため、行の出力は行番
+号の順番に行われるようになっている。これは非常に単純なプログラムであり、
+同じ番号が出てきたり、番号に抜けがあったり、行が番号で始まっていなかった
+りすると混乱してしまう。
+
+</P>
+
+<PRE>
+{
+  if ($1 &#62; max)
+    max = $1
+  arr[$1] = $0
+}
+
+END {
+  for (x = 1; x &#60;= max; x++)
+    print arr[x]
+}
+</PRE>
+
+<P>
+最初のルールではそれまでに見つかった最大の行番号を記録している。
+同時に、各行を<CODE>arr</CODE>という配列に行番号を添え字に使って記録している。
+
+</P>
+<P>
+二番目のルールはすべての入力が読み込まれたあとで、
+すべての行を出力するために実行される。
+
+</P>
+<P>
+このプログラムに次のような入力を与えたとすると
+
+</P>
+
+<PRE>
+5  I am the Five man
+2  Who are you?  The new number two!
+4  . . . And four on the floor
+1  Who is number one?
+3  I three you.
+</PRE>
+
+<P>
+出力はこうなる。
+
+</P>
+
+<PRE>
+1  Who is number one?
+2  Who are you?  The new number two!
+3  I three you.
+4  . . . And four on the floor
+5  I am the Five man
+</PRE>
+
+<P>
+番号が繰り返して現れた場合、最後の行が(同じ番号の)他のものを
+上書きする。
+
+</P>
+<P>
+行番号に抜けが合った場合も、プログラム中の<CODE>END</CODE>ルールの
+簡単な修正によって対処できる。
+
+</P>
+
+<PRE>
+END {
+  for (x = 1; x &#60;= max; x++)
+    if (x in arr)
+      print arr[x]
+}
+</PRE>
+
+
+
+<H2><A NAME="SEC117" HREF="gawk_toc.html#SEC117">Scanning All Elements of an Array</A></H2>
+<P>
+<A NAME="IDX499"></A>
+<A NAME="IDX500"></A>
+<A NAME="IDX501"></A>
+
+</P>
+<P>
+プログラムで配列を使っていると、配列の各要素に対して何等かの処理を行うような
+ループを実行する必要にせまられる。そういった操作は、他の言語では配列はその添
+字が正の整数に限定されるので簡単である。つまり、配列の最大の添字はその配列の
+長さよりも短く、ゼロから添字を数え上げていけば全ての要素を参照できる。しかし
+この技法は<CODE>awk</CODE>では使えない。なぜなら配列の添字が整数に限定されず、文字
+列の場合もあるからである。そのため、<CODE>awk</CODE>は配列のスキャンのために特別な
+<CODE>for</CODE>文を備えている。
+
+</P>
+
+<PRE>
+for (<VAR>var</VAR> in <VAR>array</VAR>)
+  <VAR>body</VAR>
+</PRE>
+
+<P>
+このループは<VAR>body</VAR>をプログラム中で、それまでに<VAR>array</VAR>で添字付けする
+のに使ったそれぞれの値に対して一度ずつ実行される。ここで変数<VAR>var</VAR>にはそ
+のインデックスがセットされる。
+
+</P>
+<P>
+次のプログラムは、今説明したような<CODE>for</CODE>文を使用している。最初のルールで
+は入力レコードをスキャンし、そこで(少なくとも一度)見付かった単語を添字とした
+<CODE>used</CODE>の要素に1を代入する。二番目のルールで<CODE>used</CODE>の要素をスキャン
+して入力から見付かった単語をすべて検索し、その単語が10文字よりも長ければ出力
+し、最後にそういった単語の合計数も出力する。組み込み関数<CODE>length</CODE>の
+詳しい説明は セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照.
+にある。
+
+</P>
+
+<PRE>
+# 少なくとも一度は使われた単語に1をセットして記録する
+{
+    for (i = 1; i &#60;= NF; i++)
+        used[$i] = 1
+}
+
+# 十文字以上の長さの単語が幾つあるか調べる
+END {
+    for (x in used)
+        if (length(x) &#62; 10) {
+            ++num_long_words
+            print x
+        }
+    print num_long_words, "個の単語が十文字を越えていました"
+}
+</PRE>
+
+<P>
+セクション <A HREF="gawk_17.html#SEC169">単語の使用数を調べる</A>を参照,
+for a more detailed example of this type.
+
+</P>
+<P>
+この文を使ってアクセスされる配列中の要素の並びは <CODE>awk</CODE>内部での配列要素
+の配置よって決定され、それを制御したり変更することはできない。このことは、
+<VAR>body</VAR>の中にある文で <VAR>array</VAR>に新しい要素を付け加えたときに問題を引き
+起こす可能性がある。 <CODE>for</CODE>ループが付け加えられた要素に到達するかどうか
+も分からない。同様に、ループの中で<VAR>var</VAR>を変更すると、何が起こるか分から
+ない。最善の方法はそんなことをしないということである。
+
+</P>
+
+
+<H2><A NAME="SEC118" HREF="gawk_toc.html#SEC118">The <CODE>delete</CODE> Statement</A></H2>
+<P>
+<A NAME="IDX502"></A>
+<A NAME="IDX503"></A>
+<A NAME="IDX504"></A>
+
+</P>
+<P>
+<CODE>delete</CODE>文を使って任意の要素を配列から削除することができる。
+
+</P>
+
+<PRE>
+delete <VAR>array</VAR>[<VAR>index</VAR>]
+</PRE>
+
+<P>
+要素を削除した後では、その要素に対する参照は行えない。そういった参照は何も値
+を設定しておらず、一回も参照していない配列に対する参照と同じである。
+
+</P>
+<P>
+次は配列の要素の削除の例である。
+
+</P>
+
+<PRE>
+for (i in frequencies)
+  delete frequencies[i]
+</PRE>
+
+<P>
+この例は<CODE>frequencies</CODE>という配列中の要素を全て削除する。
+
+</P>
+<P>
+要素を削除すると、<CODE>for</CODE>文を使って配列をスキャンしても(削除された)
+要素は存在しないと報告され、<CODE>in</CODE> 演算子を使ってチェックしても 0
+(偽、false)が返ってくる。
+
+</P>
+
+<PRE>
+delete foo[4]
+if (4 in foo)
+    print "これは決して出力されない"
+</PRE>
+
+<P>
+配列の要素を削除することとnull(空文字列, <CODE>""</CODE>)を代入
+することが<STRONG>違う</STRONG>ということは重要である。
+
+</P>
+
+<PRE>
+foo[4] = ""
+if (4 in foo)
+  print "これはfoo[4]が空であっても出力される"
+</PRE>
+
+<P>
+存在しない要素を削除してもエラーにならない。
+
+</P>
+<P>
+<A NAME="IDX505"></A>
+<A NAME="IDX506"></A>
+<A NAME="IDX507"></A>
+<CODE>delete</CODE>文で添え字付けを行わないことによって、
+ある配列のすべての要素を一つの文で削除することができる。
+
+</P>
+
+<PRE>
+delete <VAR>array</VAR>
+</PRE>
+
+<P>
+この機能は<CODE>gawk</CODE>の拡張機能であり、互換モード
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)では
+使うことができない。
+
+</P>
+<P>
+この形式の<CODE>delete</CODE>文を使うのは、ループを使って配列の要素の
+削除を行うものより三倍以上効率的である。
+
+</P>
+
+<P>
+<A NAME="IDX508"></A>
+次の例は、ポータブルなやり方であるが、配列をクリアするのにわかりやすい
+やり方ではない。
+
+</P>
+<P>
+<A NAME="IDX509"></A>
+
+<PRE>
+# これを教えてくれた Michael Brennan に感謝
+split("", array)
+</PRE>
+
+<P>
+<CODE>split</CODE>関数
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)
+は目的の配列を最初にクリアする。
+この呼び出しは空文字列を分割するということであり、したがって
+分割すべきデータはなく、関数は単に配列をクリアして
+呼び出し元に復帰するのである。
+
+</P>
+<P>
+<STRONG>警告:</STRONG> 配列の削除はその型を変更することはない。
+配列を削除した後、その名前を持つスカラー変数を使うことはできない。
+以下に挙げる例は正しく動作しない:
+
+</P>
+
+<PRE>
+a[1] = 3; delete a; a = 3
+</PRE>
+
+
+
+<H2><A NAME="SEC119" HREF="gawk_toc.html#SEC119">Using Numbers to Subscript Arrays</A></H2>
+
+<P>
+配列について重要なのは、<EM>配列の添え字は常に
+文字列として扱われる</EM>ということである。
+配列の添え字に数字を使った場合、それは添え字付けに使われる前に
+文字列に変換される
+(セクション <A HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>を参照)。
+
+</P>
+<P>
+<A NAME="IDX510"></A>
+<A NAME="IDX511"></A>
+<A NAME="IDX512"></A>
+これは、組込み変数<CODE>CONVFMT</CODE>の値が、プログラム中での配列要素に対する
+アクセスに影響を及ぼす可能性があると言うことである。例えば、
+
+</P>
+
+<PRE>
+xyz = 12.153
+data[xyz] = 1
+CONVFMT = "%2.2f"
+if (xyz in data)
+    printf "%s は dataにあります\n", xyz
+else
+    printf "%s は dataにありません\n", xyz
+</PRE>
+
+<P>
+これは<SAMP>`12.15 is not in data'</SAMP>を出力する。最初の文では<CODE>a</CODE> と 
+<CODE>b</CODE>の両方に同じ数値データを代入している。 <CODE>data[a]</CODE>に対する代入は、
+<CODE>a</CODE>が文字列<CODE>"12.153"</CODE> （<CODE>CONVFMT</CODE>で指定されるデフォルトの変換
+ルール<CODE>"%.6g"</CODE>による）を用いて行われ、結果として<CODE>data["12.153"]</CODE>に
+1が代入される。プログラムはその後で<CODE>CONVFMT</CODE>を変更している。 <SAMP>`(b
+in data)'</SAMP>というテストは<CODE>b</CODE>の文字列への変換を行うがこのときの結果は
+<CODE>"12.15"</CODE>となる。なぜなら<CODE>CONVFMT</CODE>に設定された値によって小数点以下
+二桁までしか許されていないからである。したがって<CODE>"12.15"</CODE>と
+<CODE>"12.153"</CODE>は違うのでこのテストは失敗する。
+
+</P>
+<P>
+変換ルールに従うと(セクション <A HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>を参照)、
+整数値は常に整数を表わす文字列に変換され、<CODE>CONVFMT</CODE>の値は変換に対し
+て影響を与えない。良くある例では、
+
+</P>
+
+<PRE>
+for (i = 1; i &#60;= maxsub; i++)
+    <I>do something with</I> array[i]
+</PRE>
+
+<P>
+<CODE>CONVFMT</CODE>の値が意味を持たないのでこれはうまく動作する。
+
+</P>
+<P>
+<CODE>awk</CODE>での多くの事象のように、大抵の場合は期待通りに動作する。
+しかし、これは実際のルールの正確な知識を得るのに有益であり、時として
+微妙な効果をプログラムに対して及ぼすことがある。
+
+</P>
+
+
+<H2><A NAME="SEC120" HREF="gawk_toc.html#SEC120">Using Uninitialized Variables as Subscripts</A></H2>
+
+<P>
+<A NAME="IDX513"></A>
+<A NAME="IDX514"></A>
+ここで入力されたデータを逆順に出力したいと考えたとしよう。
+これを行う合理的な方法は次のようなものになるだろう
+(サンプルデータも付いている)。
+
+</P>
+
+<PRE>
+$ echo 'line 1
+&#62; line 2
+&#62; line 3' | awk '{ l[lines] = $0; ++lines }
+&#62; END {
+&#62;     for (i = lines-1; i &#62;= 0; --i)
+&#62;        print l[i]
+&#62; }'
+-| line 3
+-| line 2
+</PRE>
+
+<P>
+残念なことに、入力データの中で一番最初の行は出力されていない!
+
+</P>
+<P>
+一見するとこのプログラムはちゃんと動作するようにみえる。<CODE>lines</CODE>は
+初期化されておらず、初期化されていない変数は数値 0の値を持っている。だ
+から、<CODE>l[0]</CODE>の値は出力されるはずだ。
+
+</P>
+<P>
+結論をいうと、<CODE>awk</CODE>の配列で使う添え字は<STRONG>常に</STRONG>文字列として扱
+う。また、初期化されていない変数が文字列として扱われたときの値は<CODE>""</CODE>
+であって、0ではない。そのため、<SAMP>`line 1'</SAMP>は最終的には<CODE>l[""]</CODE>に格
+納されたのだ。
+
+</P>
+<P>
+次の例はちゃんと働くようにしたプログラムである。
+
+</P>
+
+<PRE>
+{ l[lines++] = $0 }
+END {
+    for (i = lines - 1; i &#62;= 0; --i)
+       print l[i]
+}
+</PRE>
+
+<P>
+ここで、<SAMP>`++'</SAMP>は<CODE>line</CODE>を強制的に数値にする。
+したがって、"古い値"(old value)を数値の 0にする。これは
+配列の添え字として(文字列の)<CODE>"0"</CODE>に変換する。
+
+</P>
+
+<P>
+<A NAME="IDX515"></A>
+<A NAME="IDX516"></A>
+今見たように、それが幾分一般的でないものであったとしても、
+空文字列(<CODE>""</CODE>) は配列の添え字として正当なものなのである(d.c.)。
+コマンドラインで<SAMP>`--lint'</SAMP>が指定されていた場合
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)、
+<CODE>gawk</CODE>は配列の添え字に空文字列を使うと警告を出す。
+
+</P>
+
+
+<H2><A NAME="SEC121" HREF="gawk_toc.html#SEC121">Multi-dimensional Arrays</A></H2>
+
+<P>
+<A NAME="IDX517"></A>
+<A NAME="IDX518"></A>
+<A NAME="IDX519"></A>
+多次元配列とは、配列要素の指定を複数の添字の並びによって行う配列である。例え
+ば二次元の配列は二つの添字を必要とする。一般的な(<CODE>awk</CODE>も含めた大多数の
+言語では) 二次元配列の要素に対する参照は <CODE>grid[<VAR>x</VAR>,<VAR>y</VAR>]</CODE>このよ
+うに行う。 (<CODE>grid</CODE>は配列の名前)
+
+</P>
+<P>
+<A NAME="IDX520"></A>
+<CODE>awk</CODE>では、多次元配列をその添字を一つの文字列に連結して扱うということで
+実現している。つまり、添字を文字列に変換し 
+(セクション <A HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>を参照)、
+それをセパレータを間にはさんで一つに連結する。ということである。ここで一つに
+まとめられた文字列が多次元配列の添字となり、この文字列は通常の一次元配列に対
+する添字であるように扱われる。セパレータには組み込み変数<CODE>SUBSEP</CODE>に格納
+されている値が使われる。
+
+</P>
+<P>
+例えば、<CODE>SUBSEP</CODE>の値が<CODE>"@"</CODE>であるとき <CODE>foo[5,12]="value"</CODE>と
+いう式を評価するとしよう。 5と12という数値は文字列に変換され、そしてその間に
+<SAMP>`@'</SAMP>をはさんで連結する。その結果は<CODE>"5@12"</CODE>となる。したがって、
+<CODE>foo["5@12"]</CODE>という要素に<CODE>"value"</CODE>がセットされるという結果になる
+のである。
+
+</P>
+<P>
+配列要素に格納してしまうと、<CODE>awk</CODE>はその添字が一つのインデックスなのか、
+複数のインデックスの並びなのかの区別がつけられない。このため、
+<CODE>foo[5,12]</CODE> と <CODE>foo[5 SUBSEP 12]</CODE> の二つの式は常に同じ値となる。
+
+</P>
+<P>
+<CODE>SUBSEP</CODE>のデフォルトの値は<CODE>"\034"</CODE>という文字列である。このキャラク
+タは印字可能キャラクタでなく、<CODE>awk</CODE>プログラムや入力データ中に現れること
+はまずないであろうキャラクタである。
+
+</P>
+<P>
+ありそうもないキャラクタを選択するということは、 <CODE>SUBSEP</CODE>の値によっては
+区別を付けられないような添字文字列を作り出してしまうことがあるので、それを避
+けるために有効である。たとえば<CODE>SUBSEP</CODE> が<CODE>"@"</CODE>だったとすると、
+<CODE>foo["a@b", "c"]</CODE> と <CODE>foo["a","b@c"]</CODE>は両方とも結果的に
+<CODE>foo["a@b@c"]</CODE>となるので区別することができない。 <CODE>SUBSEP</CODE>（のデ
+フォルト）が<CODE>"\034"</CODE>であるので、このような混乱を引き起こすことはASCIIコ
+ードの034というキャラクタを使わない限りは起きないのでめったに発生しない。
+
+</P>
+<P>
+ある添字の並びが"多次元"配列中に存在するかどうかは一次元配列の時と同じ様に
+<CODE>in</CODE>オペレータを使ってできる。具体的には、<CODE>in</CODE>オペレータの左辺に、
+全体が括弧でくくられているカンマで各添字を区切った添字の並びを置けばよい。
+
+</P>
+
+<PRE>
+(<VAR>subscript1</VAR>, <VAR>subscript2</VAR>, ...) in <VAR>array</VAR>
+</PRE>
+
+<P>
+次に挙げる例では入力を二次元配列のフィールドであるかのように扱い、配列を90度
+時計まわりに回転させてその結果を出力する。この例では全ての行において要素の数
+が同じであると仮定している。
+
+</P>
+
+<PRE>
+awk '{
+     if (max_nf &#60; NF)
+          max_nf = NF
+     max_nr = NR
+     for (x = 1; x &#60;= NF; x++)
+          vector[x, NR] = $x
+}
+
+END {
+     for (x = 1; x &#60;= max_nf; x++) {
+          for (y = max_nr; y &#62;= 1; --y)
+               printf("%s ", vector[x, y])
+          printf("\n")
+     }
+}'
+</PRE>
+
+<P>
+入力として次のデータを与える
+
+</P>
+
+<PRE>
+1 2 3 4 5 6
+2 3 4 5 6 1
+3 4 5 6 1 2
+4 5 6 1 2 3
+</PRE>
+
+<P>
+結果は次のようになる。
+
+</P>
+
+<PRE>
+4 3 2 1
+5 4 3 2
+6 5 4 3
+1 6 5 4
+2 1 6 5
+3 2 1 6
+</PRE>
+
+
+
+<H2><A NAME="SEC122" HREF="gawk_toc.html#SEC122">Scanning Multi-dimensional Arrays</A></H2>
+
+<P>
+"多次元"配列を走査するための特殊な<CODE>for</CODE>文はない。というのは、多次元の
+配列やその要素というものはなくて、配列に対する多次元的な<EM>アクセス方法</EM>
+しかないからである。
+
+</P>
+<P>
+しかし、プログラム中でその（検査を行いたい）配列を常に多次元配列として
+アクセスをしているのであれば、<CODE>for</CODE>文と
+(セクション <A HREF="gawk_12.html#SEC117">Scanning All Elements of an Array</A>を参照) 、
+組み込み関数<CODE>split</CODE>を組み合わせて使うことによって配列のスキャンを
+行うことができる
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)。
+具体的にはこうする。
+
+</P>
+
+<PRE>
+for (combined in array) {
+  split(combined, separate, SUBSEP)
+  ...
+}
+</PRE>
+
+<P>
+これは、連結された状態の配列の添字を<CODE>combined</CODE>に取りだし、
+それを<CODE>SUBSEP</CODE>
+の値がある場所を基準にして独立した添字に分割している。分割された添字は配列
+<CODE>separate</CODE>の要素となる。
+
+</P>
+<P>
+したがって、以前に<CODE><VAR>array</VAR>[1,"foo"]</CODE>に値を格納したとすると、実際
+には<VAR>array</VAR>の中では<CODE>"1\034foo"</CODE>で添字付けされる要素に対して行なわれ
+ている。(<CODE>SUBSEP</CODE>のデフォルトの値が034というキャラクタコードであったこ
+とを思い出そう) 遅かれ早かれ<CODE>for</CODE>文は繰り返しの中で<CODE>"1\034foo"</CODE>と
+いう連結された添字を見つけ出す。そして<CODE>split</CODE>関数が次のように呼ばれる。
+
+</P>
+
+<PRE>
+split("1\034foo", separate, "\034")
+</PRE>
+
+<P>
+この結果、<CODE>separate[1]</CODE>に1が、<CODE>separate[2]</CODE>に<CODE>"foo"</CODE>がセット
+される。こうすることによって、元々の分割された添字の並びを取り出すことができ
+る。
+
+</P>
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_11.html">前</A>, <A HREF="gawk_13.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

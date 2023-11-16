@@ -1,0 +1,629 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - awkを実行する</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_14.html">前</A>, <A HREF="gawk_16.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC134" HREF="gawk_toc.html#SEC134"><CODE>awk</CODE>を実行する</A></H1>
+<P>
+<A NAME="IDX600"></A>
+<A NAME="IDX601"></A>
+<A NAME="IDX602"></A>
+<A NAME="IDX603"></A>
+<A NAME="IDX604"></A>
+
+</P>
+<P>
+<CODE>awk</CODE>の呼び出しでは、陽にプログラムを与えるものと、
+一つ以上のプログラムファイルを指定するものの二種類がある。
+以下にこれら両方のテンプレートを挙げる。
+このテンプレートで<SAMP>`[...]'</SAMP>に囲まれたアイテムは
+省略可能である
+
+</P>
+
+<P>
+POSIXスタイルの伝統的な一文字オプションに加えて、
+<CODE>gawk</CODE>ではGNUのロングオプションをサポートしている。
+
+</P>
+
+<PRE>
+awk [<VAR>options</VAR>] -f progfile [<CODE>--</CODE>] <VAR>file</VAR> ...
+awk [<VAR>options</VAR>] [<CODE>--</CODE>] '<VAR>program</VAR>' <VAR>file</VAR> ...
+</PRE>
+
+<P>
+<A NAME="IDX605"></A>
+<A NAME="IDX606"></A>
+<CODE>awk</CODE>を空のプログラムと共に起動することが可能である。
+
+</P>
+
+<PRE>
+$ awk " datafile1 datafile2
+</PRE>
+
+<P>
+このようなことをすることにはあまり意味がない。<CODE>awk</CODE>は
+空のプログラムが与えられた場合には
+単になにもいわずに終了する(d.c.)。
+<SAMP>`--lint'</SAMP>がコマンドラインで指定された場合、<CODE>gawk</CODE>は
+プログラムが空であることに対して警告を発する。
+
+</P>
+
+
+
+<H2><A NAME="SEC135" HREF="gawk_toc.html#SEC135">コマンドラインオプション</A></H2>
+<P>
+オプションはマイナスサインで始まり、それに一文字のキャラクタが続く。 GNUスタ
+イルのロングオプションは二つのマイナスサインとそれに続く(ほかのオプションと
+区別できるところからは省略可能な)キーワードから構成される。オプションが引数
+を取る場合、キーワードに続いてイコール記号(<SAMP>`='</SAMP>)を続けその後ろに引数を記
+述する。簡潔にするため、伝統的な短いオプションに関してのみ参照する。しかし、
+ロングオプションとショートオプションはいつでも交換可能である。
+
+</P>
+<P>
+<CODE>gawk</CODE>のロングオプションはPOSIXスタイルのオプションに適合する。オプショ
+ンと、その意味するところは次に挙げる通り。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>-F <VAR>fs</VAR></CODE>
+<DD>
+<DT><CODE>--field-separator <VAR>fs</VAR></CODE>
+<DD>
+<A NAME="IDX607"></A>
+<A NAME="IDX608"></A>
+変数<CODE>FS</CODE>に<VAR>fs</VAR>をセットする
+(セクション <A HREF="gawk_6.html#SEC38">フィールドの分割方法の指定</A>を参照)。
+
+<DT><CODE>-f <VAR>source-file</VAR></CODE>
+<DD>
+<DT><CODE>--file <VAR>source-file</VAR></CODE>
+<DD>
+<A NAME="IDX609"></A>
+<A NAME="IDX610"></A>
+<CODE>awk</CODE>プログラムが最初の非オプション引数ではなく、<VAR>source-file</VAR>で
+あることを示す。
+
+<DT><CODE>-v <VAR>var</VAR>=<VAR>val</VAR></CODE>
+<DD>
+<DT><CODE>--assign <VAR>var</VAR>=<VAR>val</VAR></CODE>
+<DD>
+<A NAME="IDX611"></A>
+<A NAME="IDX612"></A>
+プログラムの<STRONG>実行開始前</STRONG>に、変数<VAR>var</VAR> の値として<VAR>val</VAR>を
+セットする。(セットされた)変数の値は、 <CODE>BEGIN</CODE> ブロック中で
+も有効となる(セクション <A HREF="gawk_15.html#SEC136">Other Command Line Arguments</A>を参照)。
+
+<SAMP>`-v'</SAMP>オプションは、一つの変数に対してだけしかセットできないが、このオプ
+ションを複数回指定して、それぞれ別の変数に対してセットすることができる。例え
+ば<SAMP>`awk -v foo=1 -v bar=2 ...'</SAMP>のように。
+
+<DT><CODE>-mf <VAR>NNN</VAR></CODE>
+<DD>
+<DT><CODE>-mr <VAR>NNN</VAR></CODE>
+<DD>
+幾つかのメモリ制限の値を<VAR>NNN</VAR>にする。<SAMP>`f'</SAMP>フラグは
+フィールドの最大長をセットし、<SAMP>`r'</SAMP>フラグは
+レコードの最大サイズをセットする。これら二つのフラグと<SAMP>`-m'</SAMP>
+オプションは、ベル研究所バージョンのUNIX上の<CODE>awk</CODE>から
+のものである。これらは互換性のために提供されたもので、
+<CODE>gawk</CODE>ではこのようなあらかじめ定まった制限が存在しないので、
+これらのオプションは無視される。
+
+<DT><CODE>-W <VAR>gawk-opt</VAR></CODE>
+<DD>
+<A NAME="IDX613"></A>
+POSIX の標準にしたがって、処理系固有のオプションを<CODE>-W</CODE>オプションに対する
+引数として提供する。
+これらの引数はカンマか空白によって区切られる。
+これらのオプションが解析される際には大小文字は無視される。
+これらのオプションはGNUスタイルのロングオプションとしても使うことがで
+きる。<CODE>gawk</CODE>で使うことのできるオプションは少し後に一覧がある。
+
+<DT><CODE>--</CODE>
+<DD>
+コマンドラインオプションの終端を示す。以後に続く引数は、<SAMP>`-'</SAMP>で始まるもの
+であってもオプションとして扱われない。この<SAMP>`--'</SAMP>の扱いは POSIX の引数解析
+のコンベンションに従ったものである。
+
+この指定をすることにより、<SAMP>`-'</SAMP>で始まるファイルを使用できるようになり、ま
+たシェルスクリプト中で、(そのスクリプトを使う)ユーザーが <SAMP>`-'</SAMP>で始まる
+ファイル名を使用できるようになる。
+</DL>
+
+<P>
+<CODE>gawk</CODE>特有のオプションは以下の通り。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>-W traditional</CODE>
+<DD>
+<DT><CODE>-W compat</CODE>
+<DD>
+<DT><CODE>--traditional</CODE>
+<DD>
+<DT><CODE>--compat</CODE>
+<DD>
+<A NAME="IDX614"></A>
+<A NAME="IDX615"></A>
+<A NAME="IDX616"></A>
+<STRONG>互換モード</STRONG>(compatibility mode)を指定し、
+<CODE>awk</CODE>に対するGNUの拡張を禁止する。このため、
+<CODE>gawk</CODE>はベル研究所バージョンの<CODE>awk</CODE>のように振る舞う。
+<SAMP>`--traditional'</SAMP>はこのオプションの好ましいフォームである。
+拡張に関しては
+セクション <A HREF="gawk_18.html#SEC179">POSIX <CODE>awk</CODE>にはない<CODE>gawk</CODE>の拡張</A>を参照.
+にまとめられており、
+セクション <A HREF="gawk_21.html#SEC223">互換性とデバッグ</A>を参照.
+も参照のこと。
+
+<DT><CODE>-W copyleft</CODE>
+<DD>
+<DT><CODE>-W copyright</CODE>
+<DD>
+<DT><CODE>--copyleft</CODE>
+<DD>
+<DT><CODE>--copyright</CODE>
+<DD>
+<A NAME="IDX617"></A>
+<A NAME="IDX618"></A>
+General Public Licenseのショートバージョンを出力し、実行を終了する。
+このオプションは将来はなくなるだろう。
+
+<DT><CODE>-W help</CODE>
+<DD>
+<DT><CODE>-W usage</CODE>
+<DD>
+<DT><CODE>--help</CODE>
+<DD>
+<DT><CODE>--usage</CODE>
+<DD>
+<A NAME="IDX619"></A>
+<A NAME="IDX620"></A>
+<CODE>gawk</CODE>が受け付ける短いオプション、長いオプションを簡単に
+まとめて"使い方"のメッセージを出力し、実行を終了する。
+
+<DT><CODE>-W lint</CODE>
+<DD>
+<DT><CODE>--lint</CODE>
+<DD>
+<A NAME="IDX621"></A>
+他の<CODE>awk</CODE>処理系で動作するかわからないような記述に対して警告を発する。
+一部の警告は<CODE>gawk</CODE>がプログラムを読みこんだときに、その他の
+警告はプログラムを実行したときに出力される。
+
+<DT><CODE>-W lint-old</CODE>
+<DD>
+<DT><CODE>--lint-old</CODE>
+<DD>
+<A NAME="IDX622"></A>
+オリジナルの、UNIX Version 7版<CODE>awk</CODE>で使用できないような
+機能に対して警告を出す。
+(セクション <A HREF="gawk_18.html#SEC175">Major Changes between V7 and SVR3.1</A>を参照)。
+
+<DT><CODE>-W posix</CODE>
+<DD>
+<DT><CODE>--posix</CODE>
+<DD>
+<A NAME="IDX623"></A>
+<A NAME="IDX624"></A>
+POSIX 互換モードを指定して<CODE>gawk</CODE>特有の拡張機能を無効にし
+(ちょうど<SAMP>`--traditional'</SAMP>のように)、さらに以下の制限を加える。
+
+
+<UL>
+<LI>
+
+エスケープシーケンス
+(セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照)
+で<CODE>\x</CODE> を認識しない(セクション <A HREF="gawk_8.html#SEC69">Constant Expressions</A>を参照)。
+
+<LI>
+
+Newlines do not act as whitespace to separate fields when <CODE>FS</CODE> is
+equal to a single space.
+
+<LI>
+
+キーワード<CODE>function</CODE>の略語として、<CODE>func</CODE>を認めない
+(セクション <A HREF="gawk_14.html#SEC130">Function Definition Syntax</A>を参照)。
+
+<LI>
+
+<SAMP>`**'</SAMP>演算子と<SAMP>`**='</SAMP>演算子をそれぞれ<SAMP>`^'</SAMP> と <SAMP>`^='</SAMP>の代りに
+使うことを禁止する(セクション <A HREF="gawk_8.html#SEC77">Arithmetic Operators</A>を参照,
+と セクション <A HREF="gawk_8.html#SEC79">代入式</A>を参照)。
+
+<LI>
+
+コマンドラインで<SAMP>`-Ft'</SAMP>と指定されたときに、その値を<CODE>FS</CODE> に
+タブコードとしてセットしない。
+(セクション <A HREF="gawk_6.html#SEC38">フィールドの分割方法の指定</A>を参照).
+
+<LI>
+
+<CODE>fflush</CODE>組込み関数をサポートしない
+(セクション <A HREF="gawk_13.html#SEC127">Built-in Functions for Input/Output</A>を参照)。
+</UL>
+
+<SAMP>`--traditional'</SAMP>と<SAMP>`--posix'</SAMP>を同時にコマンドライン
+上で指定した場合、<SAMP>`--posix'</SAMP>が優先される。
+<CODE>gawk</CODE>はこれらが同時に指定された場合には
+警告を発する
+
+<DT><CODE>-W re-interval</CODE>
+<DD>
+<DT><CODE>--re-interval</CODE>
+<DD>
+正規表現内でのinterval expression
+(セクション <A HREF="gawk_5.html#SEC28">正規表現演算子</A>を参照)
+の使用を許可する。
+interval expressionが伝統的な<CODE>awk</CODE>では使えないものであるので、
+<CODE>gawk</CODE>では、
+これを使うことによって古い<CODE>awk</CODE>プログラムが誤動作してしまう
+怖れがあるので、デフォルトではこの機能を提供しない。
+
+<DT><CODE>-W source <VAR>program-text</VAR></CODE>
+<DD>
+<DT><CODE>--source <VAR>program-text</VAR></CODE>
+<DD>
+<A NAME="IDX625"></A>
+<CODE>awk</CODE>プログラムのソースコードとして<VAR>program-text</VAR>を使う。このオプシ
+ョンはコマンドライン上に置かれたソースコードとファイル中のソースコードを
+一緒に使うことを許し、特にコマンドライン上のプログラムからライブラリ関数を
+使うときに便利である
+(セクション <A HREF="gawk_15.html#SEC137"><CODE>AWKPATH</CODE>環境変数</A>を参照)。
+
+<DT><CODE>-W version</CODE>
+<DD>
+<DT><CODE>--version</CODE>
+<DD>
+<A NAME="IDX626"></A>
+(セクション <A HREF="gawk_20.html#SEC220">問題やバグの報告</A>を参照).
+使っている<CODE>gawk</CODE>のバージョン情報を出力する。
+これは、Free Software Foundationの最新配布と比較して、使っている
+<CODE>gawk</CODE>をアップデートする必要があるかどうかを決めるのに使うことが
+できるし、バグレポートの際に便利である。
+(セクション <A HREF="gawk_20.html#SEC220">問題やバグの報告</A>を参照).
+</DL>
+
+<P>
+他のオプションは不正なものであると警告が発せられるが、
+無視される(エラーで終了するようなことはないということ)。
+
+</P>
+<P>
+互換モードでは特例として、<SAMP>`-F'</SAMP>オプションの指定で設定された<VAR>fs</VAR> 
+が<SAMP>`t'</SAMP>であったとき、<CODE>FS</CODE>はタブキャラクタ(<CODE>"\t"</CODE>)がセットさ
+れる。これは<SAMP>`--traditional'</SAMP>が指定されたときのみ有効で、<SAMP>`--posix'</SAMP>
+が指定されている場合はこのような動作はしない
+(セクション <A HREF="gawk_6.html#SEC38">フィールドの分割方法の指定</A>を参照)。
+
+</P>
+<P>
+<SAMP>`-f'</SAMP>オプションはコマンドラインで複数回使うこともできる。
+このような場合、<CODE>gawk</CODE>はすべての<VAR>program-file</VAR>ファイルから
+プログラムを読み込み、あたかも一つの大きなファイルにまとめたかのように
+する。便利な関数は一度だけ記述して標準的な場所から取り出すようにし、
+個々のプログラムからインクルードする
+
+</P>
+<P>
+ターミナルからプログラムをタイプする場合でもライブラリ関数を使うことがで
+き、そうするためには<SAMP>`-f /dev/tty'</SAMP>を指定する。<CODE>awk</CODE>は<CODE>awk</CODE>
+は、<CODE>awk</CODE>プログラムの一部としてターミナルからファイル読み込みをおこ
+なう。プログラムをタイプしおわった後で、<KBD>control-d</KBD>(ファイルの終端を
+示すキャラクタ。MS-DOSでは<KBD>control-z</KBD>)をタイプして入力を終了する(同 
+様に、データの入力元として標準入力を使うこともできる)。
+
+</P>
+<P>
+ファイルにある<CODE>awk</CODE>プログラムとコマンドライン上の<CODE>awk</CODE>プログラ
+ムを混ぜて使うための標準的な<CODE>awk</CODE>の機構は不格好なものであるので、
+<CODE>gawk</CODE>では<SAMP>`--source'</SAMP>オプションを提供している。これは標準入力を 
+あなたの書いたプログラムのためにpre-emptにすることを要求するようなことは
+なくて、そして、簡単にコマンドライン上のプログラムとライブラリ中のプログ
+ラムを混ぜて使うことを許すのである
+(セクション <A HREF="gawk_15.html#SEC137"><CODE>AWKPATH</CODE>環境変数</A>を参照)。
+
+</P>
+<P>
+<SAMP>`-f'</SAMP>オプションも<SAMP>`--source'</SAMP>オプションも指定されていない場合、
+<CODE>gawk</CODE>は非オプションのコマンドライン引数のうち、最初のものをプロ
+グラムのテキストとみなす。
+
+</P>
+<P>
+<A NAME="IDX627"></A>
+<A NAME="IDX628"></A>
+<CODE>POSIXLY_CORRECT</CODE>という環境変数が存在した場合、
+<CODE>gawk</CODE>はコマンドラインオプションで<SAMP>`--posix'</SAMP>を指定したかのように、
+厳密なPOISXモードで動作する。
+多くのGNUプログラムは厳密なPOSIXモードで動作するのに
+この環境変数を参照する。<SAMP>`--lint'</SAMP>をコマンドラインで
+指定すると、<CODE>gawk</CODE>は<CODE>POSIXLY_CORRECT</CODE>のために
+POSIXモードになり、その後でPOSIXモードが有効であるとの
+警告メッセージを出力する。
+
+</P>
+<P>
+この変数の設定はシェルのスタートアップファイルで行うのが
+一般的だろう。BashのようなBシェル互換のシェルの場合、
+これは次のような行をホームディレクトリの<TT>`.profile'</TT>
+というファイルに追加すればできる。
+
+</P>
+
+<PRE>
+POSIXLY_CORRECT=true
+export POSIXLY_CORRECT
+</PRE>
+
+<P>
+Cシェル互換のシェル(あまり勧めないが)の場合は、
+次のような行をホームディレクトリの<TT>`.login'</TT>というファイルに
+追加することでできる。
+
+</P>
+
+<PRE>
+setenv POSIXLY_CORRECT true
+</PRE>
+
+
+
+<H2><A NAME="SEC136" HREF="gawk_toc.html#SEC136">Other Command Line Arguments</A></H2>
+
+<P>
+コマンドライン上の他の引数は、コマンドライン上の順番で
+入力ファイルとして処理される。しかし、引数が
+<CODE><VAR>var</VAR>=<VAR>value</VAR></CODE>という形式であった場合には、
+これは<VAR>value</VAR>という値を<VAR>var</VAR>にセットする代入として
+扱われ、ファイル指定とはみなされない。
+
+</P>
+<P>
+<A NAME="IDX629"></A>
+<A NAME="IDX630"></A>
+これらすべての引数は、<CODE>awk</CODE>プログラムの配列変数<CODE>ARGV</CODE>
+(セクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照)を構成する。
+コマンドラインオプションとプログラムテキスト(もしあれば)は<CODE>ARGV</CODE>に
+は含まれない。他のすべての引数は、変数代入も含めて、<CODE>ARGV</CODE>の要素に
+含まれる。<CODE>ARGV</CODE>の各要素は処理され、<CODE>gawk</CODE>はその時点で処理し
+ている<CODE>ARGV</CODE>の要素のインデックスを<CODE>ARGIND</CODE>という変数に処理する。
+
+</P>
+<P>
+ファイル名引数と、変数代入引数の違いは、<CODE>awk</CODE>が次の入力ファイルを
+オープンしようとしたときに明確になる。実行時に、"ファイル名"をそれが
+実際には変数代入でないかどうかをチェックする。もし、変数代入であれば、
+<CODE>awk</CODE>はファイルからの読み込みではなく、変数の代入を行うのである。
+
+</P>
+<P>
+したがって、この変数は(コマンドライン上で)先行するファイルの読み込み
+がすべて行われたあとで、与えられた値を受け取ることになる。特に
+このやり方で値を設定されている変数は、
+<CODE>awk</CODE>が引数リストを走査する前に<CODE>BEGIN</CODE>ルールが
+実行されるために<CODE>BEGIN</CODE>ルールの中で(その値を)参照することはできない。
+(セクション <A HREF="gawk_9.html#SEC93">特殊パターン<CODE>BEGIN</CODE>と<CODE>END</CODE></A>を参照)。
+
+</P>
+<P>
+<A NAME="IDX631"></A>
+コマンドライン上で与えられた変数の値はエスケープシーケンス
+処理が実行される(d.c.)(セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照)。
+
+</P>
+<P>
+初期の<CODE>awk</CODE>処理系の一部では、変数代入がすべてのファイル名の
+前にあったときに、その代入を<CODE>BEGIN</CODE>ルールが<EM>実行される前に</EM>
+行っていた。<CODE>awk</CODE>の振る舞いはこのために一貫性を欠いていた。
+つまり、一部のコマンドライン上の代入は<CODE>BEGIN</CODE>ルール
+の内側にあるかのように扱われたが、そうでないものもあった。
+しかし、一部のアプリケーションはこの"仕様"に依存していた。
+<CODE>awk</CODE>がより一貫性を持つように変更されたとき、
+<SAMP>`-v'</SAMP>オプションがこのような古い動作を前提としていた
+アプリケーションに適応させるために追加された。
+
+</P>
+<P>
+変数代入の機能は、
+データファイルを走査する前に
+<CODE>RS</CODE>、<CODE>OFS</CODE>、<CODE>ORS</CODE>のような変数に代入して
+入出力の書式を制御するのに便利である。
+同様に、あるデータファイルを複数回読んで処理するときの
+状態を制御するのにも便利である。例えば、
+
+</P>
+<P>
+<A NAME="IDX632"></A>
+<A NAME="IDX633"></A>
+
+<PRE>
+awk 'pass == 1  { <VAR>pass 1 での仕事</VAR> }
+     pass == 2  { <VAR>pass 2 での仕事</VAR> }' pass=1 mydata pass=2 mydata
+</PRE>
+
+<P>
+変数代入の機能があるので、<CODE>FS</CODE>に値をセットする<SAMP>`-F'</SAMP>オプションは
+必要というわけではない。これは歴史的な互換性のために残されている。
+
+</P>
+
+
+<H2><A NAME="SEC137" HREF="gawk_toc.html#SEC137"><CODE>AWKPATH</CODE>環境変数</A></H2>
+<P>
+<A NAME="IDX634"></A>
+<A NAME="IDX635"></A>
+<A NAME="IDX636"></A>
+<A NAME="IDX637"></A>
+<A NAME="IDX638"></A>
+<A NAME="IDX639"></A>
+
+</P>
+<P>
+以前のセクションで、<CODE>awk</CODE>プログラムファイルの名前をコマンドライン上
+の<SAMP>`-f'</SAMP>オプションで指定できることを説明した。大部分の<CODE>awk</CODE>処理 
+系では、指定するプログラムファイルがカレントディレクトリにない限りは、そ
+のファイルのパス名を記述しなければならない。
+
+</P>
+<P>
+<A NAME="IDX640"></A>
+しかし<CODE>gawk</CODE>では、<SAMP>`-f'</SAMP>オプションで与えられている
+ファイル名が<SAMP>`/'</SAMP>を含んでいない場合には、
+ディレクトリリスト(<STRONG>検索パス</STRONG>(search path)と呼ばれる)
+にあるディレクトリに指定されたファイルがあるかを
+一つ一つ検索していく。
+
+</P>
+<P>
+検索パスはコロンで区切られたディレクトリ名からなる文字列である。@code   
+{gawk}は<CODE>AWKPATH</CODE>という環境変数からサーチパスを取得する。もし、この
+環境変数が定義されていなければ、<CODE>gawk</CODE>はデフォルトのパス
+<SAMP>`.:/usr/local/share/awk'</SAMP>を使用する
+<A NAME="FOOT18" HREF="gawk_foot.html#FOOT18">(18)</A>
+(システム管理者のために作成されたプログラムは変数<CODE>AWKPATH</CODE>が
+カレントディレクトリ(<TT>`.'</TT>を含んでいない状態で使用するべきである)。
+
+</P>
+<P>
+検索パスの機能は、特に便利な<CODE>awk</CODE>関数のライブラリの作成に有効である。
+ライブラリファイルを標準的なデフォルトパスに置くことができ、コマンドライ
+ンではそれを短い名前で指定することができる。さもなければ、ライブラリの各
+ファイルを指定するのにその名前をフルパスで書かなければならないだろう。
+
+</P>
+<P>
+<SAMP>`--source'</SAMP>オプションと<SAMP>`-f'</SAMP>オプションの両方を使うことによって、
+コマンドライン上にあるあなたの<CODE>awk</CODE>プログラムは
+<CODE>awk</CODE>ライブラリファイルを便利に使うことができる
+セクション <A HREF="gawk_16.html#SEC141"><CODE>awk</CODE>の関数ライブラリ</A>を参照。
+
+</P>
+<P>
+パスの検索は<CODE>gawk</CODE>が互換モードで実行されているときには
+行われない。これは<SAMP>`--traditional'</SAMP> や<SAMP>`--posix'</SAMP>の
+ときも同様であるセクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照。
+
+</P>
+<P>
+<STRONG>注意:</STRONG> もしカレントディレクトリにあるファイルを見つけるようにし 
+たいのであれば、検索パスにカレントディレクトリを含める必要がある。それに
+は、陽に<TT>`.'</TT>を含めたパスを指定するか、パスに空のエントリを含めるかを
+する(空のエントリはパスの先頭か末尾にコロンを置くか、<SAMP>`::'</SAMP>のように二
+つのコロンを連続して置くことで作成できる)。もしカレントディレクトリが検 
+索パスに含まれていなければ、カレントディレクトリにあるファイルは見つから
+ない。パスの検索機構はシェルのそれと同じである。
+
+</P>
+<P>
+Version 3.0以降、環境に<CODE>AWKPATH</CODE>が存在しない場合<CODE>gawk</CODE>は
+<CODE>ENVIRON["AWKPATH"]</CODE>にデフォルトの検索パスをセットするようにな
+った。これは。<CODE>gawk</CODE>が使うだろう検索パスの決定を簡単にする。
+
+</P>
+
+
+<H2><A NAME="SEC138" HREF="gawk_toc.html#SEC138">Obsolete Options and/or Features</A></H2>
+
+<P>
+<A NAME="IDX641"></A>
+<A NAME="IDX642"></A>
+<A NAME="IDX643"></A>
+<A NAME="IDX644"></A>
+このセクションでは、以前のバージョンの<CODE>gawk</CODE>では使うことのできた
+機能やコマンドラインオプションと、現在使用可能だが
+使わないほうが良い(次のリリースでは<EM>なくなる</EM>だろう
+ということ)機能やコマンドラインオプションについて説明する。
+
+</P>
+
+<P>
+<CODE>gawk</CODE>のバージョン3.0.4 では、
+以前のバージョンの<CODE>gawk</CODE>に対して、使えなくなった機能や
+使えなくなったコマンドラインオプションはない。
+このセクション
+は本質的にプレースホルダーであり、
+幾つかのオプションは将来の<CODE>gawk</CODE>では
+削除される。
+
+</P>
+
+
+
+<H2><A NAME="SEC139" HREF="gawk_toc.html#SEC139">ドキュメント化されていないオプションと機能</A></H2>
+<P>
+<A NAME="IDX645"></A>
+
+<PRE>
+<I>Use the Source, Luke!</I>
+Obi-Wan
+</PRE>
+
+<P>
+
+<P>
+このセクションは意図的に空白にしている。
+
+</P>
+<P>
+ルーク、ソースを読むんだ!
+
+</P>
+
+
+
+<H2><A NAME="SEC140" HREF="gawk_toc.html#SEC140">Known Bugs in <CODE>gawk</CODE></A></H2>
+<P>
+<A NAME="IDX646"></A>
+<A NAME="IDX647"></A>
+
+</P>
+
+<UL>
+<LI>
+
+<SAMP>`-F'</SAMP>オプションは<CODE>FS</CODE>(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)
+の値を変更するためのもので、コマンドラインで変数の代入を行うことができる
+ので必要というわけではない。これは以前のものとの互換性のために残してある。
+
+<LI>
+
+使用しているシステムが<TT>`/dev/fd'</TT>や<TT>`/dev/stdin'</TT>, <TT>`/dev/stdout'</TT>,
+<TT>`/dev/stderr'</TT>といったファイルをサポートしているのであれば、
+そういったファイルをサポートしていないシステムで
+<CODE>gawk</CODE>を実行したときとは違う実行結果になるかもしれない。
+<CODE>gawk</CODE>がこれらのファイルを内部的に解釈したとき、それらに
+対する出力、たとえば標準出力は<TT>`/dev/stdout'</TT>と同期をしている。
+システムがこれらのファイルをサポートしているときには
+出力は実際には異なるファイルに出力しているのである。
+(セクション <A HREF="gawk_7.html#SEC66">Special File Names in <CODE>gawk</CODE></A>を参照)。
+
+<LI>
+
+文法的に不正な、キャラクタ一つのプログラムは、解析スタックのオーバーフロ
+ーを招き、親切とはいえないメッセージを出力する。
+そのようなプログラムを完全に一般的なケースで解析することは
+びっくりするほど難しく、それに対処するための努力はやる価値がない。
+</UL>
+
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_14.html">前</A>, <A HREF="gawk_16.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

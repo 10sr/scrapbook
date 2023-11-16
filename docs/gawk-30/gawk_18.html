@@ -1,0 +1,500 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - awkの発展</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_17.html">前</A>, <A HREF="gawk_19.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC174" HREF="gawk_toc.html#SEC174"><CODE>awk</CODE>の発展</A></H1>
+
+<P>
+このマニュアルでは、POSIX規格に従ったGNUの<CODE>awk</CODE>処理系について
+の説明をしている。多くの<CODE>awk</CODE>ユーザーは、Version 7 UNIX上でのオリジ
+ナル<CODE>awk</CODE>だけを知っている(この処理系は 4.3 --RenoまでのBerkeley UNIX
+上の<CODE>awk</CODE>の元となった。Berkeley UNIX の リリース4.4 では、システム
+の<CODE>awk</CODE>に<CODE>gawk</CODE> 2.15.2を使用している)。この章では<CODE>awk</CODE>言 
+語の進化を、(より詳しい説明のある場所の)クロスリファレンスを交えて手短に
+説明する。
+
+</P>
+
+
+
+<H2><A NAME="SEC175" HREF="gawk_toc.html#SEC175">Major Changes between V7 and SVR3.1</A></H2>
+<P>
+<CODE>awk</CODE>言語はVersion 7 Unix (1978)と、System V Release 3.1 (1987)で最初に
+作られた新しいバージョンとの間で相当に進化した。このセクションでは変更と、
+それについてのクロスリファレンスを要約する。
+
+</P>
+
+<UL>
+<LI>
+
+一行にある複数のルールの区切りに<SAMP>`;'</SAMP>を要求するようになった。
+(セクション <A HREF="gawk_3.html#SEC21"><CODE>awk</CODE> の文と行</A>を参照).
+
+<LI>
+
+ユーザー定義の関数と、リターン文
+(セクション <A HREF="gawk_14.html#SEC129">ユーザー定義関数</A>を参照).
+
+<LI>
+
+<CODE>delete</CODE> 文 (セクション <A HREF="gawk_12.html#SEC118">The <CODE>delete</CODE> Statement</A>を参照).
+
+<LI>
+
+<CODE>do</CODE>-<CODE>while</CODE> 文
+(セクション <A HREF="gawk_10.html#SEC101">The <CODE>do</CODE>-<CODE>while</CODE> Statement</A>を参照).
+
+<LI>
+
+組み込み関数の<CODE>atan2</CODE>, <CODE>cos</CODE>, <CODE>sin</CODE>, <CODE>rand</CODE>, <CODE>srand</CODE>
+(セクション <A HREF="gawk_13.html#SEC125">Numeric Built-in Functions</A>を参照).
+
+<LI>
+
+組み込み関数の<CODE>gsub</CODE>, <CODE>sub</CODE>, <CODE>match</CODE>
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)。
+
+<LI>
+
+組込み関数の <CODE>close</CODE>と<CODE>system</CODE>
+(セクション <A HREF="gawk_13.html#SEC127">Built-in Functions for Input/Output</A>を参照)。
+
+<LI>
+
+組込み変数の<CODE>ARGC</CODE>, <CODE>ARGV</CODE>, <CODE>FNR</CODE>, <CODE>RLENGTH</CODE>, 
+<CODE>RSTART</CODE>,<CODE>SUBSEP</CODE>(セクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照)。
+
+<LI>
+
+<SAMP>`?'</SAMP>演算子と<SAMP>`:'</SAMP>演算子を使った条件式
+(セクション <A HREF="gawk_8.html#SEC84">Conditional Expressions</A>を参照).
+
+<LI>
+
+べき乗の演算子<SAMP>`^'</SAMP>と
+(セクション <A HREF="gawk_8.html#SEC77">Arithmetic Operators</A>を参照) その代入演算子
+<SAMP>`^='</SAMP> (セクション <A HREF="gawk_8.html#SEC79">代入式</A>を参照)。
+
+<LI>
+
+一部の古い<CODE>awk</CODE>プログラムで破られていた演算子の優先順位を
+Cと同じにした(セクション <A HREF="gawk_8.html#SEC86">Operator Precedence (How Operators Nest)</A>を参照)。
+
+<LI>
+
+<CODE>FS</CODE>にセットする値
+(セクション <A HREF="gawk_6.html#SEC38">フィールドの分割方法の指定</A>を参照)と
+<CODE>split</CODE>関数の三番目の引数として正規表現を許す
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)。
+
+<LI>
+
+<SAMP>`~'</SAMP>演算子と<SAMP>`!~'</SAMP>演算子に対するオペランドとしての動的正規表現
+(セクション <A HREF="gawk_5.html#SEC26">正規表現の使い方</A>を参照).
+
+<LI>
+
+<SAMP>`\b'</SAMP>、<SAMP>`\f'</SAMP>、<SAMP>`\r'</SAMP>のようなエスケープシーケンス
+(セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照)
+(一部のベンダーは古いバージョンの<CODE>awk</CODE>を
+<SAMP>`\b'</SAMP>、<SAMP>`\f'</SAMP>、<SAMP>`\r'</SAMP>を認識するように
+変更していたが、それはあなたが信頼できるものではない)。
+
+<LI>
+
+<CODE>getline</CODE>関数に対する入力のリダイレクト
+(セクション <A HREF="gawk_6.html#SEC46"><CODE>getline</CODE>を使った入力</A>を参照).
+
+<LI>
+
+複数の<CODE>BEGIN</CODE>ルールと<CODE>END</CODE>ルール
+(セクション <A HREF="gawk_9.html#SEC93">特殊パターン<CODE>BEGIN</CODE>と<CODE>END</CODE></A>を参照).
+
+<LI>
+
+多次元配列
+(セクション <A HREF="gawk_12.html#SEC121">Multi-dimensional Arrays</A>を参照)。
+</UL>
+
+
+
+<H2><A NAME="SEC176" HREF="gawk_toc.html#SEC176">Changes between SVR3.1 and SVR4</A></H2>
+
+<P>
+<A NAME="IDX737"></A>
+UNIX System V Release 4 versionの<CODE>awk</CODE>では次のような機能が追加されて
+いる(このうちの幾つかは<CODE>gawk</CODE>がオリジナルである)
+
+</P>
+
+<UL>
+<LI>
+
+<CODE>ENVIRON</CODE> 変数 (セクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照)。
+
+<LI>
+
+コマンドラインでの<SAMP>`-f'</SAMP> オプションの複数指定
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照).
+
+<LI>
+
+プログラム実行前に変数への代入を行うための<SAMP>`-v'</SAMP>オプション
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照).
+
+<LI>
+
+コマンドラインオプションの終了をあらわすための<SAMP>`--'</SAMP>オプション。
+
+<LI>
+
+<SAMP>`\a'</SAMP>, <SAMP>`\v'</SAMP>, <SAMP>`\x'</SAMP> というエスケープシーケンス
+(セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照)。
+
+<LI>
+
+組み込み関数<CODE>srand</CODE>が返す値の定義
+(セクション <A HREF="gawk_13.html#SEC125">Numeric Built-in Functions</A>を参照)。
+
+<LI>
+
+大小文字変換のための組み込みの文字列操作関数<CODE>toupper</CODE> と <CODE>tolower</CODE>
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照).
+
+<LI>
+
+<CODE>printf</CODE>関数の書式指定文字<SAMP>`%c'</SAMP>の仕様の明確化
+(セクション <A HREF="gawk_7.html#SEC62">書式制御文字</A>を参照)。
+
+<LI>
+
+<CODE>printf</CODE>関数の引数リスト中で(<CODE>"%*.*d"</CODE>)の様にフィールド幅や、精度
+を動的に与える機能
+(セクション <A HREF="gawk_7.html#SEC62">書式制御文字</A>を参照).
+
+<LI>
+
+<CODE>$0 ~/foo/</CODE>の様に、マッチングオペレータを使用したときと等価な
+<CODE>/foo/</CODE>の様な正規表現定数
+(セクション <A HREF="gawk_8.html#SEC72">正規表現定数を使う</A>を参照)。
+</UL>
+
+
+
+<H2><A NAME="SEC177" HREF="gawk_toc.html#SEC177">Changes between SVR4 and POSIX <CODE>awk</CODE></A></H2>
+
+<P>
+POSIX のコマンド言語およびユーティリティの標準は、<CODE>awk</CODE>に次のような
+言語の変更を導入した。
+
+</P>
+
+<UL>
+<LI>
+
+処理系固有のオプションのための<SAMP>`-W'</SAMP>の使用。
+
+<LI>
+
+数値から文字列の変更を制御する<CODE>CONVFMT</CODE>の使用
+(セクション <A HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>を参照)。
+
+<LI>
+
+数値文字列の概念と、それが期待通りに動作するためのきちんとした比較ルール
+(セクション <A HREF="gawk_8.html#SEC82">Variable Typing and Comparison Expressions</A>を参照)。
+
+<LI>
+
+以前にはドキュメント化されていなかった言語の仕様の多くを
+より完全にドキュメント化した。
+</UL>
+
+<P>
+以下の一般的な拡張はPOSIX標準では許されていない。
+
+</P>
+
+
+<UL>
+<LI>
+
+<CODE>\x</CODE>で指定されるエスケープシーケンスを認識しない。
+(セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照).
+
+<LI>
+
+Newlines do not act as whitespace to separate fields when <CODE>FS</CODE> is
+equal to a single space.
+
+<LI>
+
+キーワード<CODE>function</CODE>の略語として <CODE>func</CODE>を認めない
+(セクション <A HREF="gawk_14.html#SEC130">Function Definition Syntax</A>を参照)。
+
+<LI>
+
+<SAMP>`^'</SAMP> や <SAMP>`^='</SAMP>の代わりに<SAMP>`**'</SAMP> または <SAMP>`**='</SAMP>を
+使うことができない
+(セクション <A HREF="gawk_8.html#SEC77">Arithmetic Operators</A>を参照と
+セクション <A HREF="gawk_8.html#SEC79">代入式</A>を参照)。
+
+<LI>
+
+コマンドラインで<SAMP>`-Ft'</SAMP>と指定されたときに<CODE>FS</CODE>の
+値をタブにセットしない
+(セクション <A HREF="gawk_6.html#SEC38">フィールドの分割方法の指定</A>を参照)。
+
+<LI>
+
+組込み関数の<CODE>fflush</CODE>をサポートしない
+(セクション <A HREF="gawk_13.html#SEC127">Built-in Functions for Input/Output</A>を参照)。
+</UL>
+
+
+
+<H2><A NAME="SEC178" HREF="gawk_toc.html#SEC178">Extensions in the Bell Laboratories <CODE>awk</CODE></A></H2>
+
+<P>
+<A NAME="IDX738"></A>
+オリジナルの<CODE>awk</CODE>の開発者の一人であるBrian Kernighanは、
+彼の作成した処理系を匿名<CODE>ftp</CODE>を通じて入手可能な
+状態に置いている
+(セクション <A HREF="gawk_20.html#SEC221">自由に入手可能な他の<CODE>awk</CODE>処理系</A>を参照)。
+このセクションでは、彼の作成した<CODE>awk</CODE>処理系のPOSIX <CODE>awk</CODE>にはない
+拡張機能を説明する。
+
+</P>
+
+<UL>
+<LI>
+
+それぞれフィールド数の最大値やレコードサイズの最大値を設定する
+<SAMP>`-mf <VAR>NNN</VAR>'</SAMP> オプションと <SAMP>`-mr <VAR>NNN</VAR>'</SAMP>オプション
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)。
+
+<LI>
+
+バッファリングされた出力をフラッシュするための組込み関数
+<CODE>fflush</CODE>
+(セクション <A HREF="gawk_13.html#SEC127">Built-in Functions for Input/Output</A>を参照)。
+
+</UL>
+
+
+
+<H2><A NAME="SEC179" HREF="gawk_toc.html#SEC179">POSIX <CODE>awk</CODE>にはない<CODE>gawk</CODE>の拡張</A></H2>
+
+<P>
+<A NAME="IDX739"></A>
+GNU の実装による <CODE>gawk</CODE>には、多くの機能が追加されている。
+このセクションでは、そのような機能をとりあげる。
+拡張機能は<SAMP>`--traditional'</SAMP> オプションや
+<SAMP>`--posix'</SAMP>オプションによって禁止することができる
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)。
+
+</P>
+<P>
+<CODE>gawk</CODE>のバージョン 2.10では以下の機能が導入された。
+
+</P>
+
+<UL>
+<LI>
+
+<SAMP>`-f'</SAMP>コマンドラインオプションで指定されたファイルを検索する
+場所を指定する<CODE>AWKPATH</CODE>環境変数。
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照).
+
+<LI>
+
+<CODE>IGNORECSE</CODE>変数とその効果。
+(セクション <A HREF="gawk_5.html#SEC30">大小文字を区別するマッチング</A>を参照).
+
+<LI>
+
+<TT>`/dev/fd/<VAR>n</VAR>'</TT> といったファイル名の解釈
+(セクション <A HREF="gawk_7.html#SEC66">Special File Names in <CODE>gawk</CODE></A>を参照)。
+</UL>
+
+<P>
+<CODE>gawk</CODE>バージョン2.13では以下の機能が導入された。
+
+</P>
+
+<UL>
+<LI>
+
+<CODE>FIELDWIDTHS</CODE>変数とその効果
+(セクション <A HREF="gawk_6.html#SEC44">固定長データの読み込み</A>を参照)・
+
+<LI>
+
+タイムスタンプを扱ったり出力したりするための組込み関数
+<CODE>systime</CODE> と <CODE>strftime</CODE>
+(セクション <A HREF="gawk_13.html#SEC128">Functions for Dealing with Time Stamps</A>を参照)。
+
+<LI>
+
+ソースコード上のエラーや、移植時に問題になるような個所を
+指摘する<SAMP>`-W lint'</SAMP> オプション(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)。
+
+<LI>
+
+これらの拡張を無効にする<SAMP>`-W compat'</SAMP>オプション
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)。
+
+<LI>
+
+POSIXに完全に従うようにする<SAMP>`-W posix'</SAMP>オプション
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照).
+</UL>
+
+<P>
+<CODE>gawk</CODE>バージョン2.14では以下の機能が導入された。
+
+</P>
+
+<UL>
+<LI>
+
+次のデータファイルまでスキップをする<CODE>next file</CODE>文
+(セクション <A HREF="gawk_10.html#SEC106">The <CODE>nextfile</CODE> Statement</A>を参照)。
+</UL>
+
+<P>
+<CODE>gawk</CODE>バージョン2.15では以下の機能が導入された。
+
+</P>
+
+<UL>
+<LI>
+
+<CODE>FILENAME</CODE>が<CODE>ARGV</CODE>のどこにあるかを示す
+<CODE>ARGIND</CODE>という変数 (セクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照)。
+
+<LI>
+
+<CODE>getline</CODE> が -1を返したり、<CODE>close</CODE> が失敗したときの
+システムのエラーメッセージを保持する<CODE>ERRNO</CODE>という変数
+(セクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照)。
+
+<LI>
+
+<SAMP>`--'</SAMP>で始まるGNUスタイルの長いオプションを扱う機能。
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照).
+
+<LI>
+
+コマンドライン上のプログラムとライブラリファイルとを混在する
+ための<SAMP>`--source'</SAMP>オプション
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照).
+
+<LI>
+
+The <TT>`/dev/pid'</TT>, <TT>`/dev/ppid'</TT>, <TT>`/dev/pgrpid'</TT>, 
+<TT>`/dev/user'</TT> といったファイル名の解釈
+(セクション <A HREF="gawk_7.html#SEC66">Special File Names in <CODE>gawk</CODE></A>を参照).
+</UL>
+
+<P>
+<CODE>gawk</CODE>のバージョン3.0では以下の機能が導入された。
+
+</P>
+
+<UL>
+<LI>
+
+<CODE>next file</CODE>文は<CODE>nextfile</CODE>に変更された
+(セクション <A HREF="gawk_10.html#SEC106">The <CODE>nextfile</CODE> Statement</A>を参照)。
+
+<LI>
+
+The <SAMP>`--lint-old'</SAMP> option to
+UNIX バージョン7上のオリジナル<CODE>awk</CODE>にない機能を
+警告するための<SAMP>`--lint-old'</SAMP>オプション
+(セクション <A HREF="gawk_18.html#SEC175">Major Changes between V7 and SVR3.1</A>を参照)。
+
+<LI>
+
+<SAMP>`--compat'</SAMP>オプションのより適切な名前として
+<SAMP>`--traditional'</SAMP> オプションが追加された
+ (セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)。
+
+<LI>
+
+<CODE>FS</CODE>に空文字列がセットされたときの動作と、
+<CODE>split</CODE>の第三引数に空文字列を渡したときの動作。
+(セクション <A HREF="gawk_6.html#SEC41">個々のキャラクタを別個のフィールドにする</A>を参照).
+
+<LI>
+
+<CODE>RS</CODE>が正規表現のときの動作。
+(セクション <A HREF="gawk_6.html#SEC34">入力をレコードへと分割をするやりかた</A>を参照).
+
+<LI>
+
+<CODE>RT</CODE>変数
+(セクション <A HREF="gawk_6.html#SEC34">入力をレコードへと分割をするやりかた</A>を参照).
+
+<LI>
+
+より強力なテキスト操作のための<CODE>gensub</CODE>関数
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)。
+
+<LI>
+
+<CODE>strftime</CODE>関数が引数なしで呼べるようにデフォルトの
+時間フォーマットを獲得した
+(セクション <A HREF="gawk_13.html#SEC128">Functions for Dealing with Time Stamps</A>を参照)。
+
+<LI>
+
+POSIXの正規表現とGNU正規表現の両方をフルサポートした
+(セクション <A HREF="gawk_5.html#SEC25">正規表現</A>を参照)。
+
+<LI>
+
+<SAMP>`--re-interval'</SAMP> オプションによって
+正規表現でinterval expressionが使えるようになる
+(セクション <A HREF="gawk_5.html#SEC28">正規表現演算子</A>を参照)。
+
+<LI>
+
+<CODE>IGNORECASE</CODE>の値が、文字列比較だけでなく、正規表現演算にも
+適用されるようになった
+(セクション <A HREF="gawk_5.html#SEC30">大小文字を区別するマッチング</A>を参照).
+
+<LI>
+
+BELL研バージョンの<CODE>awk</CODE>にあった
+<SAMP>`-m'</SAMP>オプションと<CODE>fflush</CODE>関数
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照と
+セクション <A HREF="gawk_13.html#SEC127">Built-in Functions for Input/Output</A>を参照)。
+
+<LI>
+
+コンフィグレーションの手順を制御するGNU Autoconfの使用
+(セクション <A HREF="gawk_20.html#SEC208">Compiling <CODE>gawk</CODE> for Unix</A>を参照).
+
+<LI>
+
+アミガのサポート
+(セクション <A HREF="gawk_20.html#SEC219">Amigaでの<CODE>gawk</CODE> のインストール</A>を参照)。
+
+</UL>
+
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_17.html">前</A>, <A HREF="gawk_19.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

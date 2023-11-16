@@ -1,0 +1,1307 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - 組み込み関数</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_12.html">前</A>, <A HREF="gawk_14.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC123" HREF="gawk_toc.html#SEC123">組み込み関数</A></H1>
+
+<P>
+<A NAME="IDX521"></A>
+<STRONG>組み込み関数</STRONG>とは<CODE>awk</CODE>プログラムで常に呼び出す事のできる関数である。
+この章では<CODE>awk</CODE>の全ての組み込み関数を定義する。一部のものは別のセクショ
+ンで説明がされているが、便宜のためここでも簡単にまとめてある
+(ユーザーは自分で新たに関数を定義する事もできる
+ セクション <A HREF="gawk_14.html#SEC129">ユーザー定義関数</A>を参照.)。
+
+</P>
+
+
+
+<H2><A NAME="SEC124" HREF="gawk_toc.html#SEC124">Calling Built-in Functions</A></H2>
+
+<P>
+組み込み関数を呼び出すには、関数の名前に続けて括弧で囲まれた引数を書けばよい。
+例えば<CODE>atan2(y + z, 1)</CODE>は関数<CODE>atan2</CODE> を二つの引数で呼び出す。
+
+</P>
+<P>
+組み込み関数の名前と、開き括弧の間にある空白は無視される。しかし、そういった
+空白は使わないようにすることを勧めたい。ユーザー定義の関数ではこのような空白
+を許されておらず、関数名の直後に空白をおかないという単純なやり方でそのような
+間違いを簡単に見つけ出せる。
+
+</P>
+<P>
+<A NAME="IDX522"></A>
+組み込み関数はそれぞれ、特定の数の引数を受け取る。多くの場合、組み込み関
+数に対して余計に多く渡された引数は無視される。引数が省略されたときのデフ
+ォルトの扱いは個々の関数毎に決められている。一部の<CODE>awk</CODE>処理系では、
+組込み変数に余計な引数を渡した場合はそういった引数は無視されていた。しか
+し<CODE>awk</CODE>では、それは致命的なエラーとなる。
+
+</P>
+<P>
+関数が呼び出されるとき、関数の実引数は実際に関数が呼び出される前に完全に評価
+され、式が作り出される。例えば次のようなコードでは
+
+</P>
+
+<PRE>
+i = 4
+j = sqrt(i++)
+</PRE>
+
+<P>
+変数<CODE>i</CODE>は、<CODE>sqrt</CODE>に対する実引数の値として4がセットされて関数が呼ば
+れる前に 5がセットされる。
+
+</P>
+<P>
+<A NAME="IDX523"></A>
+関数に対する実引数を評価する順番は定義されていない。そのため、
+実引数が左から右へ順番に評価されるということを仮定したプログラムを
+書くべきではない。例えば、
+
+</P>
+
+<PRE>
+i = 5
+j = atan2(i++, i *= 2)
+</PRE>
+
+<P>
+上記のようなプログラム片があったとして、評価の順番が左から右であったとす
+ると、<CODE>i</CODE>は最初に6になり、ついで12となり、それから<CODE>atan2</CODE>が実 
+引数6と12で呼び出されるしかし、評価が右から左へ行われたとすると、@code  
+{i}は最初に10となり、ついで11になる。その後<CODE>atan2</CODE>の呼び出しが実引 
+数11と10で行われる。
+
+</P>
+
+
+<H2><A NAME="SEC125" HREF="gawk_toc.html#SEC125">Numeric Built-in Functions</A></H2>
+
+<P>
+以下のリストは、数値を扱うすべての組込み関数である。
+省略可能な引数はブラケット("[" と "]")で囲まれている。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>int(<VAR>x</VAR>)</CODE>
+<DD>
+<A NAME="IDX524"></A>
+この関数は整数への丸めを行う。
+丸めのときは0へ向かって、つまり0と<VAR>x</VAR>の間にある整数の中から選択する。
+
+例えば、<CODE>int(3)</CODE> は 3、 <CODE>int(3.9)</CODE> は 3、 <CODE>int(-3.9)</CODE> は
+-3、そして <CODE>int(-3)</CODE> は -3 となる。
+
+<DT><CODE>sqrt(<VAR>x</VAR>)</CODE>
+<DD>
+<A NAME="IDX525"></A>
+この関数は<VAR>x</VAR>の正の平方根を返す。 <VAR>x</VAR>が負であった場合にはエラーとな
+る。たとえば、<CODE>sqrt(4)</CODE>は2である。
+
+<DT><CODE>exp(<VAR>x</VAR>)</CODE>
+<DD>
+<A NAME="IDX526"></A>
+これは自然対数eの<VAR>x</VAR>乗を返すか、<VAR>x</VAR>が範囲外であればエラーをレポート
+する。 <VAR>x</VAR>の取り得る値の範囲はあなたが使っているマシンの浮動小数点数の実
+装による。
+
+<DT><CODE>log(<VAR>x</VAR>)</CODE>
+<DD>
+<A NAME="IDX527"></A>
+<VAR>x</VAR>が正の場合には<VAR>x</VAR>の自然対数を返し、そうでない場合にはエラーとなる。l
+
+<DT><CODE>sin(<VAR>x</VAR>)</CODE>
+<DD>
+<A NAME="IDX528"></A>
+<VAR>x</VAR>の正弦を返す(<VAR>x</VAR>の単位はラジアン)。
+
+<DT><CODE>cos(<VAR>x</VAR>)</CODE>
+<DD>
+<A NAME="IDX529"></A>
+<VAR>x</VAR>の余弦を返す(<VAR>x</VAR>の単位はラジアン)。
+
+<DT><CODE>atan2(<VAR>y</VAR>, <VAR>x</VAR>)</CODE>
+<DD>
+<A NAME="IDX530"></A>
+<CODE><VAR>y</VAR> / <VAR>x</VAR></CODE>のアークタンジェントを返す(単位はラジアン)。
+
+<DT><CODE>rand()</CODE>
+<DD>
+<A NAME="IDX531"></A>
+乱数を返す。<CODE>rand</CODE>の返す値は0から1の範囲の数であり、0と1は含まれない。
+
+しばしば整数の乱数を必要とするだろうが、次に <VAR>n</VAR>未満の非負の整数の乱数を
+返すユーザー定義関数を挙げる。
+
+
+<PRE>
+function randint(n) {
+     return int(n * rand())
+}
+</PRE>
+
+この例での掛け算は0より大きく、<VAR>n</VAR>未満の実数を作り出す。それを(<CODE>int</CODE>
+を使って)0から<CODE><VAR>n</VAR> - 1</CODE>の間の整数にする。
+
+次の例は先ほどのものと同じ様な、1から<VAR>n</VAR>の間の整数を返す関数を使っている。
+このプログラムはレコード入力の度に新しい乱数を出力する。
+
+
+<PRE>
+awk '
+# サイコロをシミュレートする関数
+function roll(n) { return 1 + int(rand() * n) }
+
+# 三つの六面体サイコロを振り、
+# その合計を出力する。
+{
+      printf("%d points\n",
+             roll(6)+roll(6)+roll(6))
+}'
+</PRE>
+
+<A NAME="IDX532"></A>
+<STRONG>注意:</STRONG><CODE>gawk</CODE>も含めて、大部分の<CODE>awk</CODE>処理系では実行の度 
+に<CODE>rand</CODE>は、同じ数値、もしくは<STRONG>種</STRONG>から数値を作り出しはじめる。 
+このことはプログラムを実行する度に同じ結果が生成されるということである。
+その数値はひとつの<CODE>awk</CODE>プログラムの中ではランダムであるけれども走ら
+せるごとに予想できるものである。これはデバッグには便利であるけれども、使
+う度毎に違う結果を必要とするような場合には実行する毎に乱数の種を違ったも
+のにしなければならない。それを行うには<CODE>srand</CODE>を使用する。
+
+<DT><CODE>srand([<VAR>x</VAR>])</CODE>
+<DD>
+<A NAME="IDX533"></A>
+<CODE>srand</CODE>は乱数を生成するための出発点、もしくは<STRONG>種</STRONG>の値として
+<VAR>x</VAR>をセットする。
+
+それぞれの種は各々特定の"乱数列"
+<A NAME="FOOT11" HREF="gawk_foot.html#FOOT11">(11)</A>
+を導き出す。従って、乱数の種として同じ値を
+二度目にセットしたとすると、同じ"乱数列"を得ることになる。
+
+<CODE>srand()</CODE>の引数<VAR>x</VAR>を省略した場合、乱数の種としてその時点の日時が使
+用される。この方法は予測できないような乱数列を得られる。
+
+<CODE>srand</CODE>の返す値は以前使われていた乱数の種である。これによって以前の乱数
+系列をもう一度作り出すことが簡単になる。
+</DL>
+
+
+
+<H2><A NAME="SEC126" HREF="gawk_toc.html#SEC126">Built-in Functions for String Manipulation</A></H2>
+
+<P>
+このセクションにある関数は一つ以上の文字列を検索したり変更したりするものである。
+省略可能な引数はブラケット("[" と "]")で囲まれている。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>index(<VAR>in</VAR>, <VAR>find</VAR>)</CODE>
+<DD>
+<A NAME="IDX534"></A>
+文字列<VAR>in</VAR>の中で、文字列<VAR>find</VAR>が出てくる最初の場所を検索し、
+見つかった文字列が始まる<VAR>in</VAR>のキャラクタの位置を返す。例を挙げよう。
+
+
+<PRE>
+$ awk 'BEGIN { print index("peanut", "an") }'
+-| 3
+</PRE>
+
+もし<VAR>find</VAR>が見つからなかったなら、<CODE>index</CODE>は0を返す
+(<CODE>awk</CODE>での文字列の添字は1から始まると言うことを思い出して欲しい)。
+
+<DT><CODE>length([<VAR>string</VAR>])</CODE>
+<DD>
+<A NAME="IDX535"></A>
+<VAR>string</VAR>中のキャラクタの数を返す。 <VAR>string</VAR>が数値であった場合、その
+数値を（その数値を表す）文字列に変換したときのキャラクタの数が返る。例えば、
+<CODE>length("abcde")</CODE>は5であるが、<CODE>length(15 * 35)</CODE>の結果は 3である。
+それは15 × 35 = 525で、この525は三つのキャラクタからなる <SAMP>`"525"'</SAMP>という
+文字列に変換されるからである。
+
+引数が省略された場合、<CODE>length</CODE>は<CODE>$0</CODE>の長さを返す。
+
+<A NAME="IDX536"></A>
+<A NAME="IDX537"></A>
+<A NAME="IDX538"></A>
+<A NAME="IDX539"></A>
+古いバージョンの<CODE>awk</CODE>では、<CODE>length</CODE>関数を括弧なしで呼ぶことができ
+る。それは POSIX の標準では"deprecated"とされる。このことは、プログラム中
+でこういった書き方が将来のバージョンでは使えなくなるかも知れないということで
+ある。従って、<CODE>awk</CODE>プログラムの移植性を最大にするために括弧を常に書くべ
+きである。
+
+<DT><CODE>match(<VAR>string</VAR>, <VAR>regexp</VAR>)</CODE>
+<DD>
+<A NAME="IDX540"></A>
+<CODE>match</CODE>関数は<VAR>string</VAR>から、正規表現<VAR>regexp</VAR>にマッチする部分文字
+列の中で、最も左にあり、もっとも長い部分文字列を検索し、部分文字列が始まる場
+所を返す（<VAR>string</VAR>の最初から始まっていれば1）。マッチするものが見つから
+なかった場合、0を返す。
+
+<A NAME="IDX541"></A>
+<A NAME="IDX542"></A>
+<CODE>match</CODE>関数は組み込み変数の<CODE>RSTART</CODE> にインデックスをセットし、同様
+に組み込み変数<CODE>RLENGTH</CODE>にマッチした部分文字列の長さをセットする。マッチ
+しなかった場合には、<CODE>RSTART</CODE> には0が、<CODE>RLENGTH</CODE> には -1がセッ
+トされる。
+
+例えば、
+
+
+<PRE>
+awk '{
+       if ($1 == "FIND")
+         regex = $2
+       else {
+         where = match($0, regex)
+         if (where != 0)
+           print "Match of", regex, "found at", \
+                     where, "in", $0
+       }
+}'
+</PRE>
+
+このプログラムは変数<CODE>regex</CODE>に格納されている正規表現にマッチする行を探す。
+この正規表現は変更することができる。ある行の最初の単語が<SAMP>`FIND'</SAMP>であった
+場合、 <CODE>regex</CODE>はその行の二番目の単語に変更される。従って、次のようなデー
+タを与えると
+
+
+<PRE>
+FIND ru+n
+My program runs
+but not very quickly
+FIND Melvin
+JF+KM
+This line is property of Reality Engineering Co.
+Melvin was here.
+</PRE>
+
+<CODE>awk</CODE>の出力は次のようになる。
+
+
+<PRE>
+Match of ru+n found at 12 in My program runs
+Match of Melvin found at 1 in Melvin was here.
+</PRE>
+
+<DT><CODE>split(<VAR>string</VAR>, <VAR>array</VAR> [, <VAR>fieldsep</VAR>])</CODE>
+<DD>
+<A NAME="IDX543"></A>
+この関数は<VAR>string</VAR>を<VAR>fieldsep</VAR>によって分割し、分割された結果を
+<VAR>array</VAR>に格納する。分割された最初の要素は<CODE><VAR>array</VAR>[1]</CODE>に、二番目
+の要素は <CODE><VAR>array</VAR>[2]</CODE>に格納され、以下の要素も同様である。三番目の引
+数<VAR>fieldsep</VAR>の文字列値は、 <VAR>string</VAR>を分割する場所を指定する
+（<CODE>FS</CODE>が入力レコードを分割する場所にマッチする正規表現であるように）正
+規表現である。 <VAR>fieldsep</VAR>が省略されると、<CODE>FS</CODE>の値が使われる。
+<CODE>split</CODE>は作り出された要素の数を返す。
+
+<CODE>split</CODE>関数はまた、入力行をフィールドに分割するとの同じ様なやり方で文字
+列を分割する。例えば、
+
+
+<PRE>
+split("cul-de-sac", a, "-")
+</PRE>
+
+これは<SAMP>`-'</SAMP>をセパレータとして、<SAMP>`auto-da-fe'</SAMP>という文字列を三つのフィ
+ールドに分割し、配列<CODE>a</CODE>の要素を以下のようにセットする。
+
+
+<PRE>
+a[1] = "cul"
+a[2] = "de"
+a[3] = "sac"
+</PRE>
+
+<CODE>split</CODE>を呼び出して返ってくる値は3である。
+
+入力フィールドを分割するときと同じ様に、<VAR>fieldsep</VAR>の値が<CODE>" "</CODE> であ
+る場合には先頭や末尾にある空白は無視され、要素は空白で区切られる。
+
+<A NAME="IDX544"></A>
+また同様に、<VAR>fieldsep</VAR>が空文字列であれば、個々のキャラクタが配列の要
+素となるように分割がおこなわれる(これは<CODE>gawk</CODE>特有の拡張である)。
+
+<A NAME="IDX545"></A>
+最近の<CODE>gawk</CODE>処理系では、<CODE>gawk</CODE>も含めて、この関数の第三引数に文
+字列だけでなく(<CODE>/abc/</CODE>)のような正規表現定数を許している。(d.c.)
+POSIXの標準も同様である。
+
+文字列の分割に先立って、<CODE>split</CODE>は配列<VAR>array</VAR>の
+要素をすべて削除する(d.c.)
+
+<VAR>string</VAR>のどこにも<VAR>fieldsep</VAR>にマッチするものがない場合、
+<VAR>array</VAR>は一つの要素を持つようになる。その要素の値は、
+元々の<VAR>string</VAR>と同じである。
+
+<DT><CODE>sprintf(<VAR>format</VAR>, <VAR>expression1</VAR>,...)</CODE>
+<DD>
+<A NAME="IDX546"></A>
+この関数は<CODE>printf</CODE>がその引数を渡されたときに出力するであろう文字列を
+(出力はせずに)返す。
+(セクション <A HREF="gawk_7.html#SEC60">Using <CODE>printf</CODE> Statements for Fancier Printing</A>を参照).
+例えば、
+
+
+<PRE>
+sprintf("pi = %.2f (approx.)", 22/7)
+</PRE>
+
+returns the string <CODE>"pi = 3.14 (approx.)"</CODE>.
+これは<CODE>"pi = 3.14 (approx.)"</CODE>という文字列を返す。
+
+<DT><CODE>sub(<VAR>regexp</VAR>, <VAR>replacement</VAR> [, <VAR>target</VAR>])</CODE>
+<DD>
+<A NAME="IDX547"></A>
+<CODE>sub</CODE>関数は<VAR>target</VAR>の値を変更する。検索する値は文字列でなければなら
+ず、そしてそれは <VAR>regexp</VAR>で与えられる正規表現にマッチする部分文字列の中
+で一番左にあり、長さが一番長いものである文字列全体の内マッチしたテキストは
+<VAR>replacement</VAR>で置き換えられる。
+置き換えられた文字列は<VAR>target</VAR>の新しい値となる。
+
+この関数は独特である。それは、<VAR>target</VAR>が単に値を計算するのに使われるので
+はなく、式ではないということからくる。 <VAR>target</VAR>は変数、フィールド、配列
+の参照のように変更された値を格納できるものでなければならない。この引数が省略
+された場合にはデフォルトとして<CODE>$0</CODE>が使用される。
+
+例を挙げよう。
+
+
+<PRE>
+str = "water, water, everywhere"
+sub(/at/, "ith", str)
+</PRE>
+
+この例では <CODE>str</CODE>に<CODE>"wither, water, everywhere"</CODE>をセットし、その
+中で最も左にあり、もっとも長い<SAMP>`at'</SAMP>を<SAMP>`ith'</SAMP>に置き換える。
+
+<CODE>sub</CODE>関数は置き換えを行った数(つまり1か0のいずれか)を返す。
+
+<VAR>replacement</VAR>中にスペシャルキャラクタ<SAMP>`&#38;'</SAMP>があると、それは<VAR>regexp</VAR>
+にマッチした部分文字列を表す。 (もしこの正規表現が二つ以上の文字列にマッチす
+るのならば、 <SAMP>`&#38;'</SAMP>が表す部分文字列が変化するだろう) 例えば、
+
+
+<PRE>
+awk '{ sub(/candidate/, "&#38; and his wife"); print }'
+</PRE>
+
+これは各入力行で最初に現れる<SAMP>`candidate'</SAMP>を<SAMP>`candidate and his wife'</SAMP>に
+変更する。
+
+別の例を挙げよう。
+
+
+<PRE>
+awk 'BEGIN {
+        str = "daabaaa"
+        sub(/a*/, "c&#38;c", str)
+        print str
+}'
+-| dcaacbaaa
+</PRE>
+
+この例では<SAMP>`dcaacbaaa'</SAMP>が出力される。これは<SAMP>`&#38;'</SAMP>は非文字定数として扱わ
+れ、"最左最長"の規則に従っている為である。
+(セクション <A HREF="gawk_5.html#SEC31">How Much Text Matches?</A>を参照)。
+
+スペシャルキャラクタ(<SAMP>`&#38;'</SAMP>)の効果はその前にバックスラッシュを付けることに
+よって抑制することができる。例によって、文字列中に一つのバックスラッシュを入
+れるためにはバックスラッシュを二つ続けて書かなければならない。従って、置換文
+字列中に<SAMP>`&#38;'</SAMP>という文字を含ませるには<SAMP>`\\&#38;'</SAMP>と記述する。次に挙げる例は
+各行で最初に現れる<SAMP>`|'</SAMP>を<SAMP>`&#38;'</SAMP>で置き換える。
+
+
+<PRE>
+awk '{ sub(/\|/, "\\&#38;"); print }'
+</PRE>
+
+<A NAME="IDX548"></A>
+<A NAME="IDX549"></A>
+<STRONG>ノート:</STRONG>上述のように、<CODE>sub</CODE>の三番目の引数は左辺値でなければならな
+い。一部の<CODE>awk</CODE>処理系には三番目の引数として左辺値でない式を許すものもある。
+そういった場合、<CODE>sub</CODE>はパターンを検索し、0か1を返すけれども、置き換え(起
+こったとして)の結果は、それを格納する場所がないので失われる。そのような
+<CODE>awk</CODE>は次のような式を受け付ける。
+
+
+<PRE>
+sub(/USA/, "United States", "the USA and Canada")
+</PRE>
+
+過去のものに対する互換性のために、<CODE>gawk</CODE>はこのような間違ったコード
+を受容する。しかしながら、第三引数として別の変更不能なオブジェクトを
+使った場合には致命的エラーを引き起こす結果となり、プログラムを実行する
+ことができないだろう。
+
+結局のところ、<VAR>regexp</VAR>は正規表現定数ではなく、文字列へと変換され
+その文字列値がマッチすべき正規表現として取り扱われるものである。
+
+<DT><CODE>gsub(<VAR>regexp</VAR>, <VAR>replacement</VAR> [, <VAR>target</VAR>])</CODE>
+<DD>
+<A NAME="IDX550"></A>
+この関数は<CODE>sub</CODE>と似ているが、<CODE>gsub</CODE>はもっとも長く、最も左にあり、
+それぞれが<EM>重ならない</EM>ようなマッチした部分文字列を<EM>すべて</EM>置換する。
+<CODE>gsub</CODE>の<SAMP>`g'</SAMP>は全ての場所で置換を行う"global"を意味する。次の例で
+は、
+
+<PRE>
+awk '{ gsub(/Britain/, "United Kingdom"); print }'
+</PRE>
+
+全ての入力レコードで、<SAMP>`Britain'</SAMP>という文字列を全て <SAMP>`United Kingdom'</SAMP>
+に置き換える。
+
+<CODE>gsub</CODE>関数は置き換えが起こった回数を返す。検索と置換の対象となる変数
+<VAR>target</VAR>が省略された場合、入力レコード全体、つまり<CODE>$0</CODE>が使用される。
+
+<CODE>sub</CODE>と同じ様に、<SAMP>`&#38;'</SAMP> と <SAMP>`\'</SAMP>の二つのキャラクタは特殊な意味があ
+り、また三番目の引数は左辺値でなければならない。
+</DL>
+
+<DL COMPACT>
+
+<DT><CODE>gensub(<VAR>regexp</VAR>, <VAR>replacement</VAR>, <VAR>how</VAR> [, <VAR>target</VAR>])</CODE>
+<DD>
+<A NAME="IDX551"></A>
+<CODE>gensub</CODE>は汎用的な置換関数である。<CODE>sub</CODE>や<CODE>gsub</CODE>のように
+対象文字列<VAR>target</VAR>から正規表現<VAR>regexp</VAR>に
+マッチする部分を検索する。<CODE>sub</CODE>や<CODE>gsub</CODE>と違うのは、
+関数の戻り値として置換が行われた文字列を返し、
+元の文字列を<EM>変更しない</EM>という点である。
+もし<VAR>how</VAR>が<SAMP>`g'</SAMP>か<SAMP>`G'</SAMP>で始まる文字列であれば、
+<VAR>regexp</VAR>にマッチする全てのものを<VAR>replacement</VAR>に置き換え、
+そうでない場合には
+<VAR>how</VAR>は何番目にマッチしたものを
+<VAR>regexp</VAR>で置き換える
+かを指示する。
+<VAR>target</VAR>が渡されなかった場合、<CODE>$0</CODE>が代わりに
+使われる。
+
+<CODE>gensub</CODE>には、
+置換テキストの中で正規表現の構成要素を指定する
+という<CODE>sub</CODE>や<CODE>gsub</CODE>にはない機能
+が追加されている。
+これはマークする正規表現を括弧で囲み、置換テキスト
+の中で<SAMP>`\<VAR>n</VAR>'</SAMP>を使って指定する。
+<VAR>n</VAR>は1から9までの数字である。
+例えば、
+
+
+<PRE>
+$ gawk '
+&#62; BEGIN {
+&#62;      a = "abc def"
+&#62;      b = gensub(/(.+) (.+)/, "\\2 \\1", "g", a)
+&#62;      print b
+&#62; }'
+-| def abc
+</PRE>
+
+<CODE>sub</CODE>で説明したように、文字列中でバックスラッシュを一つ
+置くためには、二つタイプしなければならない。
+
+置換テキスト中では、<SAMP>`\0'</SAMP>は<SAMP>`&#38;'</SAMP>と同じように
+マッチしたテキスト全体を表わす。
+
+次の例は、三番目の引数を置き換えの対象となる
+(正規表現にマッチした)テキストを指定するために
+どのように使うかを表わしている。
+
+
+<PRE>
+$ echo a b c a b c |
+&#62; gawk '{ print gensub(/a/, "AA", 2) }'
+-| a b c AA b c
+</PRE>
+
+この場合、<CODE>$0</CODE>がデフォルトの(置き換えの)対象文字列として
+使用される。<CODE>gensub</CODE>は置き換えを行った結果の新しい
+文字列を戻り値として返し、それは直接<CODE>print</CODE>で出力する
+ものとして(<CODE>print</CODE>に)渡される。
+
+もし引数<VAR>how</VAR>が<SAMP>`g'</SAMP>でも<SAMP>`G'</SAMP>でも始まっていない
+文字列や、0よりも小さい数値であったとすると、
+一度だけ置換が行われる。
+
+<VAR>regexp</VAR>が<VAR>target</VAR>にマッチしなかった場合、<CODE>gensub</CODE>の
+戻り値は元の値であり、<VAR>target</VAR>を変更することはない。
+
+<A NAME="IDX552"></A>
+<CODE>gensub</CODE>は<CODE>gawk</CODE>の拡張であり、
+互換モード(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)では
+使用できない。
+
+<DT><CODE>substr(<VAR>string</VAR>, <VAR>start</VAR> [, <VAR>length</VAR>])</CODE>
+<DD>
+<A NAME="IDX553"></A>
+この関数は<VAR>string</VAR>中で<VAR>start</VAR>番目のキャラクタから始まる長さ
+<VAR>length</VAR>の部分文字列を返す。文字列の最初のキャラクタの数は1である。例え
+ば、<CODE>substr("washington", 5, 3)</CODE>は<CODE>"ing"</CODE>を返す。
+
+<VAR>length</VAR>が与えられない場合、この関数は<VAR>string</VAR>で <VAR>start</VAR>番目から
+始まる残りの部分全てを返す。例えば、<CODE>substr("washington", 5)</CODE>は
+<CODE>"ington"</CODE>を返す。 <VAR>length</VAR>が<VAR>start</VAR>番目から文字列の終端までの
+長さよりも長い場合も同様である。
+
+<STRONG>注意:</STRONG><CODE>substr</CODE>が返す文字列に代入することは<EM>できない</EM>。
+したがって、以下に示す例のようにして文字列の一部を変更しようとすることは
+間違いである。
+
+
+<PRE>
+string = "abcdef"
+# "abCDEf"を得ようとしているが、うまく行かない
+substr(string, 3, 3) = "CDE"
+</PRE>
+
+また、<CODE>sub</CODE>や<CODE>gsub</CODE>の第三引数として<CODE>substr</CODE>を使うのも
+間違いである。
+
+
+<PRE>
+gsub(/xyz/, "pdq", substr($0, 5, 20))  # 間違い
+</PRE>
+
+<A NAME="IDX554"></A>
+<A NAME="IDX555"></A>
+<DT><CODE>tolower(<VAR>string</VAR>)</CODE>
+<DD>
+<A NAME="IDX556"></A>
+この関数は与えられた<VAR>string</VAR>中の大文字を小文字に置き換えた文字列を返す。
+このときアルファベット以外のキャラクタは変更されない。例えば、
+<CODE>tolower("MiXeD cAsE 123")</CODE> は <CODE>"mixed case 123"</CODE>を返す。
+
+<DT><CODE>toupper(<VAR>string</VAR>)</CODE>
+<DD>
+<A NAME="IDX557"></A>
+この関数は与えられた<VAR>string</VAR>中の小文字を大文字に置き換えた文字列を返す。
+このときアルファベット以外のキャラクタは変更されない。例えば、
+<CODE>toupper("MiXeD cAsE 123")</CODE> は <CODE>"MIXED CASE 123"</CODE>を返す。
+</DL>
+
+
+<H3>More About <SAMP>`\'</SAMP> and <SAMP>`&#38;'</SAMP> with <CODE>sub</CODE>, <CODE>gsub</CODE> and <CODE>gensub</CODE></H3>
+
+<P>
+<A NAME="IDX558"></A>
+<CODE>sub</CODE>, <CODE>gsub</CODE>, <CODE>gensub</CODE>を使っているときに
+バックスラッシュやアンパサンド(<CODE>&#38;</CODE>)を使おうとするときは、
+これらの文字が幾つかの段階で
+<STRONG>エスケープ処理</STRONG>(escape processing)される
+ことに注意する必要がある。
+
+</P>
+<P>
+第一に、<CODE>awk</CODE>がプログラムを読み込んで
+内部にプログラム実行のためのコピーを作るときに
+<STRONG>単語</STRONG>レベル(lexical level)で。
+
+</P>
+<P>
+さらに、<CODE>awk</CODE>が生成する置換文字列を実際にスキャンするときに
+実行時レベル(run-time level)で。
+
+</P>
+<P>
+これらの両方のレベルで、<CODE>awk</CODE>はバックスラッシュの後に来ることのでき
+るキャラクタの集合を検索する。レキシカルレベルでは、セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照. 
+に挙げられているようなエスケープシーケンスの検索をする。した
+がって、<CODE>awk</CODE>が実行時レベルで<SAMP>`\'</SAMP>を処理するには、レキシカルレベ
+ルで二つの<SAMP>`\'</SAMP>をタイプする。エスケープシーケンスとして正しくないキャ
+ラクタが<SAMP>`\'</SAMP>の後に来たときは、UNIXの<CODE>awk</CODE>や<CODE>gawk</CODE>の両方と 
+も単純に<SAMP>`\'</SAMP>を取り去って、その後のキャラクタを文字列に送る。        
+だから、<CODE>"a\qb"</CODE>は<CODE>"aqb"</CODE>のように扱われる。
+
+</P>
+<P>
+実行時レベルでは、幾つかの関数が<SAMP>`\'</SAMP>と<SAMP>`&#38;'</SAMP>のシーケンスを違ったや
+り方で扱う。この状況は(残念だが)ちょっとばかり複雑である。
+
+</P>
+<P>
+伝統的に<CODE>sub</CODE> と <CODE>gsub</CODE>という関数は、<SAMP>`\&#38;'</SAMP>というキャラクタ
+二つの並びを特別に扱っていて、このシーケンスは一つの<SAMP>`&#38;'</SAMP>の置き換えら
+れたが、文字列<VAR>replacement</VAR>中にある、<SAMP>`&#38;'</SAMP>の前にない<SAMP>`\'</SAMP>は変更
+されずにそのままにされた。これを表にすると以下のようになる。
+
+</P>
+
+<P>
+この表はレキシカルレベルの処理で奇数個のバックスラッシュが実行時レベルで
+は偶数個になったものと、実行時に<CODE>sub</CODE>が処理した結果の両方がある(単 
+純のため、この後の表ではレキシカルレベルで偶数個の<SAMP>`\'</SAMP>がある場合だけ
+を例示する)。
+
+</P>
+<P>
+伝統的アプローチに関する問題は、
+<SAMP>`\'</SAMP>というリテラルにマッチしたテキストが続くというものを取得する
+手段がない、ということである。
+
+</P>
+<P>
+<A NAME="IDX559"></A>
+<A NAME="IDX560"></A>
+1992年のPOSIX標準はこの問題を解決した。この標準では、<CODE>sub</CODE> と 
+<CODE>gsub</CODE>は<SAMP>`\'</SAMP>の後の<SAMP>`\'</SAMP> にも <SAMP>`&#38;'</SAMP>にも注目するということ
+を述べている。もし、<SAMP>`\'</SAMP>に続いて何かあれば、そのキャラクタはそのキ
+ャラクタそのものとして出力される。<SAMP>`\'</SAMP>と<SAMP>`&#38;'</SAMP>の解釈は以下のように
+なった。
+
+</P>
+
+<P>
+これは問題を解決したかのように見える。しかし残念ながら、標準で述べている
+ことは一般的ではない。標準では、<SAMP>`\'</SAMP>はその直後にある<SAMP>`\'</SAMP>と<SAMP>`&#38;'</SAMP>
+以外のすべてのキャラクタの特殊な意味を打ち消すと主張しているが、 
+その特殊な意味は定義されていない。これは二つの問題に繋がる。
+
+</P>
+
+<OL>
+<LI>
+
+バックスラッシュは文字列<VAR>replacement</VAR>中では
+二重に置かねばならず、伝統的な<CODE>awk</CODE>プログラムを破壊する。
+
+<LI>
+
+<CODE>awk</CODE>プログラムを確実に可搬性のあるものにするには、
+文字列<VAR>replacement</VAR>にある<EM>すべてのキャラクタ</EM>
+の前にバックスラッシュを置かなければならない。<A NAME="FOOT12" HREF="gawk_foot.html#FOOT12">(12)</A>
+</OL>
+
+<P>
+POSIXの標準は改定中である。<A NAME="FOOT13" HREF="gawk_foot.html#FOOT13">(13)</A>
+上で述べた理由によって、よりオリジナルの結果に一致させるために標準の
+改定が提案された。提案されたルールは<SAMP>`\'</SAMP>をマッチしたテキストの前
+に置くのを可能にするために、特別なケースを持つ。
+
+</P>
+
+<P>
+実行時レベルでは、現在三つの特殊なキャラクタ並び、<SAMP>`\\\&#38;'</SAMP>, <SAMP>`\\&#38;'</SAMP>, 
+<SAMP>`\&#38;'</SAMP>があるが、伝統的には一つしかない。しかし、伝統的なケースの 
+ように、これら三つのシーケンスの一部ではない<SAMP>`\'</SAMP>は、そのまま出力に現
+れる。
+
+</P>
+<P>
+<CODE>gawk</CODE> 3.0 follows these proposed POSIX rules for <CODE>sub</CODE> and
+<CODE>gsub</CODE>.
+これら提案された規則が実際に標準に取り入れられるかどうかは現時点
+ではわからない。これからのリリースの<CODE>gawk</CODE>では、標準(それが
+最終的な仕様であるかどうかに関らず)への追随をするだろう。この
+マニュアル も同様に更新されるだろう。
+
+</P>
+<P>
+<CODE>gensub</CODE>のルールはかなり単純である。実行時レベルでは、<CODE>gawk</CODE>は
+<SAMP>`\'</SAMP>を見つけると、その後ろに数字が続いている場合には、(その数字に対 
+応する)以前に現れているカッコで括られた部分正規表現にマッチしたテキスト 
+が出力テキストに現れる。それ以外の場合、<SAMP>`\'</SAMP>の後ろのキャラクタはなん
+の意味もなく、そのキャラクタがそのまま出力テキストに現れるが、<SAMP>`\'</SAMP>は
+出力されない。
+
+</P>
+
+<P>
+レキシカルレベルの処理や実行時レベルの処理は複雑なので、<CODE>sub</CODE>や
+<CODE>gsub</CODE>には特殊ケースがある。あなたが置換を実行するときには、
+<CODE>gawk</CODE>と、<CODE>gensub</CODE>の使用を勧める。
+
+</P>
+
+
+<H2><A NAME="SEC127" HREF="gawk_toc.html#SEC127">Built-in Functions for Input/Output</A></H2>
+
+<P>
+以下に挙げる関数は入出力(I/O)に関係するものである。
+省略可能な引数はブラケット("[" と "]")で囲まれている。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>close(<VAR>filename</VAR>)</CODE>
+<DD>
+<A NAME="IDX561"></A>
+入力や出力のためのファイル<VAR>filename</VAR>をクローズする。
+この引数は出力のパイプへの、あるいはパイプからのリダイレクトの
+シェルコマンドであっても良い。この場合にはパイプがクローズされる。
+詳しくは
+セクション <A HREF="gawk_7.html#SEC67">Closing Input and Output Files and Pipes</A>を参照。
+
+<DT><CODE>fflush([<VAR>filename</VAR>])</CODE>
+<DD>
+<A NAME="IDX562"></A>
+<A NAME="IDX563"></A>
+<A NAME="IDX564"></A>
+<A NAME="IDX565"></A>
+<A NAME="IDX566"></A>
+<VAR>filename</VAR>に結び付けられている
+オープンしたファイルの出力や、
+パイプにリダイレクト出力しているシェルコマンド
+のための出力バッファをフラッシュする。
+
+多くのユーティリティプログラムがその出力を<STRONG>バッファリング</STRONG>している。
+これは、ディスク上のファイルやターミナルに書き出す情報をメモリ上に貯えて
+おき、(送るのに)十分な量になったところで出力デバイスにまとめて送るもので
+ある。しかし、時としてバッファがいっぱいになっていなくても、情報をその出
+力先に出力するために強制的にプログラムにそのバッファを<STRONG>フラッシュ</STRONG>  
+(flush)させる必要があることがある。これが、<CODE>fflush</CODE>の目的である。
+<CODE>gawk</CODE>もまたその出力をバッファリングしており、<CODE>fflush</CODE>関数は
+<CODE>gawk</CODE>のバッファを強制的にフラッシュさせるために使うことができる。
+
+<CODE>fflush</CODE>は最近(1994年)にベル研究所で開発された<CODE>awk</CODE>で
+追加された。これはPOSIXの標準ではなく、<SAMP>`--posix'</SAMP>がコマンドラインで
+指定された場合(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)は
+使用できない。
+
+<CODE>gawk</CODE>は<CODE>fflush</CODE>関数を二つの方法で拡張した。一つは、引数なしの
+場合を認めたというものであり、この場合は標準出力のバッファがフラッシュさ
+れる。もう一つは、引数として空文字列(<CODE>""</CODE>) を認めたというもので
+あり、これは<EM>すべての</EM>オープンされているファイル、パイプをフラッシ 
+ュする。
+
+<CODE>fflush</CODE>はバッファのフラッシュに成功した場合は0を返し、
+それ以外では非0を返す。
+
+<DT><CODE>system(<VAR>command</VAR>)</CODE>
+<DD>
+<A NAME="IDX567"></A>
+<A NAME="IDX568"></A>
+この関数は
+ユーザーがオペレーティングシステムのコマンドを実行し、
+その後で<CODE>awk</CODE>プログラムに戻るということをできるようにする。
+関数<CODE>system</CODE>は<VAR>command</VAR>で渡された文字列をコマンドとして
+実行する。コマンドから戻ってきたとき、
+実行したコマンドの終了ステータスを関数の値として返す。
+
+例えば次のコード片を<CODE>awk</CODE>プログラムに埋めこむと、
+
+
+<PRE>
+END {
+     system("date | mail -s 'awk run done' root")
+}
+</PRE>
+
+システム管理者はこの<CODE>awk</CODE>プログラムが
+入力を処理し終わって入力終了処理が始まったときに
+メイルを受け取ることになる。
+
+パイプに対して<CODE>print</CODE>や<CODE>printf</CODE>をリダイレクト
+することはほとんどの場合仕事を達成するのに十分である。
+多くのコマンドを実行する必要があるのなら、シェルに対する
+パイプに対して単純に出力してやることで効率良く行うことが
+できるだろう:
+
+
+<PRE>
+while (<VAR>more stuff to do</VAR>)
+    print <VAR>command</VAR> | "/bin/sh"
+close("/bin/sh")
+</PRE>
+
+しかしながら、<CODE>awk</CODE>プログラムが対話的なものであったときには、
+<CODE>system</CODE>はシェルやエディタのような
+大きなself-containedプログラムを用意するのに便利である。
+
+一部のオペレーティングシステムでは<CODE>system</CODE>関数を
+実装することができない。サポートされていない場合には<CODE>system</CODE>は
+致命的エラーを引き起こす。
+
+</DL>
+
+<P>
+<A NAME="IDX569"></A>
+<A NAME="IDX570"></A>
+<A NAME="IDX571"></A>
+<A NAME="IDX572"></A>
+
+</P>
+<P>
+バッファリングというものは、あなたのプログラムが<STRONG>対話的</STRONG>(interactive)
+であろうがなかろうが、根の深い混乱を招く可能性がある。たとえば、
+キーボードの前に坐っているユーザーとのやり取りを考えてみよう<A NAME="FOOT14" HREF="gawk_foot.html#FOOT14">(14)</A>
+
+</P>
+<P>
+対話的なプログラムは一般的にはその出力は<STRONG>行バッファ</STRONG>、つまり
+各行毎に出力を行うものとなっている。対話的でないプログラムは
+バッファがいっぱいになるまで実際に出力するのを待ち、複数行が
+バッファに溜まっているということもある。
+
+</P>
+<P>
+以下に挙げるのはその違いを示す例である。
+
+</P>
+
+<PRE>
+$ awk '{ print $1 + $2 }'
+1 1
+-| 2
+2 3
+-| 5
+<KBD>Control-d</KBD>
+</PRE>
+
+<P>
+各行は即座に出力されている。これを以下の例と比較してみよう。
+
+</P>
+
+<PRE>
+$ awk '{ print $1 + $2 }' | cat
+1 1
+2 3
+<KBD>Control-d</KBD>
+-| 2
+-| 5
+</PRE>
+
+<P>
+ここでは、<KBD>Control-d</KBD>がタイプされるまで、何も出力されていない。
+これはバッファリングされているためであり、それが<CODE>cat</CODE>に対する
+パイプへ(一度に)送られているからである。
+
+</P>
+
+<H3>Controlling Output Buffering with <CODE>system</CODE></H3>
+<P>
+<A NAME="IDX573"></A>
+<A NAME="IDX574"></A>
+
+</P>
+<P>
+関数<CODE>fflush</CODE>はファイルやパイプに対する出力のバッファリングを
+陽に制御する機能を提供する。しかしこれは、他の<CODE>awk</CODE>処理系では
+使えないのでこれを使うと可搬性(portability)に欠けることになる。
+出力バッファをフラッシュするための手段として、<CODE>system</CODE>関数を
+空文字列を引数にして呼び出すというものがある。
+
+</P>
+
+<PRE>
+system("")   # 出力をフラッシュする
+</PRE>
+
+<P>
+<CODE>gawk</CODE>はこのような<CODE>system</CODE>関数の使い方を特殊なものとして
+みなし、シェル(あるいは他のコマンドインタープリター)を何のコマンドも
+なしに起動するようなことはしない。このため、<CODE>gawk</CODE>では
+この使い方は便利であるばかりでなく、効率も良い。
+このやり方は他の<CODE>awk</CODE>処理系でも使えることが多いので、
+必要ないシェルを起動してしまうことを避ける必要もない
+(他の処理系では、標準出力のバッファだけがフラッシュされ、その他の
+出力バッファはフラッシュされないかもしれない)。
+
+</P>
+<P>
+もし、プログラマーが期待することを考えているのなら、<CODE>system</CODE>が
+すべてのペンディングされている出力をフラッシュするだろうことが
+役に立つだろう。
+
+</P>
+
+<PRE>
+BEGIN {
+     print "first print"
+     system("echo system echo")
+     print "second print"
+}
+</PRE>
+
+<P>
+このプログラムは
+
+</P>
+
+<PRE>
+first print
+system echo
+second print
+</PRE>
+
+<P>
+
+</P>
+<P>
+上記のような出力をするはずで、下に示すようなものではない。
+
+</P>
+
+<PRE>
+system echo
+first print
+second print
+</PRE>
+
+<P>
+もし<CODE>awk</CODE>が<CODE>system</CODE>を実行する前にバッファをフラッシュしなければ、
+後者のような(期待しない)出力がでてくることになる。
+
+</P>
+
+
+<H2><A NAME="SEC128" HREF="gawk_toc.html#SEC128">Functions for Dealing with Time Stamps</A></H2>
+
+<P>
+<A NAME="IDX575"></A>
+<A NAME="IDX576"></A>
+<CODE>awk</CODE>プログラムの common useは、特定のレコードが記録された
+時刻を示すタイムスタンプ情報からなるログファイルに対する処理である。
+多くのプログラムは、タイムスタンプを<CODE>time</CODE>というシステムコール
+が返すある特定の時点からの経過秒数の形で記録する。
+POSIX システム上では、これは UTCの1970年1月1日の午前零時からの
+経過秒数である。
+
+</P>
+<P>
+このようなログファイルの処理をより簡単にして便利なレポートを
+生成するために、<CODE>gawk</CODE>にはタイムスタンプに関連する働きをする
+二つの関数がある。これらの関数は両方とも<CODE>gawk</CODE>での拡張であり、
+POSIXの標準にも<CODE>gawk</CODE>以外の<CODE>awk</CODE>処理系にもない。
+
+</P>
+<P>
+省略可能なパラメーターは、角カッコ("[" と "]")で囲まれている。
+
+</P>
+
+<DL COMPACT>
+
+<DT><CODE>systime()</CODE>
+<DD>
+<A NAME="IDX577"></A>
+この関数はシステムが始まった時点から現在までの時間を秒で返す。 POSIX のシ
+ステムでは、これはUTCでの1970年1月1日の0時を起点としている。
+これは他のシステムでは違った数字かもしれない。
+
+<DT><CODE>strftime([<VAR>format</VAR> [, <VAR>timestamp</VAR>]])</CODE>
+<DD>
+<A NAME="IDX578"></A>
+この関数は文字列を返す。この関数は ANSI のC標準ライブラリの同名の関数と同じ
+ものである。<VAR>timestamp</VAR>で特定される時間を文字列にするのに使い、文字列
+<VAR>format</VAR>をベースに文字列化する。
+<VAR>timestamp</VAR>は<CODE>systime</CODE>が返した値と同じ書式である。
+引数<VAR>timestamp</VAR>が省略された場合、<CODE>gawk</CODE>は
+タイムスタンプとして現在時刻を使用する。
+引数<VAR>format</VAR>が省略された場合、
+code{strftime}は<CODE>"%a %b %d %H:%M:%S %Z %Y"</CODE>を
+使用する。この書式文字列は
+<CODE>date</CODE>ユーティリティの出力と(ほぼ)同じ出力を生成する
+(3.0以前のバージョンの<CODE>gawk</CODE>は引数<VAR>format</VAR>を省略することは
+できなかった)。
+</DL>
+
+<P>
+<CODE>systime</CODE>関数はログファイルの日付、時間と、プログラムを実行している時点
+の日付、時間とを比較することを可能にする。特に、ある特定のレコードが記録され
+てからどれくらいたったのかを求めることが簡単になる。それはまた、"seconds 
+since the epoch"フォーマットを使ってログのレコードを作成することを可能にす
+る。
+
+</P>
+<P>
+<CODE>strftime</CODE>関数はタイムスタンプを、人間が読み易い情報に変換するのを簡単
+にさせる。この関数は<CODE>sprintf</CODE>関数
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)
+に似ていて、書式指定でないキャラクタはその
+まま文字列として返され、書式指定文字列中で日付や時刻を特定するものがあるとそ
+れを置き換える。もし、<VAR>timestamp</VAR>が省略されると <CODE>gawk</CODE>は代わりに実
+行時の時間を使う。
+
+</P>
+<P>
+<CODE>strftime</CODE>は、ANSI の標準Cがサポートする以下の書式指定を使用できる。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>%a</CODE>
+<DD>
+実行されている環境での曜日の略称。
+
+<DT><CODE>%A</CODE>
+<DD>
+実行されている環境での省略なしの曜日の名称。
+
+<DT><CODE>%b</CODE>
+<DD>
+実行されている環境での、月の省略名称。
+
+<DT><CODE>%B</CODE>
+<DD>
+実行されている環境での、省略なしの月の名前。
+
+<DT><CODE>%c</CODE>
+<DD>
+実行されている環境での"適当な"日付と時刻の表示形式。
+
+<DT><CODE>%d</CODE>
+<DD>
+10進数で表わした月の日数(01から31まで)。
+
+<DT><CODE>%H</CODE>
+<DD>
+24時間表示での時刻(00から23まで)。
+
+<DT><CODE>%I</CODE>
+<DD>
+12時間表示での時刻(01から12まで)。
+
+<DT><CODE>%j</CODE>
+<DD>
+十進数で表わされたその年の初めからの日数(001から366まで)。
+
+<DT><CODE>%m</CODE>
+<DD>
+十進数で表わされた月(01から12まで)。
+
+<DT><CODE>%M</CODE>
+<DD>
+十進数で表わされた分(00から59まで)。
+
+<DT><CODE>%p</CODE>
+<DD>
+実行されている環境での、12時間表示の時刻の午前/午後を表わすもの。
+
+<DT><CODE>%S</CODE>
+<DD>
+十進数で表わされた秒(00から60まで)。
+<A NAME="FOOT15" HREF="gawk_foot.html#FOOT15">(15)</A>
+
+<DT><CODE>%U</CODE>
+<DD>
+その年の第何週かを示す数値(その年最初の日曜日が第一週の最初の日である)
+で、範囲は00から53。
+
+<DT><CODE>%w</CODE>
+<DD>
+曜日を表わす数値。0から6までの範囲で、日曜日が0。
+
+<DT><CODE>%W</CODE>
+<DD>
+その年の第何週かを示す数値(その年最初の月曜日が第一週の最初の日である)
+であり、範囲は00から53。
+
+<DT><CODE>%x</CODE>
+<DD>
+実行されている環境での"適当な"日付表示。
+
+<DT><CODE>%X</CODE>
+<DD>
+実行されている環境での"適当な"時間表示。
+
+<DT><CODE>%y</CODE>
+<DD>
+十進数で表わされた世紀を除いた年(00から99まで)。
+
+<DT><CODE>%Y</CODE>
+<DD>
+十進数で表わされた世紀を含めた年(1995など)。
+
+<DT><CODE>%Z</CODE>
+<DD>
+タイムゾーンの名前かその略称、あるいはタイムゾーンが決定できなければ空。
+
+<DT><CODE>%%</CODE>
+<DD>
+<SAMP>`%'</SAMP>という文字。
+</DL>
+
+<P>
+変換指定文字が上に挙げたものに含まれていない場合には、その結果は未定義で
+ある。<A NAME="FOOT16" HREF="gawk_foot.html#FOOT16">(16)</A>
+
+</P>
+<P>
+<A NAME="IDX579"></A>
+非公式に、 <STRONG>locale</STRONG>はプログラムを実行する地理的な場所である。例えば、ア
+メリカ合衆国では1991年9月4日を略して書き表わす普通のやり方は "9/4/91"であ
+る。ヨーロッパの多くの国ではそれを"4.9.91"のように記述する。したがって、ア
+メリカにおいては<SAMP>`%x'</SAMP>という指定は <SAMP>`9/4/91'</SAMP>という結果となり、ヨーロッ
+パでは<SAMP>`4.9.91'</SAMP>という結果となる。 ANSI 標準Cでは大部分のCプログラマーが
+使うであろう環境でのデフォルトの<CODE>C</CODE>ロカール(locale)を定義している。
+
+</P>
+<P>
+<CODE>gawk</CODE>のための
+パブリックドメインバージョンの<CODE>strftime</CODE>は ANSIに完全にしたがった形では
+書かれていない。そういったものを<CODE>gawk</CODE>のコンパイルのときに使用すれば
+(セクション <A HREF="gawk_20.html#SEC202"><CODE>gawk</CODE>をインストールする</A>を参照.)、次に挙げるような書式指定も
+行なうことが可能である。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>%D</CODE>
+<DD>
+<SAMP>`%m/%d/%y'</SAMP>という指定に等しい。
+
+<DT><CODE>%e</CODE>
+<DD>
+月のなかでの日だが、一桁の場合には空白を補う。
+
+<DT><CODE>%h</CODE>
+<DD>
+前述の<SAMP>`%b'</SAMP>と同じ。
+
+<DT><CODE>%n</CODE>
+<DD>
+改行キャラクタ(ASCII のLF)。
+
+<DT><CODE>%r</CODE>
+<DD>
+<SAMP>`%I:%M:%S %p'</SAMP>という指定と同じ。
+
+<DT><CODE>%R</CODE>
+<DD>
+<SAMP>`%H:%M'</SAMP>という指定と同じ。
+
+<DT><CODE>%T</CODE>
+<DD>
+<SAMP>`%H:%M:%S'</SAMP>という指定と同じ。
+
+<DT><CODE>%t</CODE>
+<DD>
+タブキャラクタ
+
+<DT><CODE>%k</CODE>
+<DD>
+24時間表示での時刻を十進表記で表わしたもの(0-23)。
+一桁の場合には空白が付け加えられる。
+
+<DT><CODE>%l</CODE>
+<DD>
+12時間表示での時刻を十進表記で表わしたもの(1-12)。
+一桁の場合には空白が付け加えられる。
+
+<DT><CODE>%C</CODE>
+<DD>
+00から99で表わした年(西暦の下二桁)。
+
+<DT><CODE>%u</CODE>
+<DD>
+月曜日を1で表わした、曜日を表わす数値(1(月曜)から7まで)。
+
+<A NAME="IDX580"></A>
+<DT><CODE>%V</CODE>
+<DD>
+最初の月曜日を1とした週(01から53まで)。
+週の数値を決めるやり方はISO 8601で定められている
+(すなわち、1月1日がある週が(1月1日から)、4日以上あるのであれば
+その週が1。そうでなければその週は53となり、次の週が1となる)。
+
+<DT><CODE>%G</CODE>
+<DD>
+ISO week numberでの年の十進表記
+
+例えば、1993年の一月一日は1992年の53週である。
+したがって、これに対するISO week numberは
+1993年であるにもかかわらず1992である。
+同様に、1973年の12月31日は、それが1973年であるにもかかわらず
+ISO week numberでは1974年の第一週となる
+
+<DT><CODE>%g</CODE>
+<DD>
+ISO week numberでの年の世紀の部分を除いた(下二桁ということ)ものの
+十進表記(00から99)。
+
+<DT><CODE>%Ec %EC %Ex %Ey %EY %Od %Oe %OH %OI</CODE>
+<DD>
+<DT><CODE>%Om %OM %OS %Ou %OU %OV %Ow %OW %Oy</CODE>
+<DD>
+これらは"代替表現"(alternate representations)であり、
+二番目の文字((<SAMP>`%c'</SAMP>や<SAMP>`%C'</SAMP>など)だけが指定に使われる。
+これらは認識されるが、それらの通常の意味が使用される。
+<A NAME="FOOT17" HREF="gawk_foot.html#FOOT17">(17)</A>。
+(これらはPOSIXの<CODE>date</CODE>ユーティリティに従うことを容易にする。)
+
+<DT><CODE>%v</CODE>
+<DD>
+VMSフォーマットでの日付(例 20-JUN-1991)。
+
+<A NAME="IDX581"></A>
+<A NAME="IDX582"></A>
+<DT><CODE>%z</CODE>
+<DD>
++HHMM という書式のタイムゾーンオフセット
+(この書式はRFC-822/RFC-1036 日付ヘッダを生成する必要がある)
+</DL>
+
+<P>
+次に挙げるサンプルは、<CODE>awk</CODE>によるPOSIXの<CODE>date</CODE>ユーティリティの
+実現である。通常は、<CODE>date</CODE>ユーティリティは、現在の日付と時刻をよく 
+知られた書式で出力する。しかし、<SAMP>`+'</SAMP>で始まる引数を与えた場合、
+<CODE>date</CODE>はその引数の非書式指定部分はそのまま標準出力にコピーし、現在
+時刻にしたがって、文字列中の書式指定子を解釈する。例を挙げよう。
+
+</P>
+
+<PRE>
+$ date '+Today is %A, %B %d, %Y.'
+-| Today is Thursday, July 11, 1991.
+</PRE>
+
+<P>
+以下のプログラムは<CODE>gawk</CODE>バージョンの<CODE>date</CODE>
+ユーティリティである。
+タイムゾーンがUTCにセットされたかのように<CODE>date</CODE>を実行させる
+<SAMP>`-u'</SAMP>オプションを取り扱うために、
+シェルラッパー(shell wrapper)がある。
+
+</P>
+
+<PRE>
+#! /bin/sh
+#
+# date -- approximate the P1003.2 'date' command
+
+case $1 in
+-u)  TZ=GMT0     # UTCを使う
+     export TZ
+     shift ;;
+esac
+
+gawk 'BEGIN  {
+    format = "%a %b %d %H:%M:%S %Z %Y"
+    exitval = 0
+
+    if (ARGC &#62; 2)
+        exitval = 1
+    else if (ARGC == 2) {
+        format = ARGV[1]
+        if (format ~ /^\+/)
+            format = substr(format, 2)   # 先頭の +を取り除く
+    }
+    print strftime(format)
+    exit exitval
+}' "$@"
+</PRE>
+
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_12.html">前</A>, <A HREF="gawk_14.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

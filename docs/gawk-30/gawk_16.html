@@ -1,0 +1,2283 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - awkの関数ライブラリ</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_15.html">前</A>, <A HREF="gawk_17.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC141" HREF="gawk_toc.html#SEC141"><CODE>awk</CODE>の関数ライブラリ</A></H1>
+
+<P>
+この章では、便利な<CODE>awk</CODE>関数のライブラリを紹介する。
+これら関数を使ったサンプルプログラムはこの後
+(セクション <A HREF="gawk_17.html#SEC155">実用的な <CODE>awk</CODE> プログラム</A>を参照)
+にある。
+
+</P>
+<P>
+セクション <A HREF="gawk_17.html#SEC171">Texinfoのソースファイルからプログラムを取り出す</A>を参照,
+では、このマニュアルのTexinfoのソースファイルから、ライブラリ関数の
+サンプルとプログラムを取り出して使うためのプログラムを提供している
+(これは<CODE>gawk</CODE>の配布キットの一部として既に済んでいる)。
+
+</P>
+<P>
+あなたが便利な、汎用目的の<CODE>awk</CODE>関数を作成し、それを
+このマニュアルの一部として寄付したいのなら、著者に連絡して欲しい。
+そのための情報はセクション <A HREF="gawk_20.html#SEC220">問題やバグの報告</A>を参照にある。
+コードを送るだけではなくて、あなたのコードをパブリックドメインにしたり、
+GPL(セクション <A HREF="gawk_23.html#SEC230">GNU GENERAL PUBLIC LICENSE</A>を参照)の元で公表したり、あるい
+は著作権を Free Software Foundationに譲渡することが求められる。
+
+</P>
+
+
+
+<H2><A NAME="SEC142" HREF="gawk_toc.html#SEC142">Simulating <CODE>gawk</CODE>-specific Features</A></H2>
+<P>
+<A NAME="IDX648"></A>
+
+</P>
+<P>
+この章とセクション <A HREF="gawk_17.html#SEC155">実用的な <CODE>awk</CODE> プログラム</A>を参照にあるプロ 
+グラムは、<CODE>gawk</CODE>特有の機能を自由に使っている。このセクションでは、 
+他の<CODE>awk</CODE>処理系のためにこれらのプログラムを修正する方法について簡単 
+に説明する。
+
+</P>
+<P>
+エラーメッセージを<TT>`/dev/stderr'</TT>に送っていないかチェックする。
+もしあなたが使っているシステムに<TT>`/dev/stderr'</TT>がなかったり、
+<CODE>gawk</CODE>が使えない場合には、<SAMP>`&#62; "/dev/stderr"'</SAMP>の代わりに
+<SAMP>`| "cat 1&#62;&#38;2"'</SAMP> を使う。
+
+</P>
+<P>
+幾つかのプログラムでは<CODE>nextfile</CODE>
+(セクション <A HREF="gawk_10.html#SEC106">The <CODE>nextfile</CODE> Statement</A>を参照)
+を入力ファイルの残りをスキップするために使っている。
+セクション <A HREF="gawk_16.html#SEC143">Implementing <CODE>nextfile</CODE> as a Function</A>を参照
+に、同じことを行う関数をどのように記述するかの説明がある。
+
+</P>
+<P>
+さらに一部のプログラムでは、入力の大文字と小文字の違いを無視していて、
+それを<CODE>IGNORECASE</CODE>に1を設定することで行っている。
+
+</P>
+<P>
+同様の効果を、プログラムの先頭に以下に挙げるようなルールを
+追加することによって得ることができる。
+
+</P>
+
+<PRE>
+# 大小文字の違いを無視する
+{ $0 = tolower($0) }
+</PRE>
+
+<P>
+これにより、すべての正規表現の検査と、文字列の比較が
+小文字を使ってのみ行われる。
+
+</P>
+
+
+<H2><A NAME="SEC143" HREF="gawk_toc.html#SEC143">Implementing <CODE>nextfile</CODE> as a Function</A></H2>
+
+<P>
+<A NAME="IDX649"></A>
+<A NAME="IDX650"></A>
+セクション <A HREF="gawk_10.html#SEC106">The <CODE>nextfile</CODE> Statement</A>を参照.で
+説明されている<CODE>nextfile</CODE>文は、<CODE>gawk</CODE>特有の拡張であり、
+これは他の<CODE>awk</CODE>処理系では使うことができない。
+このセクションでは、<CODE>gawk</CODE>が使えない場合に<CODE>nextfile</CODE>関数を
+シミュレートしたものを二つ例示する。
+
+</P>
+<P>
+次の例は、<CODE>nextfile</CODE>を記述しようとする最初の試みである。
+
+</P>
+
+<PRE>
+# nextfile -- カレントファイルの残りレコードをスキップする。
+
+# これはawkの "main" programの前に置く必要がある。
+
+function nextfile()    { _abandon_ = FILENAME; next }
+
+_abandon_ == FILENAME  { next }
+</PRE>
+
+<P>
+このファイルはメインプログラムの前に置くようにする必要がある。なぜなら、
+このルールは一番最初に実行されなければならないからである。このルールはカ
+レントデータファイルの名前(<CODE>FILENAME</CODE>という変数で参照できる)を@code
+{_abandon_}という名前の変数の内容と比較していて、ファイル名とマッチした 
+ときにこのルールのアクションパートの<CODE>next</CODE>文を実行し、次のレコード 
+へ移る(変数名に<SAMP>`_'</SAMP>を使うのは規約であるセクション <A HREF="gawk_16.html#SEC154">Naming Library Function Global Variables</A>を参照.で詳しく説明されている)。
+
+</P>
+<P>
+<CODE>nexta</CODE>文の使用は、カレントデータファイルからすべてのレコードを読む
+ようなループの効率を挙げるのに効果的である。最終的にファイルの終端に達し、
+そして新しいファイルがオープンされ、<CODE>FILENAME</CODE>の値が変更される。こ 
+れが一回おこると、<CODE>_abandon_</CODE>と<CODE>FILENAME</CODE>の比較は失敗し、"本 
+当の"プログラムの最初のルールから実行が継続される。
+
+</P>
+<P>
+<CODE>nextfile</CODE>関数それ自体は、単に<CODE>_abandon_</CODE>という変数に
+値をセットして、<CODE>next</CODE>文を実行してループを継続している。
+<A NAME="FOOT19" HREF="gawk_foot.html#FOOT19">(19)</A>
+
+</P>
+<P>
+このバージョンでは、ちょっとした問題がある。
+コマンドライン上で同じファイルが<EM>二度</EM>連続して指定されていたら
+どうなるだろうか?
+
+</P>
+<P>
+<A NAME="IDX651"></A>
+この場合、このプログラムは最初のファイルは正しくスキップするが、
+二番目のファイルは、スキップすべきでないにもかかわらず
+最初のファイルの最後からそのままスキップされ続けてしまう。
+次にこの点を改善した<CODE>nextfile</CODE>の二番目のバージョンを例に挙げる。
+
+</P>
+
+<PRE>
+# nextfile -- 現在処理しているファイルの残りレコードをスキップする
+# this should be read in before the "main" awk program
+# correctly handle successive occurrences of the same file
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May, 1993
+
+# このライブラリは“本当の”awkプログラムよりも前に読まれるようにすること
+
+function nextfile()   { _abandon_ = FILENAME; next }
+
+_abandon_ == FILENAME {
+      if (FNR == 1)
+          _abandon_ = ""
+      else
+          next
+}
+</PRE>
+
+<P>
+<CODE>nextfile</CODE>関数には変更がなく、<CODE>_abandon_</CODE>にカレント
+ファイル名をセットし、<CODE>next</CODE>文を実行するだけである。<CODE>next</CODE>文は
+次のレコードを読み込み、<CODE>FNR</CODE>をインクリメントし、同様に<CODE>FNR</CODE>は
+最低でも2という値であることが保証される。しかしながら、<CODE>nextfile</CODE>が
+ファイルの最後のレコードで呼び出された場合、<CODE>awk</CODE>はカレントデータフ
+ァイルをクローズし、次のファイルへ処理を移す。これによって、<CODE>FILENAME</CODE>
+は新しいファイルの名前がセットされ、<CODE>FNR</CODE>は1にリセットされる。
+次のファイルがその直前のファイルと同じ名前であった場合、<CODE>_abandon_</CODE>
+は(ファイルが変わったのに)まだ<CODE>FILENAME</CODE>と等しいままである。
+この場合は、<CODE>_abandon_</CODE>は空文字列にリセットされ、この後のこのル
+ールの実行は(次に<CODE>nextfile</CODE>が呼ばれるまで)失敗するようになる。
+
+</P>
+<P>
+<CODE>FNR</CODE>が1でないのなら、まだ元のデータファイルを処理しているのであり、
+プログラムはファイルのスキップをするために<CODE>next</CODE>文を実行する。
+
+</P>
+<P>
+この点に関する重大な疑問とは、
+"<CODE>nextfile</CODE>の機能はライブラリファイルとして提供することも
+できる。なぜ、<CODE>gawk</CODE>の組込み機能としたのか?"ということである。
+これは重要な質問である。
+機能の追加はプログラムを大きく遅くして、保守を難しくしてしまい
+かねないからだ。
+
+</P>
+<P>
+この質問に対する回答は、<CODE>nextfile</CODE>を<CODE>gawk</CODE>に組み込んでしまうことで
+効率が上がるから、ということである。もし、<CODE>nextfile</CODE>が大きなデータファイルの先 
+頭で実行されたとすると、<CODE>awk</CODE>はファイル全体を読み続けなければならず、
+(必要がないのに)ファイルをレコードに分割して、それをスキップする。組込み
+の<CODE>nextfile</CODE>は、単純にファイルを即座にクローズ して次のファイルの
+処理を開始できるので時間を大幅に節約できる。これは特に<CODE>awk</CODE>プログ
+ラムは一般的に入出力に律速されるので、重要なことである(つまり、処理時間
+の大部分が計算ではなく、入力や出力に費やされるということ)。
+
+</P>
+
+
+<H2><A NAME="SEC144" HREF="gawk_toc.html#SEC144">Assertions</A></H2>
+
+<P>
+<A NAME="IDX652"></A>
+<A NAME="IDX653"></A>
+大きなプログラムを作るとき、ある条件が真であるかどうかを知ることができる
+と便利である。ある処理を行う前に、前提としている条件を文にして置く。この
+ような文は"表明"(assertion)として知られている。C言語では、これは
+<CODE>&#60;assert.h&#62;</CODE>というヘッダファイルで提供されており、<CODE>assrt</CODE>マク
+ロをプログラマーが表明したいことに一致するようにして使う。表明が失敗した
+場合、<CODE>assert</CODE>マクロは、真であるべきもなのに偽であった条件を説明する
+メッセージを出力するように変換される。Cでは、<CODE>assert</CODE>は次のように使う。
+
+</P>
+
+
+<PRE>
+#include &#60;assert.h&#62;
+
+int myfunc(int a, double b)
+{
+     assert(a &#60;= 5 &#38;&#38; b &#62;= 17);
+     ...
+}
+</PRE>
+
+<P>
+表明が失敗すると、このプログラムは以下のようなメッセージを出力する。
+
+</P>
+
+<PRE>
+prog.c:5: assertion failed: a &#60;= 5 &#38;&#38; b &#62;= 17
+</PRE>
+
+<P>
+<A NAME="IDX654"></A>
+ANSI Cでは、条件を文字列に変更して検査メッセージを出力することを
+可能にしている。これは<CODE>awk</CODE>では不可能であり、そのため
+<CODE>assert</CODE>関数は検査する条件を文字列にしたものも
+同時に要求する。
+
+</P>
+
+<PRE>
+# assert -- 条件が真であることを表明し、そうでない場合にはexitする。
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May, 1993
+
+function assert(condition, string)
+{
+    if (! condition) {
+        printf("%s:%d: assertion failed: %s\n",
+            FILENAME, FNR, string) &#62; "/dev/stderr"
+        _assert_exit = 1
+        exit 1
+    }
+}
+
+END {
+    if (_assert_exit)
+        exit 1
+}
+</PRE>
+
+<P>
+<CODE>assrt</CODE>関数は<CODE>condition</CODE>パラメータを検査する。もしこれが偽であ
+れば、<CODE>string</CODE>パラメータを失敗した条件を説明するのに使用して、メッ 
+セージを標準出力に出力する。そして、<CODE>_assrt_exit_</CODE>という変数に1をセ
+ットして<CODE>exit</CODE>文を実行する。<CODE>exit</CODE>文によって<CODE>END</CODE>ルールへ
+ジャンプする。<CODE>END</CODE>ルールでは、<CODE>_asert_exit_</CODE>が真であれば、即 
+座に終了する。
+
+</P>
+<P>
+<CODE>END</CODE>ルールがあるのと、そこでテストをする目的は<CODE>END</CODE>ルールが他
+にあるとき(ユーザーが作成したスクリプトにもとからあったなど)のためである。
+表明が失敗していなければ、<CODE>END</CODE>ルールが実行されたときに
+<CODE>_assrt_exit_</CODE>は偽のままであり、プログラム中の残りの<CODE>END</CODE>ルールは
+実行されることになる。これらの動作をきちんと行うために、<TT>`assert.awk'</TT>は
+<CODE>awk</CODE>が読み込む最初のソースファイルでなければならない。
+
+</P>
+<P>
+プログラムでこの関数を使うには次のようにする。
+
+</P>
+
+<PRE>
+function myfunc(a, b)
+{
+     assert(a &#60;= 5 &#38;&#38; b &#62;= 17, "a &#60;= 5 &#38;&#38; b &#62;= 17")
+     ...
+}
+</PRE>
+
+<P>
+表明が失敗すると、次のようなメッセージを目にすることになる。
+
+</P>
+
+<PRE>
+mydata:1357: assertion failed: a &#60;= 5 &#38;&#38; b &#62;= 17
+</PRE>
+
+<P>
+このバージョンの<CODE>assert</CODE>には問題があり、標準の<CODE>awk</CODE>では
+うまく働かないことがありえる。通常、プログラムが<CODE>BEGIN</CODE>ルールだけであった場合には、入力ファイ
+ルや標準入力からの読み込みは行われない。しかし(assertを使ったことにより)、
+今や<CODE>END</CODE>ルールがプログラムにあり、このため<CODE>awk</CODE>は入力データを
+ファイル、あるいは標準入力から読み込もうとするのである
+(セクション <A HREF="gawk_9.html#SEC94">Startup and Cleanup Actions</A>を参照)。
+そして、プログラムは一見ハングアップしたかのようになり、
+入力を待つ。
+
+</P>
+
+
+<H2><A NAME="SEC145" HREF="gawk_toc.html#SEC145">Rounding Numbers</A></H2>
+
+<P>
+<A NAME="IDX655"></A>
+<CODE>printf</CODE>や<CODE>sprintf</CODE>
+(セクション <A HREF="gawk_7.html#SEC60">Using <CODE>printf</CODE> Statements for Fancier Printing</A>を参照)
+が丸めを行う方法は、しばしば使用するシステムのCライブラリにある
+<CODE>sprintf</CODE>に依存する。多くのマシンでは、<CODE>spritnf</CODE>の
+丸めは<SAMP>`.5'</SAMP>を常に切り上げるのではなく、正反対の例外がある
+"unbiased"なものである。
+"unbiased"な丸めでは、<SAMP>`.5'</SAMP>は偶数方向へ丸めが行なわれる。
+このため、1.5は2へ丸められるのに対して4.5は4へ丸められることとなる。
+あなたが丸めを行うような書式指定(<CODE>".0f"</CODE>など)を使った
+場合には、システムがどのように丸めをしたのかを確かめておく
+べきである。以下に示す関数は、伝統的な丸めを行う関数である。
+これはあなたの使うawkの<CODE>printf</CODE>がunbiasedどな
+丸めをするような場合に便利でしょう。
+
+</P>
+<P>
+<A NAME="IDX656"></A>
+
+<PRE>
+# round -- do normal rounding
+#
+# Arnold Robbins, arnold@gnu.org, August, 1996
+# Public Domain
+
+function round(x,   ival, aval, fraction)
+{
+   ival = int(x)    # 整数部を取り出す
+
+   # 小数部があれば処理する
+   if (ival == x)   # 小数部がない
+      return x
+
+   if (x &#60; 0) {
+      aval = -x     # 絶対値
+      ival = int(aval)
+      fraction = aval - ival
+      if (fraction &#62;= .5)
+         return int(x) - 1   # -2.5 --&#62; -3
+      else
+         return int(x)       # -2.3 --&#62; -2
+   } else {
+      fraction = x - ival
+      if (fraction &#62;= .5)
+         return ival + 1
+      else
+         return ival
+   }
+}
+
+# test harness
+{ print $0, round($0) }
+</PRE>
+
+
+
+<H2><A NAME="SEC146" HREF="gawk_toc.html#SEC146">Translating Between Characters and Numbers</A></H2>
+
+<P>
+<A NAME="IDX657"></A>
+ある商用の<CODE>awk</CODE>処理系では、
+キャラクタを引数にとり、そのキャラクタを表わすキャラクタコードの値を
+返す組込み関数<CODE>ord</CODE>を提供している。
+二文字以上の長さの文字列が<CODE>ord</CODE>に渡された場合には
+その最初のキャラクタが対象となる。
+
+</P>
+<P>
+その反対の関数が数値を引数にとり、それが表わすキャラクタを返す
+<CODE>chr</CODE>(Pascalの同名の関数から来ている)である。
+
+</P>
+<P>
+この二つの関数は<CODE>awk</CODE>で立派に記述できる。
+これらの関数を<CODE>awk</CODE>インタープリターの組込みにすべき
+客観的な理由はない。
+
+</P>
+<P>
+<A NAME="IDX658"></A>
+<A NAME="IDX659"></A>
+
+<PRE>
+# ord.awk -- do ord and chr
+#
+# Global identifiers:
+#    _ord_:        キャラクタで添え字付けされる数値
+#    _ord_init:    _ord_を初期化する関数
+#
+# Arnold Robbins
+# arnold@gnu.org
+# Public Domain
+# 16 January, 1992
+# 20 July, 1992, revised
+
+BEGIN    { _ord_init() }
+
+function _ord_init(    low, high, i, t)
+{
+    low = sprintf("%c", 7) # BEL は ASCIIコードの 7
+    if (low == "\a") {    # 通常のASCII
+        low = 0
+        high = 127
+    } else if (sprintf("%c", 128 + 7) == "\a") {
+        # ascii, mark parity
+        low = 128
+        high = 255
+    } else {        # EBCDIC(!)
+        low = 0
+        high = 255
+    }
+
+    for (i = low; i &#60;= high; i++) {
+        t = sprintf("%c", i)
+        _ord_[t] = i
+    }
+}
+</PRE>
+
+<P>
+<A NAME="IDX660"></A>
+<A NAME="IDX661"></A>
+<A NAME="IDX662"></A>
+<A NAME="IDX663"></A>
+<A NAME="IDX664"></A>
+<CODE>chr</CODE>が使っている数値についてはもう少し説明する価値があるだろう。
+今日使われているキャラクタセットで最も名が知られているものは、ASCIIで
+ある。8ビット バイトでは256(0から255)の異なった値を区別できるが、ASCII
+では0から127までの値を使ったキャラクタだけを定義している。
+<A NAME="FOOT20" HREF="gawk_foot.html#FOOT20">(20)</A>
+私達が知っている manufacturerの少なくとも一つはASCIIを使っているが、mark
+parityを伴っていて、バイトの一番左のビットが常に1である。これは、その様
+なキャラクタコードを使っているシステムではキャラクタコードの値は128から
+255までになるということである。さらに、大きなメインフレームシステムでは、
+EBCDICキャラクタセットを使っていて、これは256すべての値を使用する。一部
+の古いシステムでは、また別のキャラクタセットを使っているものがあるが、
+心配する必要はない。
+
+</P>
+
+<PRE>
+function ord(str,    c)
+{
+    # 最初のキャラクタだけに注目する。
+    c = substr(str, 1, 1)
+    return _ord_[c]
+}
+
+function chr(c)
+{
+    # 0を足すことによって強制的に数値にする
+    return sprintf("%c", c + 0)
+}
+
+#### test code ####
+# BEGIN    \
+# {
+#    for (;;) {
+#        printf("文字を入力してください: ")
+#        if (getline var &#60;= 0)
+#            break
+#        printf("ord(%s) = %d\n", var, ord(var))
+#    }
+# }
+</PRE>
+
+<P>
+これらの関数の明白な改良は、<CODE>_ord_init</CODE>のコードを
+<CODE>BEGIN</CODE>ルールの本体に移すことである。
+上記のものはこの方法で記述されている。
+
+</P>
+<P>
+<CODE>BEGIN</CODE>ルールには関数をテストするための"テストプログラム"がある。
+これはproduction useではコメントアウトされている。
+
+</P>
+
+
+<H2><A NAME="SEC147" HREF="gawk_toc.html#SEC147">Merging an Array Into a String</A></H2>
+
+<P>
+<A NAME="IDX665"></A>
+文字列の処理を行っているときには、
+配列に格納されている文字列を連結して一つの長い文字列にするような
+ことができると便利である。
+次に挙げる<CODE>join</CODE>という関数はこれを行うものであり、
+後に挙げるアプリケーションプログラムの幾つかでも使用している
+(セクション <A HREF="gawk_17.html#SEC155">実用的な <CODE>awk</CODE> プログラム</A>を参照)。
+
+</P>
+<P>
+関数の良いデザインというものは重要である。この関数は一般的である
+必要があるが、デフォルトの振る舞いが妥当なものであるべきものである。
+この関数は配列と、連結する配列要素の下限と上限を引数として呼び出される。
+ここで、配列の添え字は数値であることを仮定しているが、これは
+<CODE>split</CODE>が作り出す配列が同様なものであるので、妥当な仮定である
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)。
+
+</P>
+<P>
+<A NAME="IDX666"></A>
+
+<PRE>
+# join.awk -- 配列をつなげて文字列にする
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+function join(array, start, end, sep,    result, i)
+{
+    if (sep == "")
+       sep = " "
+    else if (sep == SUBSEP) # 魔法の値
+       sep = ""
+    result = array[start]
+    for (i = start + 1; i &#60;= end; i++)
+        result = result sep array[i]
+    return result
+}
+</PRE>
+
+<P>
+省略可能な引数は文字列を連結するときに間に挟むセパレータである。呼び出し
+時にこれが空以外の値であれば、<CODE>join</CODE>はそれを使う。引数が省略されて 
+いれば、これは空文字列となる。このケースでは、<CODE>join</CODE>は一つのスペー 
+スをデフォルトのセパレータとする。渡された値が<CODE>SUBSEP</CODE>と等しい場合、
+<CODE>join</CODE>はセパレータなしで文字列の連結を行う。<CODE>SUBSEP</CODE>は文字列の
+連結をセパレータなしで行うことを指示する"magic value"として扱われる。
+
+</P>
+<P>
+<CODE>awk</CODE>に連接のための代入演算子があれば良かったかもしれない。
+連接を行うための演算子が存在していないということは、
+文字列に関する操作を必要以上に難しいものとしている。
+
+</P>
+
+
+<H2><A NAME="SEC148" HREF="gawk_toc.html#SEC148">Turning Dates Into Timestamps</A></H2>
+
+<P>
+<CODE>systime</CODE>は<CODE>awk</CODE>に組込みの関数であり、
+タイムスタンプをシステムが開始された時刻からの経過秒数として
+返すものである。この時刻情報は<CODE>strftime</CODE>という
+組込み関数を使用して、自由自在な書式で出力可能なデータに
+することができる(<CODE>systime</CODE>と<CODE>strftime</CODE>に関する詳しい説明は
+セクション <A HREF="gawk_13.html#SEC128">Functions for Dealing with Time Stamps</A>を参照.)。
+
+</P>
+<P>
+<A NAME="IDX667"></A>
+興味深いが難しい問題は、標準形に変換されている日付のデータを
+タイムスタンプに戻すということである。ANSI Cのライブラリでは
+<CODE>mktime</CODE>という関数を、通常の形式の日付データをタイムスタンプに
+変換する目的で提供している。
+
+</P>
+<P>
+<CODE>gawk</CODE>は組込み関数として、
+Cバージョンを単純に"hook"した<CODE>mktime</CODE>を提供すべきであると
+考えるかもしれない。しかし、<CODE>mktime</CODE>は<CODE>awk</CODE>で完全に実現すること
+ができるのである。
+
+</P>
+<P>
+以下に挙げたのは<CODE>awk</CODE>による<CODE>mktime</CODE>である。
+これは、単純な日付と時刻を受け取り、それをタイムスタンプに
+変換するものである。
+
+</P>
+<P>
+このプログラムはプログラムの説明といっしょになっている。
+セクション <A HREF="gawk_17.html#SEC171">Texinfoのソースファイルからプログラムを取り出す</A>を参照,
+でこのマニュアルのTexinfoソースファイルから
+プログラムコードを抜き取ってファイルにするやり方を説明している。
+
+</P>
+<P>
+このプログラムは説明のためのコメントで始まり、
+<CODE>_tm_months_</CODE>というテーブルを初期化する<CODE>BEGIN</CODE>ルールが続く。
+このテーブルは二次元の配列であり、次の長さを保持する。
+最初の添え字は0か1であり、0は通常の年に、1は閏年に対して使われる。
+この値は二月を除いては同じ月の値は同じ値となるので、
+多重代入を使っている。
+
+</P>
+
+<PRE>
+# mktime.awk -- 標準形式の日付データをタイムスタンプに変換する
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+BEGIN    \
+{
+    # Initialize table of month lengths
+    # 各月の日数のテーブルを初期化する。
+    _tm_months[0,1] = _tm_months[1,1] = 31
+    _tm_months[0,2] = 28; _tm_months[1,2] = 29
+    _tm_months[0,3] = _tm_months[1,3] = 31
+    _tm_months[0,4] = _tm_months[1,4] = 30
+    _tm_months[0,5] = _tm_months[1,5] = 31
+    _tm_months[0,6] = _tm_months[1,6] = 30
+    _tm_months[0,7] = _tm_months[1,7] = 31
+    _tm_months[0,8] = _tm_months[1,8] = 31
+    _tm_months[0,9] = _tm_months[1,9] = 30
+    _tm_months[0,10] = _tm_months[1,10] = 31
+    _tm_months[0,11] = _tm_months[1,11] = 30
+    _tm_months[0,12] = _tm_months[1,12] = 31
+}
+</PRE>
+
+<P>
+複数の<CODE>BEGIN</CODE>ルールをまとめることの利益
+(セクション <A HREF="gawk_9.html#SEC93">特殊パターン<CODE>BEGIN</CODE>と<CODE>END</CODE></A>を参照)
+は特にライブラリファイルを記述するときに顕著である。
+ライブラリファイル中の関数は、関数のプライベートデータの初期化をきれいに
+行うことができるようになり、同様にプライベートな<CODE>END</CODE>ルールは個々の
+関数のクリーンアップ作業を提供することができる。
+
+</P>
+<P>
+次の関数は与えられた年に対して単純な閏年判定を行うものである。
+与えられた年が4で割り切れて、100では割り切れないか、400で
+割り切れる年であればそれは閏年である。
+したがって、1904は閏年だったが、1900年は閏年ではなかった。
+そして2000年は閏年である。
+
+</P>
+<P>
+<A NAME="IDX668"></A>
+
+<PRE>
+# 閏年かどうかを判定する
+function _tm_isleap(year,    ret)
+{
+    ret = (year % 4 == 0 &#38;&#38; year % 100 != 0) ||
+            (year % 400 == 0)
+
+    return ret
+}
+</PRE>
+
+<P>
+この関数はこのファイルの中でほんの数回しか使われず、
+その計算は<STRONG>インライン</STRONG>(in-line。使う場所に記述すること)に
+記述することもできる。
+独立した関数にすることによって、オリジナルの開発を容易にし、
+関数の中身を何ヶ所にも記述するときにタイプエラーが起きてしまうことを
+防止するのである。
+
+</P>
+<P>
+次の関数はもっと興味深い。この関数は日付・時刻のデータをタイムスタンプに
+変換するときの作業のほとんどを行ってしまう。呼び出し側は六つの値を配列
+(<CODE>a</CODE>という名前で定義されている)で渡す。この六つの内訳は、年(世紀も含 
+めたもの)、月、日、時、分、秒である。
+
+</P>
+<P>
+この関数は幾つかのローカル変数を使って、時間を秒で表わした値、日を秒で表
+わした値、年を秒で表わした値といったものを前計算している。しばしばCでは 
+このような式はインラインで書きくだされ、コンパイラが<STRONG>定数の畳み込み</STRONG>
+(constant folding)を行っている。例えば、ほとんどのCコンパイラはコンパイ 
+ル時に<SAMP>`60 * 60'</SAMP>を<SAMP>`3600'</SAMP>に変換し、実行時にいちいちそれを計算す 
+るようなことにはならない。これらの値の前計算は関数をより効率的にするので
+ある。
+
+</P>
+<P>
+<A NAME="IDX669"></A>
+
+<PRE>
+# 日付を秒に変換する
+function _tm_addup(a,    total, yearsecs, daysecs,
+                         hoursecs, i, j)
+{
+    hoursecs = 60 * 60         # 一時間あたりの秒数
+    daysecs = 24 * hoursecs    # 一日あたりの秒数
+    yearsecs = 365 * daysecs   # 一年あたりの秒数
+
+    total = (a[1] - 1970) * yearsecs
+
+    # 閏年の処理
+    for (i = 1970; i &#60; a[1]; i++)
+        if (_tm_isleap(i))
+            total += daysecs
+
+    j = _tm_isleap(a[1])
+    for (i = 1; i &#60; a[2]; i++)
+        total += _tm_months[j, i] * daysecs
+
+    total += (a[3] - 1) * daysecs
+    total += a[4] * hoursecs
+    total += a[5] * 60
+    total += a[6]
+
+    return total
+}
+</PRE>
+
+<P>
+この関数はまず1970年1月1日 零時
+<A NAME="FOOT21" HREF="gawk_foot.html#FOOT21">(21)</A>
+から始まって、指定された年の初めまでの経過時間の近似値を秒で求め、
+その後で1970年から、指定された年までにあった閏年の補正分を加えている。
+
+</P>
+<P>
+<CODE>j</CODE>という変数は閏年であれば1、そうでなければ0という値を保持している。
+指定された年での指定された月の直前の月までは
+<CODE>_tm_months</CODE>という配列にある対応する月毎の秒数を加えていく。
+
+</P>
+<P>
+最後に、指定された日の経過時間の秒数を加える。
+
+</P>
+<P>
+結果は、1970年1月1日からの経過秒数である。
+この値はまだ必要とするものではない。その理由を簡単に説明する。
+
+</P>
+<P>
+<CODE>mktime</CODE>関数は一つの文字列を引数としてとる。
+この文字列は日付・時刻を"標準"形式(canonical form)で表わしたものであり、
+<CODE>"<VAR>year</VAR> <VAR>month</VAR> <VAR>day</VAR> <VAR>hour</VAR> <VAR>minute</VAR> <VAR>second</VAR>"</CODE>
+のような形である。
+
+</P>
+<P>
+<A NAME="IDX670"></A>
+
+<PRE>
+# mktime -- 日付を秒に変換し、タイムゾーンの補正を行う。
+
+function mktime(str,    res1, res2, a, b, i, j, t, diff)
+{
+    i = split(str, a, " ")    # FSをあてにしてはいけない
+
+    if (i != 6)
+        return -1
+
+    # 強制的に数値にする
+    for (j in a)
+        a[j] += 0
+
+    # 確認
+    if (a[1] &#60; 1970 ||
+        a[2] &#60; 1 || a[2] &#62; 12 ||
+        a[3] &#60; 1 || a[3] &#62; 31 ||
+        a[4] &#60; 0 || a[4] &#62; 23 ||
+        a[5] &#60; 0 || a[5] &#62; 59 ||
+        a[6] &#60; 0 || a[6] &#62; 60 )
+            return -1
+
+    res1 = _tm_addup(a)
+    t = strftime("%Y %m %d %H %M %S", res1)
+
+    if (_tm_debug)
+        printf("(%s) -&#62; (%s)\n", str, t) &#62; "/dev/stderr"
+
+    split(t, b, " ")
+    res2 = _tm_addup(b)
+
+    diff = res1 - res2
+
+    if (_tm_debug)
+        printf("diff = %d seconds\n", diff) &#62; "/dev/stderr"
+
+    res1 += diff
+
+    return res1
+}
+</PRE>
+
+<P>
+この関数は最初に文字列をスペース、タブをセパレータとして配列に分割する。
+ここで配列に要素が6個なければ、エラーとして、-1を返す。次に、配列
+の各要素を0を加えることにより強制的に数値にする。その後にある<CODE>if</CODE>文
+は、各要素がそれぞれの範囲内に収まっているかどうかをチェックしている(こ 
+のチェックはもっと厳しくできる。つまり、月によって許される日付は違うので、
+そこまでチェックするということ)。これらは、欠くことのできない準備作業と 
+エラーチェックである。
+
+</P>
+<P>
+<CODE>_tm_addup</CODE>を再度呼び出して1970年1月1日 零時からの経過秒数を作り出 
+す。この値はまだ必要としているものではない。それは、ローカルタイムゾーン
+を考慮した計算をしていないからである。言い換えれば、この値はUTC(Universal
+Coordinated Time)での経過秒数を表わしたものである。ローカルタイムゾーン
+がUTCの東、あるいは西にあるのであれば、この値にある数を加えるか減じるか
+した値が求めるタイムスタンプとなる。
+
+</P>
+<P>
+例えばアメリカのジョージア州アトランタで午後6時23分だったとしてみよう。
+アトランタは UTCから西へ五時間のところにある。夏時間の場合には UTCとの差は
+四時間となる。アトランタで
+<CODE>mktime</CODE>に<CODE>"1993 5 23 18 23 12"</CODE>という引数を渡して呼び出し
+たとすると、<CODE>_tm_addup</CODE>からの結果はUTCでの午後6時23分、アトランタで
+は午後2時23分という値になる。そこで、その結果にさらに四時間分の秒数(5月23
+日は夏時間を使っている期間のため)を加える必要がある。
+
+</P>
+<P>
+どのようにすれば<CODE>mktime</CODE>はUTCからどれくらい離れているかを決められるだ
+ろうか? これはびっくりするほど簡単である。<CODE>mktime</CODE>に日付を<EM>UTC
+であるかのように</EM>渡したときに返ってきたタイムスタンプを使えば良い、この 
+タイムスタンプは<CODE>strftime</CODE>の書式にローカルタイムを使うことで元に戻 
+すことができる。つまり、すでにUTCとの差が補正されたものにする。これは、
+<CODE>"%Y %m %d %H %M %S"</CODE>という書式を<CODE>strftime</CODE>に渡せば良い。こ
+れによって返されるのはオリジナルの書式文字列の元で計算されたタイムスタン
+プである。ここで返ってきた値はUTCのと差を考慮したものである。新しい時間 
+を再度タイムスタンプに変換すると、二つのタイムスタンプの差は、その場所の
+タイムゾーンとUTCとの(秒で表わした)差である。この差をオリジナルの結果に 
+加算する。後で実例を挙げる。
+
+</P>
+<P>
+最後は、関数をテストするための"メイン"プログラムである。
+
+</P>
+
+<PRE>
+BEGIN  {
+    if (_tm_test) {
+        printf "yyyy mm dd hh mm ss の形式で日付を入力してください: "
+        getline _tm_test_date
+    
+        t = mktime(_tm_test_date)
+        r = strftime("%Y %m %d %H %M %S", t)
+        printf "Got back (%s)\n", r
+    }
+}
+</PRE>
+
+<P>
+プログラム全体は、
+デバッグ出力と最後の<CODE>BEGIN</CODE>ルールのテストを有効にするための制御を、
+二つの変数をコマンドライン上でセットすることで行っている。
+次の例はテスト実行の結果である(デバッグ出力は標準エラー出力に、
+テストの出力は標準出力に出力されていることに注意)。
+
+</P>
+
+
+<PRE>
+$ gawk -f mktime.awk -v _tm_test=1 -v _tm_debug=1
+-| Enter date as yyyy mm dd hh mm ss: 1993 5 23 15 35 10
+error--> (1993 5 23 15 35 10) -&#62; (1993 05 23 11 35 10)
+error--> diff = 14400 seconds
+-| Got back (1993 05 23 15 35 10)
+</PRE>
+
+<P>
+入力された時刻は1993年の5月23日の午後3時35分(24時間制では15時35分)である。
+デバッグ出力の最初の行はUTCとしての時間の結果、ローカルタイムゾーンから4
+時間進んだ時刻である。二番目の行はその差である14440秒、時間で表わして4時
+間である(差が4時間なのは、夏時間だからである)。最後の行の出力はタイムゾ 
+ーンの補正が正しく働いていることを示していて、入力した時刻と同じである。
+
+</P>
+<P>
+このプログラムは
+任意の書式で表わされた日付をタイムスタンプに変換するときの
+一般的な問題を解決してはいない。
+この問題は非常に複雑である。しかしながら、<CODE>mktime</CODE>関数は
+構築するための基礎を提供している。他のソフトウェアは
+月を名前で指定することができたり、AM/PMを使った時刻を24時間制に
+変換して、<CODE>mktime</CODE>が要求する"標準形式"を生成することができる。
+
+</P>
+
+
+<H2><A NAME="SEC149" HREF="gawk_toc.html#SEC149">Managing the Time of Day</A></H2>
+
+<P>
+<A NAME="IDX671"></A>
+<A NAME="IDX672"></A>
+セクション <A HREF="gawk_13.html#SEC128">Functions for Dealing with Time Stamps</A>を参照,
+で説明されている<CODE>systime</CODE>と<CODE>strftime</CODE>という関数は
+日付を人間が読みやすい形で扱うために最低限必要な機能を
+提供している。<CODE>strftime</CODE>は大規模なもので、制御書式は必然的に
+プログラムを読むときに簡単に思い出したり、ぱっとわかるような
+ものではない。
+
+</P>
+<P>
+以下に挙げた関数、<CODE>gettimeofday</CODE>は、ユーザーから
+渡されたあらかじめフォーマットされた時間情報の入った配列
+をpopulateするものである。この関数は現在時刻を<CODE>date</CODE>ユーティリティ
+と同じやり方でフォーマットされた時刻情報の文字列を返す。
+
+</P>
+<P>
+<A NAME="IDX673"></A>
+
+<PRE>
+# gettimeofday -- わかりやすい書式の日付情報を得る
+# Arnold Robbins, arnold@gnu.org, Public Domain, May 1993
+#
+# Returns a string in the format of output of date(1)
+# Populates the array argument time with individual values:
+#    time["second"]       -- 秒 (0 - 59)
+#    time["minute"]       -- 分 (0 - 59)
+#    time["hour"]         -- 時 (0 - 23)
+#    time["althour"]      -- 時 (0 - 12)
+#    time["monthday"]     -- 日 (1 - 31)
+#    time["month"]        -- 月 (1 - 12)
+#    time["monthname"]    -- 月の名前
+#    time["shortmonth"]   -- 省略表記の月
+#    time["year"]         -- 世紀中の年 (0 - 99)
+#    time["fullyear"]     -- 世紀つきの年 (19xx or 20xx)
+#    time["weekday"]      -- 曜日 (日曜日が0)
+#    time["altweekday"]   -- 曜日 (月曜日が0)
+#    time["weeknum"]      -- 日曜を始まりとする曜日番号
+#    time["altweeknum"]   -- 月曜を始まるとする曜日番号
+#    time["dayname"]      -- 曜日の名前
+#    time["shortdayname"] -- 曜日の短い名前
+#    time["yearday"]      -- 一年の中での日数 (0 - 365)
+#    time["timezone"]     -- タイムゾーンの略称
+#    time["ampm"]         -- AM or PM designation
+
+function gettimeofday(time,    ret, now, i)
+{
+    # 不必要なシステムコールを行わないために一度だけ時刻を取得する。
+    now = systime()
+
+    # date(1)スタイルの出力を返す。
+    ret = strftime("%a %b %d %H:%M:%S %Z %Y", now)
+
+    # 結果を格納する配列をクリアする。
+    for (i in time)
+        delete time[i]
+
+    # 値を埋める。このとき強制的に数値にするため
+    # 0を足す
+    time["second"]       = strftime("%S", now) + 0
+    time["minute"]       = strftime("%M", now) + 0
+    time["hour"]         = strftime("%H", now) + 0
+    time["althour"]      = strftime("%I", now) + 0
+    time["monthday"]     = strftime("%d", now) + 0
+    time["month"]        = strftime("%m", now) + 0
+    time["monthname"]    = strftime("%B", now)
+    time["shortmonth"]   = strftime("%b", now)
+    time["year"]         = strftime("%y", now) + 0
+    time["fullyear"]     = strftime("%Y", now) + 0
+    time["weekday"]      = strftime("%w", now) + 0
+    time["altweekday"]   = strftime("%u", now) + 0
+    time["dayname"]      = strftime("%A", now)
+    time["shortdayname"] = strftime("%a", now)
+    time["yearday"]      = strftime("%j", now) + 0
+    time["timezone"]     = strftime("%Z", now)
+    time["ampm"]         = strftime("%p", now)
+    time["weeknum"]      = strftime("%U", now) + 0
+    time["altweeknum"]   = strftime("%W", now) + 0
+
+    return ret
+}
+</PRE>
+
+<P>
+<CODE>strftime</CODE>の書式で要求されるものを、より簡単で読みやすい
+文字列で添え字付けしている。
+この関数を使った<CODE>alarm</CODE>プログラムが
+セクション <A HREF="gawk_17.html#SEC166">アラーム時計プログラム</A>を参照,
+にある。
+
+</P>
+<P>
+関数 <CODE>gettimeofday</CODE>は先に挙げたようなものが提供されている。
+この関数に対するより一般的なデザインとしては、カレントの時刻の
+代わりに使われるようなオプションのタイムスタンプを取れるように
+するというものがあるだろう。
+
+</P>
+
+
+<H2><A NAME="SEC150" HREF="gawk_toc.html#SEC150">Noting Data File Boundaries</A></H2>
+
+<P>
+<A NAME="IDX674"></A>
+<CODE>BEGIN</CODE>ルールと<CODE>END</CODE>ルールはそれぞれ<CODE>awk</CODE>
+プログラムの実行開始時と終了時に一回だけ実行される
+(セクション <A HREF="gawk_9.html#SEC93">特殊パターン<CODE>BEGIN</CODE>と<CODE>END</CODE></A>を参照)。
+以前、<CODE>BEGIN</CODE>ルールは各データファイルの先頭で実行され、<CODE>END</CODE>ル
+ールは各データファイルの最後で実行されるものと間違って考えていたユーザー
+がいた。我々(<CODE>gawk</CODE>の作者)がそのユーザーに対してその間違いを知らせ 
+たところ、その人は我々に<CODE>BEGIN_FILE</CODE> と <CODE>END_FILE</CODE>という名前の
+そこで期待してた動作をする特殊ルールを新たに<CODE>gawk</CODE>に追加してくれる 
+ようリクエストしてきた。彼は、そのためのコードも送ってきた。
+
+</P>
+<P>
+しかし、ちょっと考えた後で、私は後述するようなライブラリプログラムを
+提供した。これは二つのユーザー定義関数<CODE>beginfile</CODE>と<CODE>endfile</CODE>を
+それぞれ各データファイルの先頭と末尾で呼び出すようにアレンジした。
+たったの9行のコードで問題を解決できた! しかもこれは
+<EM>ポータブル</EM>で、すべての<CODE>awk</CODE>処理系で正しく動作する。
+
+</P>
+
+<PRE>
+# transfile.awk
+#
+# Give the user a hook for filename transitions
+#
+# ユーザーはbeginfile()、endfile()という
+# それぞれファイルを処理し始めるとき、処理し終わったとき
+# に適用される関数を用意しなければならない。
+#
+# Arnold Robbins, arnold@gnu.org, January 1992
+# Public Domain
+
+FILENAME != _oldfilename \
+{
+    if (_oldfilename != "")
+        endfile(_oldfilename)
+    _oldfilename = FILENAME
+    beginfile(FILENAME)
+}
+
+END   { endfile(FILENAME) }
+</PRE>
+
+<P>
+このファイルは、その中にあるルールを最初に実行させるために
+ユーザーの"メイン"プログラムの前にロードしなければならない。
+
+</P>
+<P>
+このルールは<CODE>awk</CODE>が<CODE>FILENAME</CODE>という変数を、新しいファイルに
+処理が移ったときに自動的に変更するということに依存している。
+カレントのファイル名はプライベート変数の<CODE>_oldfilename</CODE>に
+格納されている。<CODE>FILENAME</CODE>が<CODE>_oldfilename</CODE>と等しくないとき、
+新しいデータファイルが処理され始め、このとき古いファイルのために
+<CODE>endfile</CODE>を呼ぶ必要がある。<CODE>endfile</CODE>はファイルが処理された後で
+呼び出されるべきものなので、プログラムでは<CODE>_oldfilename</CODE>が
+空文字列でないことを最初にチェックしている。それから、
+カレントファイルの名前を<CODE>_oldfilename</CODE>にセットして、
+新しいデータファイルのために<CODE>beginfile</CODE>を呼び出している。
+すべての<CODE>awk</CODE>の変数と同様に、<CODE>_oldfilename</CODE>は空文字列で
+初期化されているので、このルールは最初のデータファイルのときでも
+正しく実行されるのである。
+
+</P>
+<P>
+このプログラムは同様に<CODE>END</CODE>ルールがあり、これは
+最後のファイルを処理したときの最終処理を行うためのものである。
+この<CODE>END</CODE>ルールは"メイン"プログラムにあるどの<CODE>END</CODE>ルール
+よりも前にあるので、<CODE>endfile</CODE>は一番最初に呼び出される。
+もう一度複数の<CODE>BEGIN</CODE>ルールと<CODE>END</CODE>ルールの価値を明確に
+しておこう。
+
+</P>
+<P>
+<A NAME="IDX675"></A>
+<A NAME="IDX676"></A>
+このバージョンには、最初のバージョンの<CODE>nextfile</CODE>と同じ問題がある
+(セクション <A HREF="gawk_16.html#SEC143">Implementing <CODE>nextfile</CODE> as a Function</A>を参照)。
+同じデータファイルが二度コマンドラインで連続して指定された場合、
+<CODE>endfile</CODE>と<CODE>beginfile</CODE>はそれぞれ
+最初のパスの最後と、二番目のパスの先頭では実行されないという
+ことになってしまう。
+以下のものは、この問題に対処したものである
+
+</P>
+
+<PRE>
+# ftrans.awk -- handle data file transitions
+#
+# ユーザーが beginfile() と endfile() という関数を用意する
+#
+# Arnold Robbins, arnold@gnu.org, November 1992
+# Public Domain
+
+FNR == 1 {
+    if (_filename_ != "")
+        endfile(_filename_)
+    _filename_ = FILENAME
+    beginfile(FILENAME)
+}
+
+END  { endfile(_filename_) }
+</PRE>
+
+<P>
+セクション <A HREF="gawk_17.html#SEC163">数え上げ</A>を参照,では、このライブラリ関数を
+使って、メインプログラムを単純にする方法がある。
+
+</P>
+
+
+<H2><A NAME="SEC151" HREF="gawk_toc.html#SEC151">コマンドラインオプションの処理</A></H2>
+
+<P>
+<A NAME="IDX677"></A>
+<A NAME="IDX678"></A>
+POSIX互換システムのほとんどのユーティリティは、プログラムの振る舞いを変 
+えるために使われるコマンドライン上のオプション、あるいは"スイッチ'をと 
+る。<CODE>awk</CODE>はその様なプログラムの一例である(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)。しばしばオプションは、コマンドラインオプションに正しく従
+うのに必要なデータである<STRONG>引数</STRONG>(argument)をとる。例えば<CODE>awk</CODE>の
+<SAMP>`-F'</SAMP>オプションはフィールドセパレータとして使用する文字列を要求する。 
+コマンドライン上で最初に現れる<SAMP>`--'</SAMP>あるいは、<SAMP>`-'</SAMP>で始まらない文 
+字列は、オプションの終端を示す。
+
+</P>
+<P>
+ほとんどのUNIXシステムでは<CODE>getopt</CODE>という名前のコマンドライン引数の 
+処理を行うC関数が提供されている。プログラマーは一文字のオプションを記述 
+する文字列を渡す。オプションが引数を必要とする場合には、コロンをその文字
+の直後に続ける。<CODE>getopt</CODE>はコマンドライン引数の数と、値が渡され、ル 
+ープ中で呼び出される。<CODE>getopt</CODE>はコマンドライン引数を渡されたオプシ 
+ョン文字列に従って処理を行う。ループ中で呼ばれるごとに、(オプション文字 
+列中にある)オプションが見つかれば見つかったオプションを表わすキャラクタ 
+一文字を、不正なオプションが見つかったときには<SAMP>`?'</SAMP>を返す。コマンドラ
+イン上にもうオプション指定が残っていないときには-1を返す。
+
+</P>
+
+<P>
+<CODE>getopt</CODE>を使ったとき、引数を伴わないオプションは一つのグループにま 
+とめることができる。それから、引数を伴うオプションは引数があることを要求
+する。この引数はオプション文字の直後に続けてもいいし、次のコマンドライン
+引数であっても良い。
+
+</P>
+<P>
+三つのコマンドラインオプション、<SAMP>`-a'</SAMP>, <SAMP>`-b'</SAMP>,  <SAMP>`-c'</SAMP>をとり、
+このうち<SAMP>`-b'</SAMP>は引数を要求するようなプログラムを仮定すると、以下のよ 
+うなプログラムの起動は全て正しいものである。
+
+</P>
+
+<PRE>
+prog -a -b foo -c data1 data2 data3
+prog -ac -bfoo -- data1 data2 data3
+prog -acbfoo data1 data2 data3
+</PRE>
+
+<P>
+あるオプションの引数がそのオプションとまとめられているとき、そのコマンド
+ライン引数の残りは、そのオプションの引数として扱われることに注意すること。
+上記の例では、<SAMP>`-acbfoo'</SAMP>は<SAMP>`-a'</SAMP>, <SAMP>`-b'</SAMP>, <SAMP>`-c'</SAMP> のすべての
+オプションがあり、<SAMP>`foo'</SAMP>が<SAMP>`-b'</SAMP>オプションの引数であるように指示 
+している。
+
+</P>
+<P>
+<CODE>getopt</CODE>はプログラマーが使うことのできる
+四つの大域変数を提供している。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>optind</CODE>
+<DD>
+最初のオプションでないコマンドライン引数を示す
+引数配列(<CODE>argv</CODE>)上でのインデックス。
+
+<DT><CODE>optarg</CODE>
+<DD>
+あるオプションに対する引数となる文字列
+
+<DT><CODE>opterr</CODE>
+<DD>
+<CODE>getopt</CODE>は通常、不正なオプションが渡されたときにはエラーメッセージ 
+を出力する。<CODE>opterr</CODE>に0をセットすることによってこの機能を抑制するこ
+とができる(アプリケーション自身でエラーメッセージを出したいときがあるか 
+もしれない)。
+
+<DT><CODE>optopt</CODE>
+<DD>
+コマンドラインオプションを示す文字。通常ドキュメントには記載されていない
+が、ほとんどの場合はこの変数をサポートしている。
+</DL>
+
+<P>
+次のCのプログラム片は、<CODE>awk</CODE>に対するコマンドライン引数を
+処理する<CODE>getopt</CODE>の使い方の例である。
+
+</P>
+
+<PRE>
+int
+main(int argc, char *argv[])
+{
+    ...
+    /* 自分のメッセージを出力する */
+    opterr = 0;
+    while ((c = getopt(argc, argv, "v:f:F:W:")) != -1) {
+        switch (c) {
+        case 'f':    /* ファイル */
+            ...
+            break;
+        case 'F':    /* フィールドセパレータ */
+            ...
+            break;
+        case 'v':    /* 変数代入 */
+            ...
+            break;
+        case 'W':    /* 拡張 */
+            ...
+            break;
+        case '?':
+        default:
+            usage();
+            break;
+        }
+    }
+    ...
+}
+</PRE>
+
+<P>
+余談ながら、<CODE>gawk</CODE>は通常スタイルのオプションとGNUスタイルのオプショ
+ンの両方を扱うために、GNUの <CODE>getopt_long</CODE>関数を使用している。
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照).
+
+</P>
+<P>
+<CODE>getopt</CODE>がもたらす作用は非常に便利であり、<CODE>awk</CODE>プログラム
+同様に使い易いものである。
+次に挙げるのは<CODE>awk</CODE>で記述した<CODE>getopt</CODE>である。
+この関数は<CODE>awk</CODE>の最大の弱点、単一のキャラクタの扱いが非常に
+貧弱であるということを浮き彫りにしている。
+個々のキャラクタにアクセスするために、<CODE>substr</CODE>をくり返し呼ぶ必要がある
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)。
+
+</P>
+<P>
+The discussion walks through the code a bit at a time.
+
+</P>
+
+<PRE>
+# getopt -- awkによる Cライブラリの getopt(3) 関数の実装
+#
+# arnold@gnu.org
+# Public domain
+#
+# Initial version: March, 1991
+# Revised: May, 1993
+
+# 外部変数:
+#    Optind -- 最初の非引数のARGVでの添え字
+#    Optarg -- カレントオプションに対する引数の文字列
+#    Opterr -- if non-zero, print our own diagnostic
+#    Optopt -- カレントのオプション文字
+
+# 戻り値
+#    -1     オプションの終端に達した
+#    ?      認識できなかったオプション
+#    &#60;c&#62;    カレントオプションを示すキャラクタ
+
+# Private Data
+#    _opti  -abcのようなマルチフラグオプションにおけるインデックス
+</PRE>
+
+<P>
+関数はだれが、いつ書いたのか、使用している大域変数のリスト、戻り値とその
+意味、このライブラリ関数で使っている"プライベートな"大域変数などを説明
+する多少のドキュメントから始まっている。このようなドキュメントは、どんな
+プログラムでも、とくにライブラリ関数では重要な事である。
+
+</P>
+<P>
+<A NAME="IDX679"></A>
+
+<PRE>
+function getopt(argc, argv, options,    optl, thisopt, i)
+{
+    optl = length(options)
+    if (optl == 0)        # オプションなし
+        return -1
+
+    if (argv[Optind] == "--") {  # 全て終わった
+        Optind++
+        _opti = 0
+        return -1
+    } else if (argv[Optind] !~ /^-[^: \t\n\f\r\v\b]/) {
+        _opti = 0
+        return -1
+    }
+</PRE>
+
+<P>
+関数では、呼び出されたときに最初にオプション文字列(パラメータ<CODE>options</CODE>)を
+チェックする。<CODE>options</CODE>の長さが0であれば、<CODE>getopt</CODE>は
+即座に-1を返す。
+
+</P>
+<P>
+次にオプションの終了をチェックする。<SAMP>`--'</SAMP>は、
+<SAMP>`-'</SAMP>で始まっていないコマンドライン引数と同じように
+コマンドラインオプションを終了させる。
+<CODE>Optind</CODE>はコマンドライン引数配列を通じての段階で使用される。
+これは、グローバル変数であるので、
+<CODE>getopt</CODE>が呼ばれる間も値を保ち続ける。
+
+</P>
+<P>
+使用している正規表現<CODE>/^-[^: \t\n\f\r\v\b]/</CODE>は、
+おそらくは少々おおげさだろう。これは<CODE>-</CODE>の後に、
+ホワイトスペース(whitespace)やコロン以外のキャラクタが続いていないかどうかを
+チェックしている。カレントのコマンドライン引数がこのパターンに
+マッチしないのなら、その引数はオプションではなく、そこで
+オプション処理は終わる。
+
+</P>
+
+<PRE>
+    if (_opti == 0)
+        _opti = 2
+    thisopt = substr(argv[Optind], _opti, 1)
+    Optopt = thisopt
+    i = index(options, thisopt)
+    if (i == 0) {
+        if (Opterr)
+            printf("%c -- invalid option\n",
+                                  thisopt) &#62; "/dev/stderr"
+        if (_opti &#62;= length(argv[Optind])) {
+            Optind++
+            _opti = 0
+        } else
+            _opti++
+        return "?"
+    }
+</PRE>
+
+<P>
+<CODE>_opti</CODE>という変数はカレントのコマンドライン引数の位置
+ (<CODE>argv[Optind]</CODE>)を保持している。
+複数のオプションが一つの<SAMP>`-'</SAMP>に続いている(たとえば<SAMP>`-abx'</SAMP>の
+ように)場合、ユーザーに対してはそれらのオプションを一度に
+一つずつ返す必要がある。
+
+</P>
+<P>
+<CODE>_opti</CODE>が0であった場合には文字列中で注目すべきキャラクタの位置(1の 
+位置には<SAMP>`-'</SAMP>があり、これはスキップする)である2がセットされる。
+<CODE>thisopt</CODE>という変数は<CODE>substr</CODE>を使って得られたキャラクタを保持し
+ている。<CODE>Optopt</CODE>はメインプログラムでそれを参照するために同じ値を保存
+する。
+
+</P>
+<P>
+<CODE>thisopt</CODE>が文字列<CODE>options</CODE>の中になかった場合、それは不正なオプ
+ションである。<CODE>Opterr</CODE>が非0であれば、<CODE>getopt</CODE>はCバージョンの
+<CODE>getopt</CODE>と同じようなエラーメッセージを標準エラー出力に出力する。
+
+</P>
+<P>
+オプションが不正なものであったので、それをスキップして
+次のオプションキャラクタに移動する必要がある。
+<CODE>_opti</CODE>がカレントのコマンドライン引数の長さ以上であれば、
+次の引数に移動する必要があり、同様に<CODE>Optind</CODE>はインクリメントされ、
+<CODE>_opti</CODE>は0にリセットされる。それ以外の場合は<CODE>Optind</CODE>はそのままで
+<CODE>_optie</CODE>は単にインクリメントされる。
+
+</P>
+<P>
+この場合、オプションが不正なものだったので、<CODE>getopt</CODE>は<SAMP>`?'</SAMP>を
+返す。メインプログラムは無効なオプション文字が何であったのかを
+知る必要がある場合には、<CODE>Optopt</CODE>を調べることができる。
+
+</P>
+
+<PRE>
+    if (substr(options, i + 1, 1) == ":") {
+        # get option argument
+        # オプションの引数を取得する
+        if (length(substr(argv[Optind], _opti + 1)) &#62; 0)
+            Optarg = substr(argv[Optind], _opti + 1)
+        else
+            Optarg = argv[++Optind]
+        _opti = 0
+    } else
+        Optarg = ""
+</PRE>
+
+<P>
+オプションが引数を必要とする場合、文字列<CODE>option</CODE>にある
+オプション文字列に続けてコロンを置く。カレントのコマンドライン引数
+(<CODE>argv[Optind]</CODE>))にキャラクタがまだ残っているのなら、
+残りの文字列は<CODE>Optarg</CODE>にセットされ、そうでなければ
+次のコマンドライン引数が使われる(<SAMP>`-xFOO'</SAMP> と <SAMP>`-x FOO'</SAMP>)。
+これらのどちらの場合でも、<CODE>_opti</CODE>は
+カレントのコマンドライン引数でチェックすべきキャラクタがないので
+0にリセットされる。
+
+</P>
+
+<PRE>
+    if (_opti == 0 || _opti &#62;= length(argv[Optind])) {
+        Optind++
+        _opti = 0
+    } else
+        _opti++
+    return thisopt
+}
+</PRE>
+
+<P>
+最後に、<CODE>_opti</CODE>は0か、カレントのコマンドライン引数の長さよりも大き 
+い値となる。これはその<CODE>argv</CODE>の要素が処理されたということであり、
+<CODE>Optind</CODE>は次の<CODE>argv</CODE>の要素を指すようにインクリメントされる。どち 
+らかの条件も真とならない場合には、<CODE>_opti</CODE>だけがインクリメントされる。
+これは次に<CODE>getopt</CODE>が呼ばれたときに次のオプション文字を処理できるよ 
+うにするためのものである。
+
+</P>
+
+<PRE>
+BEGIN {
+    Opterr = 1    # default is to diagnose
+    Optind = 1    # ARGV[0]はスキップする
+
+    # test program
+    if (_getopt_test) {
+        while ((_go_c = getopt(ARGC, ARGV, "ab:cd")) != -1)
+            printf("c = &#60;%c&#62;, optarg = &#60;%s&#62;\n",
+                                       _go_c, Optarg)
+        printf("non-option arguments:\n")
+        for (; Optind &#60; ARGC; Optind++)
+            printf("\tARGV[%d] = &#60;%s&#62;\n",
+                                    Optind, ARGV[Optind])
+    }
+}
+</PRE>
+
+<P>
+<CODE>BEGIN</CODE>ルールは<CODE>Opterr</CODE>と<CODE>Optind</CODE>を1に初期化している。
+<CODE>getopt</CODE>のデフォルトの動作は不正なオプションを見つけたときには検査
+メッセージを出力するというものなので<CODE>Opterr</CODE>に1をセットし、それは
+<CODE>ARGV[0]</CODE>にあるプログラム名を処理する必要がないので<CODE>Optind</CODE>
+に1をセ ットしている。
+
+</P>
+<P>
+<CODE>BEGIN</CODE>ルールの残りは単純なテストプログラムである。
+次に、このテストプログラムを実行した二つの例を挙げる。
+
+</P>
+
+<PRE>
+$ awk -f getopt.awk -v _getopt_test=1 -- -a -cbARG bax -x
+-| c = &#60;a&#62;, optarg = &#60;&#62;
+-| c = &#60;c&#62;, optarg = &#60;&#62;
+-| c = &#60;b&#62;, optarg = &#60;ARG&#62;
+-| non-option arguments:
+-|         ARGV[3] = &#60;bax&#62;
+-|         ARGV[4] = &#60;-x&#62;
+
+$ awk -f getopt.awk -v _getopt_test=1 -- -a -x -- xyz abc
+-| c = &#60;a&#62;, optarg = &#60;&#62;
+error--> x -- invalid option
+-| c = &#60;?&#62;, optarg = &#60;&#62;
+-| non-option arguments:
+-|         ARGV[4] = &#60;xyz&#62;
+-|         ARGV[5] = &#60;abc&#62;
+</PRE>
+
+<P>
+最初の<SAMP>`--'</SAMP>は<CODE>awk</CODE>に対する引数を終了させるためのものであり、
+これにより<SAMP>`-a'</SAMP>などを<CODE>awk</CODE>のオプションとして処理することを
+防止する。
+
+</P>
+<P>
+引数を処理するために<CODE>getopt</CODE>を使った例は
+セクション <A HREF="gawk_17.html#SEC155">実用的な <CODE>awk</CODE> プログラム</A>を参照.
+に幾つか挙げられている。
+
+</P>
+
+
+
+<H2><A NAME="SEC152" HREF="gawk_toc.html#SEC152">Reading the User Database</A></H2>
+
+<P>
+<A NAME="IDX680"></A>
+<TT>`/dev/user'</TT>という特殊ファイル
+(セクション <A HREF="gawk_7.html#SEC66">Special File Names in <CODE>gawk</CODE></A>を参照)は、
+カレントの実ユーザーID、実効ユーザーID、グループIDの番号に対する
+アクセスを提供する。また、可能な場合にはユーザーの
+supplementary グループもセットされる。
+しかしながら、これらは数値であり、平均的なユーザーにとっては
+便利な情報を提供していない。
+ユーザーやグループ番号から導かれるユーザーの情報を見つけるための
+何等かの手段を提供する必要がある。
+このセクションではユーザーデータベースから情報を回復する一連の
+関数を提供する。グループデータベースから情報を回復する
+同様の関数群はセクション <A HREF="gawk_16.html#SEC153">Reading the Group Database</A>を参照.
+
+</P>
+<P>
+<A NAME="IDX681"></A>
+<A NAME="IDX682"></A>
+<A NAME="IDX683"></A>
+<A NAME="IDX684"></A>
+<A NAME="IDX685"></A>
+POSIXの標準では、ユーザー情報を保持するファイルの場所を規定していない。 
+その代わり、ユーザー情報を取得するための<CODE>&#60;pwd.h&#62;</CODE>というヘッダファイ
+ルと幾つかのC言語のサブルーチンを提供している。基本的な関数は<CODE>getpwent</CODE>
+であり、これは"get password entry"から命名された。"`password"は 
+オリジナルのユーザーデータベースファイル<TT>`/etc/passwd'</TT>から来ており、
+このファイルは暗号化されたパスワードも含めたユーザーの情報を保持している。
+
+</P>
+<P>
+<CODE>awk</CODE>プログラムは<TT>`/etc/passwd'</TT>ファイルを直接
+(フォーマットはよく知られている)読むこともできる。
+パスワードファイルはネットワークシステム上で扱われるために
+このファイルはシステムのすべてのユーザーに関する情報を
+保持していないかもしれない。
+
+</P>
+<P>
+<A NAME="IDX686"></A>
+ユーザーデータベースの完全なバージョンを確実に読み出せるようにするために、
+<CODE>getpwent</CODE>を呼び出す小さなCプログラムを書く必要がある。<CODE>getpwent</CODE>
+は<CODE>struct passwd</CODE>へのポインタを返すように定義され、呼びされるた 
+びにデータベースの次のエントリを返す。エントリがそれ以上ない場合には空ポ
+インタ<CODE>NULL</CODE>を返す。これが起こった場合、Cプログラムはデータベースを
+クローズするために<CODE>endpwent</CODE>を呼び出す必要がある。次のプログラムは 
+パスワードデータベースを"cat"するCプログラム、<CODE>pwcat</CODE>である。
+
+</P>
+<P>
+<A NAME="IDX687"></A>
+
+<PRE>
+/*
+ * pwcat.c
+ *
+ * パスワードデータベースの印字可能バージョンを生成する
+ *
+ * Arnold Robbins
+ * arnold@gnu.org
+ * May 1993
+ * Public Domain
+ */
+
+#include &#60;stdio.h&#62;
+#include &#60;pwd.h&#62;
+
+int
+main(argc, argv)
+int argc;
+char **argv;
+{
+    struct passwd *p;
+
+    while ((p = getpwent()) != NULL)
+        printf("%s:%s:%d:%d:%s:%s:%s\n",
+            p-&#62;pw_name, p-&#62;pw_passwd, p-&#62;pw_uid,
+            p-&#62;pw_gid, p-&#62;pw_gecos, p-&#62;pw_dir, p-&#62;pw_shell);
+
+    endpwent();
+    exit(0);
+}
+</PRE>
+
+<P>
+もしCのことがわからなくても、心配することはない。<CODE>pwcat</CODE>の出力はユ 
+ーザーデータベースであり、伝統的なコロンで区切られた<TT>`/etc/passwd'</TT>フ
+ォーマットである。フィールドには以下のものがある。
+
+</P>
+<DL COMPACT>
+
+<DT>Login name
+<DD>
+ユーザーのログイン名。
+
+<DT>Encrypted password
+<DD>
+ユーザーの、暗号化されたパスワード。これは一部のシステムでは使用できない。
+
+<DT>User-ID
+<DD>
+ユーザーの数字で表されたユーザーID。
+
+<DT>Group-ID
+<DD>
+ユーザーの数字で表されたグループID。
+
+<DT>Full name
+<DD>
+ユーザーのフルネームと、おそらくはユーザーに関するその他の情報。
+
+<DT>Home directory
+<DD>
+ユーザーのログインする、もしくは"ホームディレクトリ"
+(シェルプログラマには<CODE>$HOME</CODE>として知られている)。
+
+<DT>Login shell
+<DD>
+ユーザーがログインしたときに実行されるプログラム。
+これは通常Bash(GNU Bourne-Again shell)のようなシェルである。
+</DL>
+
+<P>
+以下に<CODE>pwcat</CODE>の出力の一部を挙げる。
+
+</P>
+
+<PRE>
+$ pwcat
+-| root:3Ov02d5VaUPB6:0:1:Operator:/:/bin/sh
+-| nobody:*:65534:65534::/:
+-| daemon:*:1:1::/:
+-| sys:*:2:2::/:/bin/csh
+-| bin:*:3:3::/bin:
+-| arnold:xyzzy:2076:10:Arnold Robbins:/home/arnold:/bin/sh
+-| miriam:yxaay:112:10:Miriam Robbins:/home/miriam:/bin/sh
+-| andy:abcca2:113:10:Andy Jacobs:/home/andy:/bin/sh
+...
+</PRE>
+
+<P>
+以下にユーザー情報を取得する関数のグループを挙げる。これらの関数は同名の
+Cの関数と同じ働きをするものである。
+
+</P>
+<P>
+<A NAME="IDX688"></A>
+
+<PRE>
+# passwd.awk -- パスワードファイルの情報にアクセスする
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+BEGIN {
+    # tailor this to suit your system
+    _pw_awklib = "/usr/local/libexec/awk/"
+}
+
+function _pw_init(    oldfs, oldrs, olddol0, pwcat)
+{
+    if (_pw_inited)
+        return
+    oldfs = FS
+    oldrs = RS
+    olddol0 = $0
+    FS = ":"
+    RS = "\n"
+    pwcat = _pw_awklib "pwcat"
+    while ((pwcat | getline) &#62; 0) {
+        _pw_byname[$1] = $0
+        _pw_byuid[$3] = $0
+        _pw_bycount[++_pw_total] = $0
+    }
+    close(pwcat)
+    _pw_count = 0
+    _pw_inited = 1
+    FS = oldfs
+    RS = oldrs
+    $0 = olddol0
+}
+</PRE>
+
+<P>
+<CODE>BEGIN</CODE>ルールではプライベート変数に<CODE>pwcat</CODE>が格納されているディ
+レクトリ名をセットする。このファイルは<CODE>awk</CODE>ライブラリを補助するのに
+使われるので、<TT>`/usr/local/libexec/awk'</TT>というディレクトリに置いてい 
+る。望むなら他のディレクトリに置くこともできる。
+
+</P>
+<P>
+関数<CODE>_pw_init</CODE>は三つの連想配列に三つのユーザー情報をコピーしている。
+これらの配列はユーザー名によって(<CODE>_pw_byname</CODE>)、ユーザーIDによって 
+(<CODE>_pw_byuid</CODE>)、出現順序によって(<CODE>_pw_bycount</CODE>)それぞれ添え字付
+けされる。
+
+</P>
+
+<P>
+変数<CODE>_pw_inited</CODE>は効率のために使われている。<CODE>_pw_init</CODE>は一度だ
+け呼ばれれば良い。
+
+</P>
+<P>
+この関数は<CODE>getline</CODE>を使って<CODE>pwcat</CODE>から情報を読み込んでいるので、
+最初に<CODE>FS</CODE>、<CODE>RS</CODE>、<CODE>$0</CODE>の値をセーブしている。これはこれら 
+の関数がユーザープログラムのどんなところからでも呼ばれる可能性があり、ユ
+ーザーが独自の<CODE>FS</CODE>や<CODE>RS</CODE>を設定している可能性があるので、それ 
+に対処するために必要なことである。
+
+</P>
+<P>
+関数のメイン部分ではループを使って、データベースの一行読み込み、読み込ん
+だ一行のフィールドへの分割、必要に応じて読み込んだ行を配列要素にセットと
+いう一連の手順を行っている。ループが完了したときに、<CODE>_pw_init</CODE>は
+パイプのクローズ、<CODE>_pw_inited</CODE>への1のセット、<CODE>FS</CODE>、<CODE>RS</CODE>、
+<CODE>$0</CODE>の値の復元といったクリーンアップ作業を行っている。
+
+</P>
+
+<P>
+<A NAME="IDX689"></A>
+
+<PRE>
+function getpwnam(name)
+{
+    _pw_init()
+    if (name in _pw_byname)
+        return _pw_byname[name]
+    return ""
+}
+</PRE>
+
+<P>
+<CODE>getpwnam</CODE>という関数はユーザー名を表わす文字列を引数としてとる。そ 
+のようなユーザーがデータベース中にあれば、適切な行を返し、ユーザーがみつ
+からなければ空文字列を返す。
+
+</P>
+<P>
+<A NAME="IDX690"></A>
+
+<PRE>
+function getpwuid(uid)
+{
+    _pw_init()
+    if (uid in _pw_byuid)
+        return _pw_byuid[uid]
+    return ""
+}
+</PRE>
+
+<P>
+同じように、<CODE>getpwid</CODE>という関数はユーザーID番号を引数にとる。データ
+ベース中に該当するユーザー番号があれば適切な行を返し、みつからなければ空
+文字列を返す。
+
+</P>
+<P>
+<A NAME="IDX691"></A>
+
+<PRE>
+function getpwent()
+{
+    _pw_init()
+    if (_pw_count &#60; _pw_total)
+        return _pw_bycount[++_pw_count]
+    return ""
+}
+</PRE>
+
+<P>
+関数<CODE>getpwent</CODE>は単純にデータベース中にあるエントリを一度に一つのエ 
+ントリを走査する。<CODE>_pw_count</CODE>は配列<CODE>_pw_bycount</CODE>中の現在位置を
+保持するのに使われている。
+
+</P>
+<P>
+<A NAME="IDX692"></A>
+
+<PRE>
+function endpwent()
+{
+    _pw_count = 0
+}
+</PRE>
+
+<P>
+関数<CODE>endpwent</CODE>は<CODE>_pw_count</CODE>をリセットする。
+これにより、<CODE>getpwent</CODE>に対する呼び出しは最初から繰り返されることになる。
+
+</P>
+<P>
+これら一連の関数をデザインするにあたって意識したことは、それらの関数それ
+ぞれがデータベース配列の初期化のために<CODE>_pw_init</CODE>を呼び出すとい 
+うことである。ユーザーデータベースを生成するために別のプロセスを実行する
+オーバーヘッド、それを走査するための入出力のためのオーバーヘッド、といっ
+たものはユーザーのメインプログラムが実際にこれらの関数を呼び出すときだけ
+にかかる。このライブラリファイルがユーザープログラムにロードされても使わ
+れなかった場合には、余計な実行時オーバーヘッドはかからない(もう一つの手 
+段として<CODE>_pw_init</CODE> の本体を<CODE>BEGIN</CODE>ルールに移動するというも
+のがある。これはプログラムを単純にはするが、必要ではないかもしれない余計
+なプロセスを実行することになる)。
+
+</P>
+<P>
+<CODE>_pw_init</CODE>の呼び出しは高価なものではない。それは<CODE>_pw_inited</CODE>と
+いう変数がデータの読み出しを二度以上行うことを防いでいるためである。もし、
+あなたの<CODE>awk</CODE>プログラムのすべての最後のサイクルを詰め込むことを心配
+しているのなら(??)、<CODE>_pw_inited</CODE>のチェックを<CODE>_pw_init</CODE>からとっ
+てしまい、それぞれの関数に複製することもできる。実際には、ほとんどの
+<CODE>awk</CODE>プログラムは入出力(の速度)に縛られており、気にする必要はなく、
+行った場合にはプログラムをメンテナンスしにくくしてしまうことになる。
+
+</P>
+<P>
+セクション <A HREF="gawk_17.html#SEC159">ユーザー情報を出力する</A>を参照,にある<CODE>id</CODE>プログラム
+はこれらの関数を使用している。
+
+</P>
+
+
+<H2><A NAME="SEC153" HREF="gawk_toc.html#SEC153">Reading the Group Database</A></H2>
+
+<P>
+<A NAME="IDX693"></A>
+<A NAME="IDX694"></A>
+<A NAME="IDX695"></A>
+<A NAME="IDX696"></A>
+グループデータベースに対する同様な操作のより詳しい議論は
+セクション <A HREF="gawk_16.html#SEC152">Reading the User Database</A>を参照,
+にある。
+そのシステムに伝統的な、よく知られている<TT>`/etc/group'</TT>というファイル 
+がある場合にも、POSIXの標準は情報にアクセスするためのCライブラリルーチン
+(<CODE>&#60;grp.h&#62;</CODE>と<CODE>getgrent</CODE>)を提供している。このファイル
+(<TT>`/etc/group'</TT>)があった場合でも、それに完全な情報があるとはかぎらない。
+このため、ユーザーデータベースを扱うのにその出力としてグループデータベース
+を出力する小さなCプログラムを作る必要があるのである。
+
+</P>
+<P>
+<A NAME="IDX697"></A>
+次に挙げるプログラムは、グループデータベースを"cat"するCプログラム
+<CODE>grcat</CODE>である。
+
+</P>
+<P>
+<A NAME="IDX698"></A>
+
+<PRE>
+/*
+ * grcat.c
+ *
+ * 印字可能なグループデータベースを生成する
+ *
+ * Arnold Robbins, arnold@gnu.org
+ * May 1993
+ * Public Domain
+ */
+
+#include &#60;stdio.h&#62;
+#include &#60;grp.h&#62;
+
+int
+main(argc, argv)
+int argc;
+char **argv;
+{
+    struct group *g;
+    int i;
+
+    while ((g = getgrent()) != NULL) {
+        printf("%s:%s:%d:", g-&#62;gr_name, g-&#62;gr_passwd,
+                                            g-&#62;gr_gid);
+        for (i = 0; g-&#62;gr_mem[i] != NULL; i++) {
+            printf("%s", g-&#62;gr_mem[i]);
+            if (g-&#62;gr_mem[i+1] != NULL)
+                putchar(',');
+        }
+        putchar('\n');
+    }
+    endgrent();
+    exit(0);
+}
+</PRE>
+
+<P>
+グループデータベースの各行は、一つのグループである。そこにあるフィールド
+はコロンで区切られ、個々のフィールドは以下に挙げるような情報を表わしてい
+る。
+
+</P>
+<DL COMPACT>
+
+<DT>Group Name
+<DD>
+グループ名。
+
+<DT>Group Password
+<DD>
+暗号化されたグループパスワード。実際にはこのフィールドは使われない。
+通常はこのフィールドは空であるか、<SAMP>`*'</SAMP>がセットされている。
+
+<DT>Group ID Number
+<DD>
+グループID番号を表わす数値。この数字はファイルの中で
+ユニークなもので必要がある。
+
+<DT>Group Member List
+<DD>
+カンマで区切られたユーザー名のリスト。これらのユーザーはそのグループのメ
+ンバーである。ほとんどのUNIXシステムは、ユーザーが同時に幾つかのグループ
+に所属することを許している。それができるシステムであれば、<TT>`/dev/user'</TT>
+を読んだときに所属しているグループIDの番号が、<CODE>$5</CODE>から<CODE>$NF</CODE> 
+までのフィールドに返ってくる
+(<TT>`/dev/user'</TT>は<CODE>gawk</CODE>の拡張であることに注意。
+セクション <A HREF="gawk_7.html#SEC66">Special File Names in <CODE>gawk</CODE></A>を参照.)。
+</DL>
+
+<P>
+次に<CODE>grcat</CODE>を実行したときの出力例を挙げる。
+
+</P>
+
+<PRE>
+$ grcat
+-| wheel:*:0:arnold
+-| nogroup:*:65534:
+-| daemon:*:1:
+-| kmem:*:2:
+-| staff:*:10:arnold,miriam,andy
+-| other:*:20:
+...
+</PRE>
+
+<P>
+以下に挙げるのは、グループデータベースから情報を得るための関数群である。
+このうち幾つかは同名のCライブラリ関数から来ている。
+
+</P>
+<P>
+<A NAME="IDX699"></A>
+
+<PRE>
+# group.awk -- グループファイルを扱うための関数
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+BEGIN    \
+{
+    # あなたのシステムにあわせて変更すること
+    _gr_awklib = "/usr/local/libexec/awk/"
+}
+
+function _gr_init(    oldfs, oldrs, olddol0, grcat, n, a, i)
+{
+    if (_gr_inited)
+        return
+
+    oldfs = FS
+    oldrs = RS
+    olddol0 = $0
+    FS = ":"
+    RS = "\n"
+
+    grcat = _gr_awklib "grcat"
+    while ((grcat | getline) &#62; 0) {
+        if ($1 in _gr_byname)
+            _gr_byname[$1] = _gr_byname[$1] "," $4
+        else
+            _gr_byname[$1] = $0
+        if ($3 in _gr_bygid)
+            _gr_bygid[$3] = _gr_bygid[$3] "," $4
+        else
+            _gr_bygid[$3] = $0
+
+        n = split($4, a, "[ \t]*,[ \t]*")
+        for (i = 1; i &#60;= n; i++)
+            if (a[i] in _gr_groupsbyuser)
+                _gr_groupsbyuser[a[i]] = \
+                    _gr_groupsbyuser[a[i]] " " $1
+            else
+                _gr_groupsbyuser[a[i]] = $1
+
+        _gr_bycount[++_gr_count] = $0
+    }
+    close(grcat)
+    _gr_count = 0
+    _gr_inited++
+    FS = oldfs
+    RS = oldrs
+    $0 = olddol0
+}
+</PRE>
+
+<P>
+<CODE>BEGIN</CODE>ルールではプライベート変数に<CODE>grcat</CODE>が置かれているディレ
+クトリをセットしている。これは<CODE>awk</CODE>ライブラリルーチンを手助けするの
+に使われるので、我々はこれを<TT>`/usr/local/libexec/awk'</TT>.に置くことを選
+択した。使用するシステムによっては、異なったディレクトリに置きたくなるか
+もしれない。
+
+</P>
+<P>
+これらのルーチンはユーザーデータベースルーチンと同じようなアウトラインに
+従っている(セクション <A HREF="gawk_16.html#SEC152">Reading the User Database</A>を参照)。
+<CODE>_gr_inited</CODE>という変数はグループデータベースを二度以上走査しな 
+いようにすることを保証するためのものである<CODE>_gr_init</CODE>という関数 
+は最初に、<CODE>FS</CODE>、<CODE>RS</CODE>、<CODE>$0</CODE>の値をセーブし、その後で
+<CODE>FS</CODE>と<CODE>RS</CODE>にグループ情報を走査するための値をセットしている。
+
+</P>
+<P>
+グループ情報は幾つかの連想配列に格納されている。これらの配列はグループ名
+(<CODE>_gr_byname</CODE>)、グループID番号(<CODE>_gr_bygid</CODE>)、データベ 
+ース中の位置(<CODE>_gr_bycount</CODE>)で添え字付けされる。さらにユーザー名
+(<CODE>_gr_groupsbyuser</CODE>)で添え字付けされる配列があり、その内容は各 
+ユーザーが所属しているグループがスペースで区切られているリストである。
+
+</P>
+<P>
+ユーザーデータベースとは異なり、同じグループのために複数のレコードが使わ
+れる可能性がある。これはあるグループに多数のメンバーが所属しているときに
+は一般的なことである。そのようなエントリのペアは次のような形式である。
+
+</P>
+
+<PRE>
+tvpeople:*:101:johny,jay,arsenio
+tvpeople:*:101:david,conan,tom,joan
+</PRE>
+
+<P>
+このため、<CODE>_gr_init</CODE>はグループ名やグループID番号が既にでてきたもの 
+かどうかをチェックしている。もし以前にでてきたものであれば、ユーザー名は
+単にそれまでのユーザーのリストに連結されるだけである(先に述べたように、 
+このプログラムには微妙な問題がある。最初に呼び出されたときには名前がない
+という仮定をしている。このプログラムでは追加するときに、(追加する)名前の
+前にカンマを置いている。これは、<CODE>$4</CODE>がすでにあるかどうかをチェック 
+していない)。
+
+</P>
+<P>
+最後に<CODE>_gr_init</CODE>は<CODE>grcat</CODE>に対するパイプをクローズし、<CODE>FS</CODE>、
+<CODE>RS</CODE>、<CODE>$0</CODE>の値を元に戻し、<CODE>_gr_count</CODE>を0で初期化(後で使用
+する)し、<CODE>_gr_inited</CODE>を非0にしている
+
+</P>
+<P>
+<A NAME="IDX700"></A>
+
+<PRE>
+function getgrnam(group)
+{
+    _gr_init()
+    if (group in _gr_byname)
+        return _gr_byname[group]
+    return ""
+}
+</PRE>
+
+<P>
+<CODE>getgrnam</CODE>関数はグループ名を引数にとり、そのグループが存在していれば
+それを返し、なければ空文字列を返す。
+
+</P>
+<P>
+<A NAME="IDX701"></A>
+
+<PRE>
+function getgrgid(gid)
+{
+    _gr_init()
+    if (gid in _gr_bygid)
+        return _gr_bygid[gid]
+    return ""
+}
+</PRE>
+
+<P>
+同様に<CODE>getgrgid</CODE>関数は引数にグループID番号をとり、そのグループIDを 
+元に情報を検索する。
+
+</P>
+<P>
+<A NAME="IDX702"></A>
+
+<PRE>
+function getgruser(user)
+{
+    _gr_init()
+    if (user in _gr_groupsbyuser)
+        return _gr_groupsbyuser[user]
+    return ""
+}
+</PRE>
+
+<P>
+<CODE>getgruser</CODE>関数は対応するCのライブラリ関数はない。
+この関数はユーザー名を引数にとり、そのユーザーがメンバーとなっている
+グループのリストを返す。
+
+</P>
+<P>
+<A NAME="IDX703"></A>
+
+<PRE>
+function getgrent()
+{
+    _gr_init()
+    if (++_gr_count in _gr_bycount)
+        return _gr_bycount[_gr_count]
+    return ""
+}
+</PRE>
+
+<P>
+<CODE>getgrent</CODE>関数はデータベースのエントリを一度に一エントリずつ
+走査していく。<CODE>gr_count</CODE>という変数はリスト中のポジションを
+保持するのに使われている。
+
+</P>
+<P>
+<A NAME="IDX704"></A>
+
+<PRE>
+function endgrent()
+{
+    _gr_count = 0
+}
+</PRE>
+
+<P>
+<CODE>endgrent</CODE>は<CODE>_gr_count</CODE>を0にリセットし、
+<CODE>getgrent</CODE>が再実行できるようにする。
+
+</P>
+<P>
+ユーザーデータベースを扱ったルーチンと同じように、各関数は<CODE>_gr_int</CODE>
+を配列の初期化のために呼び出している。その呼び出しは、これらの関数が使っ
+たときに<CODE>grcat</CODE>を実行する余計なオーバーヘッドを生じるだけである
+(<CODE>_gr_init</CODE>の本体を<CODE>BEGIN</CODE>ルールに移動したときと同じように)。
+
+</P>
+<P>
+作業のほとんどはデータベースの走査と、様々な連想配列の
+構築である。ユーザーの呼び出す関数はそれ自身は非常に単純であり、
+行う作業は<CODE>awk</CODE>の連想配列に頼っている。
+
+</P>
+<P>
+これらの関数を使った<CODE>id</CODE>プログラムが
+セクション <A HREF="gawk_17.html#SEC159">ユーザー情報を出力する</A>を参照,
+にある。
+
+</P>
+
+
+<H2><A NAME="SEC154" HREF="gawk_toc.html#SEC154">Naming Library Function Global Variables</A></H2>
+
+<P>
+<A NAME="IDX705"></A>
+<A NAME="IDX706"></A>
+て、変数は<STRONG>グローバル</STRONG>(global、プログラム全体から使用可能である)か、
+<STRONG>ローカル</STRONG>(local、特定の関数でだけ使用可能である)のいずれかであり、C
+でのスタティック(static)変数にあたるものはない。
+
+</P>
+<P>
+ライブラリ関数はしばしば、複数回の関数呼び出しの間に以前の情報を保存でき
+るようにするためのグロバール変数を必要とする。例えば、<CODE>getopt</CODE>の<CODE>_opti</CODE>
+という変数(セクション <A HREF="gawk_16.html#SEC151">コマンドラインオプションの処理</A>を参照)や、
+<CODE>mktime</CODE>で使われている<CODE>_tm_months</CODE>という配列
+(@pxref {Mktime Function, ,Turning Dates Into Timestamps})がある。
+このような変数は、ライブラリ中の一つの関数だけが使用するので<STRONG>プライベート</STRONG>
+(privat e)であると呼ばれる。
+
+</P>
+<P>
+ライブラリ関数を記述するとき、プライベート変数の名前には
+他のライブラリ関数や、ユーザーのメインプログラムで使われている変数と
+同じ名前をつけないようにすべきである。たとえば、<SAMP>`i'</SAMP>とか
+<SAMP>`j'</SAMP>といった名前はよい選択ではない。なぜなら、これは
+ユーザープログラム中で、しばしば別の目的で使用されるような
+変数名であるからである。
+
+</P>
+<P>
+この章で挙げたサンプルプログラムでは、プライベート変数は
+その名前がすべてアンダースコア(<SAMP>`_'</SAMP>)から始まっていた。
+ユーザーは通常、変数名の先頭にはアンダースコアを使用せず、
+そのためこの命名規則はユーザープログラムと同じ名前の変数を
+使ってしまうという事故にあう機会を減らすのである。
+
+</P>
+<P>
+それに加えて、幾つかのライブラリ関数ではその変数を使用している関数をわか
+りやすくするために、プリフィックス(prefix)を使っている。例えば、
+<CODE>mktime</CODE>では<CODE>_tm_months</CODE>を使っており(セクション <A HREF="gawk_16.html#SEC148">Turning Dates Into Timestamps</A>を参照)、データベースルーチンでは<CODE>_pw_byname</CODE>という
+ものを使っていた
+(セクション <A HREF="gawk_16.html#SEC152">Reading the User Database</A>を参照)。
+この命名規則は変数名の衝突が起こる可能性をさらに低くでき、使うことを推奨
+する。この命名規則は、変数名と、プライベート関数の名前の両方に等しく適用
+できることに注意すること。
+
+</P>
+<P>
+私はこの命名規則を使ってライブラリルーチンの全てを書き直すこともできたが、
+私(著者)自身の<CODE>awk</CODE>プログラミングのスタイルがどのように進歩してきた
+かを説明するため、またこの議論についての若干のとっかかりを提供するために、
+あえて書き直しは行わなかった。
+
+</P>
+<P>
+変数の名前付けに関しての最後の注意事項として、関数がメインプログラムから
+使用できるようなグローバル変数を作った場合、そういった変数の名前を大文字
+から始めるのがよい命名規則である。例えば、<CODE>getopt</CODE>の<CODE>Opterr</CODE>や
+<CODE>Optind</CODE>といった変数がその例である
+(セクション <A HREF="gawk_16.html#SEC151">コマンドラインオプションの処理</A>を参照)。
+先頭の大文字はグローバルであることを示し、また全てが大文字ではない変数名
+なので、<CODE>FS</CODE>のような組込み変数の一つではないことを示している。
+
+</P>
+<P>
+ライブラリ関数中の、状態を保持し続ける必要がない<EM>すべて</EM>の変数をロ 
+ーカルとして宣言することも同様に重要なことであるもしこれが行われていなけ
+れば、そのような変数がユーザープログラムでたまたま使われる可能性があり、
+それによって追いかけるのが非常に難しいバグを導きかねないのである。
+
+</P>
+
+<PRE>
+function lib_func(x, y,    l1, l2)
+{
+    ...
+    <VAR>use variable</VAR> some_var  # some_var could be local
+    ...                   # but is not by oversight
+}
+</PRE>
+
+<P>
+<A NAME="IDX707"></A>
+異なる命名規則として、Tclコミュニティで一般的に使われている
+ライブラリ関数や"パッケージ"が必要としている値を一つの連想配列を使って
+保持するというものがある。これは、実際に使用するグローバルな名前を
+劇的に減らすものである。例えば、
+セクション <A HREF="gawk_16.html#SEC152">Reading the User Database</A>を参照.
+で説明されている関数では、
+<CODE>_pw_inited</CODE>, <CODE>_pw_awklib</CODE>, <CODE>_pw_total</CODE>,
+<CODE>_pw_count</CODE>といった変数の代わりに
+<CODE>PW_data["inited"]</CODE>, <CODE>PW_data["total"]</CODE>,
+<CODE>PW_data["count"]</CODE>,  <CODE>PW_data["awklib"]</CODE>
+を使うのである。
+
+</P>
+<P>
+このセクションで説明された命名規則は実際には協定といったものであり、
+プログラムを書くときにはこれに
+必ず従わなければならないというものではないが、
+我々はこのような方法をとることをお勧めする。
+
+</P>
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_15.html">前</A>, <A HREF="gawk_17.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

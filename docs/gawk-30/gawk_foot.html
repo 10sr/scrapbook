@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - Footnotes</TITLE>
+</HEAD>
+<BODY>
+<H1>Effective AWK Programming</H1>
+<H3><A NAME="FOOT1" HREF="gawk_1.html#FOOT1">(1)</A></H3>
+<P>これらのコマンドはPOSIXに準拠したシステムで使用可能であ 
+る。他のオペレーティングシステムを使っているのなら、あなたはさらに
+入出力のリダイレクトやパイプなどの概念に親しむ必要がある。
+<H3><A NAME="FOOT2" HREF="gawk_1.html#FOOT2">(2)</A></H3>
+<P>訳注: 原書の場合
+<H3><A NAME="FOOT3" HREF="gawk_3.html#FOOT3">(3)</A></H3>
+<P>これらのシステムでは、しばしば<CODE>gawk</CODE>がそのシス 
+テムでの<CODE>awk</CODE>として用いられている。
+<H3><A NAME="FOOT4" HREF="gawk_3.html#FOOT4">(4)</A></H3>
+<P><SAMP>`#!'</SAMP>構文はLinuxやバークレイUNIX、System V 
+Release4と、一部のRelease 3から派生したUNIXシステムで使用できる
+<H3><A NAME="FOOT5" HREF="gawk_3.html#FOOT5">(5)</A></H3>
+<P><SAMP>`#!'</SAMP>で始まる行はインタープリタのフルパス名とプログラムを
+実行するための引数リストのリストがある。
+最初の引数は実行するためのものであり、その他はオプションのインタープリタ
+に渡す初期コマンドライン引数である。オペレーティングシステムは、インター
+プリタを与えられた<CODE>awk</CODE>プログラムのフルパス名から起動し、引数リスト
+の残りを<CODE>awk</CODE>に対するオプション指定か、データファイル、もしくはその
+両方にする。
+<H3><A NAME="FOOT6" HREF="gawk_6.html#FOOT6">(6)</A></H3>
+<P>POSIX <CODE>awk</CODE>では、改行はフィール
+ドを分ける空白とはみなされない。
+<H3><A NAME="FOOT7" HREF="gawk_6.html#FOOT7">(7)</A></H3>
+<P>
+<CODE>sed</CODE>ユーティリティは"ストリームエディタ"である。その動作は、やは
+りPOSIXの標準で定義されている。
+<H3><A NAME="FOOT8" HREF="gawk_8.html#FOOT8">(8)</A></H3>
+<P><CODE>awk</CODE>内部ではすべての数値は倍精度の浮動小数点数であ
+る。もしこの言葉の意味が判らなくても気にすることはない。
+<H3><A NAME="FOOT9" HREF="gawk_11.html#FOOT9">(9)</A></H3>
+<P>
+POSIX の <CODE>awk</CODE>では、改行は空白とみなされない。
+<H3><A NAME="FOOT10" HREF="gawk_11.html#FOOT10">(10)</A></H3>
+<P>
+一部の初期のUNIX上の<CODE>awk</CODE>では、処理すべきデータファイルがあったとしても
+<CODE>FILENAME</CODE>を<CODE>"-"</CODE>に初期化していた。この振る舞いは誤ったものであり、
+こうなることを期待してプログラムを作成するべきではない。
+<H3><A NAME="FOOT11" HREF="gawk_13.html#FOOT11">(11)</A></H3>
+<P>
+コンピュータが作り出す乱数は本当の乱数ではない。
+これらは"擬似乱数"として知られている。これは作られた数値群は
+ランダムのように見えるけれども、何度でも同じ順序の乱数系列を作り出すことが
+できるのだ。
+<H3><A NAME="FOOT12" HREF="gawk_13.html#FOOT12">(12)</A></H3>
+<P>
+この結果は故意ではない。
+<H3><A NAME="FOOT13" HREF="gawk_13.html#FOOT13">(13)</A></H3>
+<P>
+April, 1999現在、最終的な承認状態にあり、
+1997年中に出版されることが期待されている。
+<H3><A NAME="FOOT14" HREF="gawk_13.html#FOOT14">(14)</A></H3>
+<P>
+標準出力がターミナルデバイスに接続されていれば、そのプログラムは
+対話的なものである。
+<H3><A NAME="FOOT15" HREF="gawk_13.html#FOOT15">(15)</A></H3>
+<P>閏秒のために60になる可能性があるので、60までとなっている。
+<H3><A NAME="FOOT16" HREF="gawk_13.html#FOOT16">(16)</A></H3>
+<P>これは ANSI の標準CではCバージョンの<CODE>strftime</CODE>のその
+ような場合の動作が定義されていないからで、<CODE>gawk</CODE>が使うであろうそのシ
+ステムでの<CODE>strftime</CODE>それならば同様の結果となる。典型的なのは変換指定
+文字が戻り値の文字列にないということだろう。
+<H3><A NAME="FOOT17" HREF="gawk_13.html#FOOT17">(17)</A></H3>
+<P>もしこの事がわからなくても気にすることはない。
+これらはプログラムの"国際化"(internationalize)を容易にするためのも
+のである。
+<H3><A NAME="FOOT18" HREF="gawk_15.html#FOOT18">(18)</A></H3>
+<P>あなたの使っている<CODE>gawk</CODE>は<TT>`/usr/local/share/awk'</TT>
+以外のディレクトリを使っているかもしれない。これは<CODE>gawk</CODE>がどのよう
+にビルドされたり、インストールされたかに依存していて、実際のディレクト
+リは<CODE>gawk</CODE>がコンフィギュレーションされたときに生成された
+<SAMP>`$(datadir)'</SAMP>の値になる。しかし、これを気にする必要はない。
+<H3><A NAME="FOOT19" HREF="gawk_16.html#FOOT19">(19)</A></H3>
+<P>
+一部の<CODE>awk</CODE>処理系では、関数本体で<CODE>next</CODE>を実行することを
+許していない。もしそのような処理系を使っているのなら、
+それに対処する必要がある。
+<H3><A NAME="FOOT20" HREF="gawk_16.html#FOOT20">(20)</A></H3>
+<P>ASCIIは多くの国で128から255までの値を
+各国固有のキャラクタの定義に使っている。もし使用しているシステムが
+これらの拡張を使っているのならば、単純にループを0から255にすれば良い。
+<H3><A NAME="FOOT21" HREF="gawk_16.html#FOOT21">(21)</A></H3>
+<P>これはPOSIXシステムの 開始時間であり、他のシステムでは
+異なったものかもしれない。
+<H3><A NAME="FOOT22" HREF="gawk_17.html#FOOT22">(22)</A></H3>
+<P>セクション <A HREF="gawk_16.html#SEC150">Noting Data File Boundaries</A>を参照.
+にあるコードを確かめるように。なぜ<CODE>wc</CODE>では
+<CODE>endfile</CODE>の中で<CODE>FNR</CODE>の値を使わずに、
+<CODE>lines</CODE>という変数を使わねばらないのだろうか?
+<H3><A NAME="FOOT23" HREF="gawk_17.html#FOOT23">(23)</A></H3>
+<P>古い、非POSIXシステムでは、<CODE>tr</CODE>
+はしばしばこのリストを囲むブラケットを必要とせず、したがってクォートの必
+要もなかった。これは仕様である。
+<H3><A NAME="FOOT24" HREF="gawk_17.html#FOOT24">(24)</A></H3>
+<P>このプログラムは、<CODE>gawk</CODE>に文字列中の個々のキャラクタを配 
+列の要素に分割するという能力が追加される前に書かれた。この能力はプログラ
+ムをどのように単純化できるだろうか?
+<H3><A NAME="FOOT25" HREF="gawk_17.html#FOOT25">(25)</A></H3>
+<P>"Real world"とは、"実際
+に何かをするために使われるプログラム"と定義される。
+<H3><A NAME="FOOT26" HREF="gawk_17.html#FOOT26">(26)</A></H3>
+<P>幾つかの、非常に古い
+<CODE>awk</CODE>では、ファイルが存在するけれどもそれが空であるときに
+<SAMP>`getline junk &#60; t'</SAMP> という検査が無限ループに
+落ち込む可能性がある。Caveat Emptor(買手注意?)。
+<H3><A NAME="FOOT27" HREF="gawk_19.html#FOOT27">(27)</A></H3>
+<P><TT>`/usr/local/share/awk'</TT>以外のパスが使われる
+場合もある。これは<CODE>gawk</CODE>がどのようにビルドされ、インストールされたかに
+よる。
+<H3><A NAME="FOOT28" HREF="gawk_19.html#FOOT28">(28)</A></H3>
+<P>POSIX <CODE>awk</CODE>では、改行はフィールドを分割しない
+</BODY>
+</HTML>

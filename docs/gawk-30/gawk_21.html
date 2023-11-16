@@ -1,0 +1,481 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - Implementation Notes</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_20.html">前</A>, <A HREF="gawk_22.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC222" HREF="gawk_toc.html#SEC222">Implementation Notes</A></H1>
+
+<P>
+この付録には主に<CODE>gawk</CODE>の実装者(implementor)や保守者(maintainer)にと
+って重要な情報がある。すべては他の実装系ではなく、特別に<CODE>gawk</CODE>にあ 
+てはまる。
+
+</P>
+
+
+
+<H2><A NAME="SEC223" HREF="gawk_toc.html#SEC223">互換性とデバッグ</A></H2>
+
+<P>
+POSIXの<CODE>awk</CODE>にはない、GNUによる<CODE>awk</CODE>言語やプログラムに対する拡
+張はセクション <A HREF="gawk_18.html#SEC179">POSIX <CODE>awk</CODE>にはない<CODE>gawk</CODE>の拡張</A>を参照にまとめられている。これ
+らの機能は全て、<SAMP>`--traditional'</SAMP> オプションや <SAMP>`--posix'</SAMP>オプショ
+ンと共に<CODE>gawk</CODE>を起動することにより禁止することができる。
+
+</P>
+<P>
+<CODE>gawk</CODE>がデバッグのために<SAMP>`-DDEBUG'</SAMP>をつけてコンパイルされた
+場合、使えるコマンドラインオプションが一つ増える。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>-W parsedebug</CODE>
+<DD>
+<DT><CODE>--parsedebug</CODE>
+<DD>
+プログラムを解析した結果である解析スタックの情報を出力する。
+</DL>
+
+<P>
+このオプションは<CODE>gawk</CODE>開発者(developer)にのみ適用され、一般のユーザー
+は使えない。実行速度を低下させてしまうので、あなたの使っている<CODE>gawk</CODE>ではこのオ
+プションが使えないようにコンパイルされているだろう。
+
+</P>
+
+
+<H2><A NAME="SEC224" HREF="gawk_toc.html#SEC224"><CODE>gawk</CODE>に追加を行う</A></H2>
+
+<P>
+もしあなたがあなたが有意義な方法でgawkの質を高めることを望むなら、
+あなたは全く自由にそれを行うことができる。  
+重要なのは、フリーソフトウェアの所有についてのポイントであり、
+ソースコードは自由に入手可能であり、あなたの望むように
+変更できる(セクション <A HREF="gawk_23.html#SEC230">GNU GENERAL PUBLIC LICENSE</A>を参照)。
+
+</P>
+<P>
+このセクションでは、現在我々が<CODE>gawk</CODE>に対して行なおうとしている拡張の説
+明を簡単に行なう。
+
+</P>
+
+
+
+<H3><A NAME="SEC225" HREF="gawk_toc.html#SEC225">Adding New Features</A></H3>
+
+<P>
+<A NAME="IDX769"></A>
+<A NAME="IDX770"></A>
+あなたが<CODE>gawk</CODE>に対して好きなように新しい機能を追加することは自由で 
+ある。しかし、あなたがおこなった変更点を<CODE>gawk</CODE>の配布キットに含めた 
+いと思うのなら、その変更点を私(元の開発者)が適用できるようにするための幾
+つかのステップを通る必要がある。
+
+</P>
+
+<OL>
+<LI>
+
+最新バージョンを入手する。これは最新の<CODE>gawk</CODE>の配布バージョンに対し 
+ての変更がもっとも手間がかからないものだからである。もし、あなたの使った
+<CODE>gawk</CODE>が非常に古いバージョンだったりしたら、私は変更点のすべてを取 
+り込むことはできないかもしれない。<CODE>gawk</CODE>の最新バージョンの入手に関 
+する情報はセクション <A HREF="gawk_20.html#SEC204">Getting the <CODE>gawk</CODE> Distribution</A>を参照。
+
+<LI>
+
+<CITE>GNU Coding Standards</CITE>に従う。
+このドキュメントはGNUソフトウェアがどのように書かれるべきかについて
+説明している。もし、まだこれを読んだことがないのであれば、
+どうぞ<CODE>gawk</CODE>の変更を<EM>始める前に</EM>読んで欲しい。
+(<CITE>GNU Coding Standards</CITE>は、FSFからのAutoconfの
+配布の一部として入手することができる)。
+
+<A NAME="IDX771"></A>
+<A NAME="IDX772"></A>
+<LI>
+
+<CODE>gawk</CODE>のスタイルを使用する。
+<CODE>gawk</CODE>のCソースコードは<CITE>GNU Coding Standards</CITE>に従っているが、
+幾つかの小さな例外がある。ソースコードのフォーマットは(特にブレースの
+位置について)"K&#38;R"スタイルを使用しており、タブを使っている。簡単に
+まとめると、<CODE>gawk</CODE>のコーディングルールは、
+
+
+<UL>
+<LI>
+
+関数を定義するときにはオールドスタイル(非プロトタイプ)の
+関数ヘッダを使う。
+
+<LI>
+
+関数名をそれがある行の先頭に置く。
+
+<LI>
+
+たとえ戻り値の型が<CODE>int</CODE>であっても、関数の戻り値の型を
+関数名と関数の引数がある行の上の行に記述する。
+
+<LI>
+
+関数の引数を宣言するときにはインデントをつけない。
+
+<LI>
+
+制御構造(<CODE>if</CODE>, <CODE>while</CODE>, <CODE>for</CODE>, <CODE>do</CODE>, <CODE>switch</CODE>,
+<CODE>return</CODE>)を使う場合のカッコの回りには空白を置く。
+
+<LI>
+
+関数呼び出しに使うカッコの前にはスペースを置かない。
+
+<LI>
+
+すべてのCの演算子の回りには空白を置き、関数呼び出し中の
+カンマの後にも空白を置く。
+
+<LI>
+
+多重の副作用を作り出すためにカンマ演算子を使わないこと。
+ただし、<CODE>for</CODE>ループの初期化部分や、incremnt part、
+マクロの本体は除く。
+
+<LI>
+
+インデントにはタブコードを使い、スペースを使わない。
+
+<LI>
+
+"K&#38;R"のカッコのレイアウトスタイルを使う。
+
+<LI>
+
+<CODE>if</CODE>文、<CODE>while</CODE>文、<CODE>for</CODE>文の条件部分、
+<CODE>switch</CODE>文の<CODE>case</CODE>では、
+ポインタやキャラクタの値だけの代わりに、
+<CODE>NULL</CODE>や<CODE>'\0'</CODE>に対する比較を使う。
+
+<LI>
+
+<CODE>1</CODE>や<CODE>0</CODE>の代わりに、
+<CODE>TRUE</CODE>、<CODE>FALSE</CODE>、<CODE>NULL</CODE>といった
+シンボリックな定数や、適切なところで<CODE>\0</CODE>というキャラクタ定数
+を使用する。
+
+<LI>
+
+関数毎にその関数を説明するコメントをつける。
+
+<LI>
+
+<SAMP>`#elif'</SAMP>を使わない。
+UNIX上で動作する多くの古いCコンパイラはこれを扱うことができない。
+
+<LI>
+
+スタックからメモリーを割り付ける関数である<CODE>alloca</CODE>を使わない。
+これを使用することによって、(割り付けた領域を陽にfreeしなくても良いという)
+ちょっとした利益を受けるよりも重大なトラブルが引き起こされる。
+<CODE>alloca</CODE>の代わりに、<CODE>malloc</CODE>と<CODE>free</CODE>を使うように。
+</UL>
+
+もし私(原著者)があなたのコードを、このようなコーディングスタイルに書き直
+さなければならないのならば、私はそれを面倒に思うだろう。
+
+<LI>
+
+appropriate paper workにサインする準備をする。FSFにあなたの変更を配布さ 
+せるようにするには、その変更をパブリックドメインに置き、有効なサイン付き
+の声明書を提出するか、変更点に関する著作権をFSFに譲渡するかのどちらかを 
+行わなければならない。これらのアクションは両方とも簡単なものであり、既に
+<EM>多くの</EM>人達がこれを行っている。
+もしなにか疑問があれば、私(セクション <A HREF="gawk_20.html#SEC220">問題やバグの報告</A>を参照)、
+か、<CODE>gnu@gnu.org</CODE>に連絡して欲しい
+(セクション <A HREF="gawk_20.html#SEC220">問題やバグの報告</A>を参照)。
+
+<LI>
+
+ドキュメントの更新。
+あなたの新しいコードに沿って、このマニュアルのための新しいセクショ
+ン、もしくは章を提供して欲しい。もし可能ならば、通常のフォーマットされて
+ないASCIIテキストではなく(それでもないよりは良いが)、Texinfoを使って欲し
+い。<CITE>Effective AWK Programming</CITE>で使っている書式は、Texinfoソースファイルの
+<SAMP>`@bye'</SAMP>の後にある。可能ならば、マニュアルページも同じように更新して
+欲しい。
+
+あなたは同様にドキュメントの変更に対する手続き書類に署名しなければ
+ならないだろう。
+
+<LI>
+
+変更に関しての文脈差分(context diff)または 単一化差分(unified diff)を提 
+出する。オリジナルの<CODE>gawk</CODE>のソースツリーと、あなたの修正したバージ 
+ョンの<CODE>gawk</CODE>との比較を<SAMP>`diff -c -r -N'</SAMP> か<SAMP>`diff -u -r -N'</SAMP>を
+使って行う(私は文脈差分のほうが読みやすいと思う。しかし、単一化差分のほ 
+うが小さくなる)。ここで、GNUバージョンの<CODE>diff</CODE>を使うことをお薦めす 
+る。<CODE>diff</CODE>の実行によって生成された出力を私に送って欲しい。電子メイ 
+ルの情報はセクション <A HREF="gawk_20.html#SEC220">問題やバグの報告</A>を参照。
+
+この書式を使う事によって、私があなたの変更を<CODE>gawk</CODE>のソースコードの 
+マスターバージョンに(<CODE>patch</CODE>を使って)適用するのが簡単になる。もし変
+更を手作業でやる必要があるならテキストエディタを使って行うが、特に変更点
+が多数あった場合には私はそれをできないかもしれない。
+</OL>
+
+<P>
+多くの作業があるように思えるかもしれないが、あなたは新しいコードを書くこ
+とができたとして、私はそれをメンテナンスし、サポートしなければならない
+ということを忘れないで欲しい。
+
+</P>
+
+
+<H3><A NAME="SEC226" HREF="gawk_toc.html#SEC226">Porting <CODE>gawk</CODE> to a New Operating System</A></H3>
+
+<P>
+<A NAME="IDX773"></A>
+<CODE>gawk</CODE>を新しいオペレーティングシステムに移植したい場合、
+以下に挙げるような幾つかのステップがある。
+
+</P>
+
+<OL>
+<LI>
+
+コーディングスタイル、diffの提出などに関して
+セクション <A HREF="gawk_21.html#SEC225">Adding New Features</A>を参照,にある
+ガイドラインに従う。
+
+<LI>
+
+移植を行うときには、あなたの書くコードは、<CODE>gawk</CODE>の残りの部分や、他 
+の移植と共存しなければならないということに注意すること。システムに関係な
+い部分のコードを変更しないようにし、もし可能ならば、移植のためのコードを
+単に<SAMP>`#ifdef'</SAMP>をばらまくような形で行わないこと。
+
+もし特定なシステムのために必要とされた変更が、コード全体のあまりに多くに
+影響するならば、私は恐らくその変更を受け入れないだろう。このような場合で
+も、もちろん、あなたはあなたの行った変更を
+GPL(セクション <A HREF="gawk_23.html#SEC230">GNU GENERAL PUBLIC LICENSE</A>を参照).
+に従って配布することができる。
+
+<LI>
+
+<CODE>gawk</CODE>を構成するファイルの幾つかはFree Software Foundationの他の人 
+々によってメンテナンスされている。したがって、はっきりした理由がない限り
+は、そのようなコードの変更は行うべきではない。つまり、変更は不可能ではな
+いが、これらにファイルに対する変更は慎重に、注意深く調べられることになる。
+該当するファイルとしては、<TT>`alloca.c'</TT>, <TT>`getopt.h'</TT>, <TT>`getopt.c'</TT>,
+<TT>`getopt1.c'</TT>, <TT>`regex.h'</TT>, <TT>`regex.c'</TT>, <TT>`dfa.h'</TT>,
+<TT>`dfa.c'</TT>, <TT>`install-sh'</TT>, <TT>`mkinstalldirs'</TT>がある。
+
+<LI>
+
+移植をメンテナンスし続けることを厭わないこと。UNIX以外のオペレーティング
+システムは、そのようなシステムで<CODE>gawk</CODE>をコンパイルしたり実行したり 
+するのに必要なコードをメンテナンスしているボランティアによってサポートさ
+れている。もし、その様なメンテナンスを行うボランティアが誰もいなければ、
+その移植はサポート外のものとなり、配布キットから取り除く必要が生じるかも
+しれない。
+
+<LI>
+
+適切な<TT>`gawkmisc.???'</TT>ファイルを提供する。各移植はオペレーティングシ 
+ステム固有の機能を実装するそれぞれの<TT>`gawkmisc.???'</TT>を持っている。こ 
+れはコード本体に<SAMP>`#ifdef'</SAMP>を使って埋めこむよりも明快である。メインソ 
+ースディレクトリにある<TT>`gawkmisc.c'</TT>は適切な<TT>`gawkmisc.???'</TT>ファイ
+ルを各サブディレクトリからインクルードする。それらも同様に更新することを
+忘れないように。
+
+各移植毎の<TT>`gawkmisc.???'</TT>ファイルは、
+移植先のマシンやオペレーティングシステムを連想させるような拡張子がついている。
+たとえば、<TT>`pc/gawkmisc.pc'</TT> や<TT>`vms/gawkmisc.vms'</TT>といったものがある。
+単なる<TT>`gawkmisc.c'</TT>ではなく別々の拡張子を使うことによって、
+ファイルを移植ごとのサブディレクトリからメインのサブディレクトリに
+本当の<TT>`gawkmisc.c'</TT>ファイルを壊すことなく持ってくることが
+可能になる(現在のところ、これはMS-DOSとOS-2への移植のみの事柄である)。
+
+<LI>
+
+あなたの使っているオペレーティングシステムで必要となる<TT>`Makefile'</TT>、C
+のソースファイルおよびヘッダファイルを提供する。あなたの書いたコードは別
+のサブディレクトリに入るようにすべきで、ファイル名は使用するオペレーティ
+ングシステムやマシンと同じか、簡単に連想できるような名前を持っているよう
+にする。
+
+<LI>
+
+ドキュメントを更新する。
+あなたの移植したシステム上で<CODE>gawk</CODE>をインストール、コンパイル
+するのに必要なステップを記述したこのマニュアルのセクション
+を書いて欲しい。
+
+<LI>
+
+適切な事務手続きに署名する準備をする。FSFがあなたのコードを配布するため 
+に、あなたはあなたのコードをパブリックドメインに置いてそのための署名され
+た宣言書を提出するか、あなたのコードの著作権をFSFに委譲するかしなければ 
+ならない。
+</OL>
+
+<P>
+これらのステップに従うことによって、あなたの<CODE>gawk</CODE>に対する変更をま 
+とめることが容易になり。すでにある他のオペレーティングシステムへ移植する
+ためのコードと問題なく共存できるようになるのである。
+
+</P>
+<P>
+あなたが提供し、メンテナンスするコードの中では、コーディングスタイルやブ
+レースの配置をあなたの好きなようにすることができる。
+
+</P>
+
+
+<H2><A NAME="SEC227" HREF="gawk_toc.html#SEC227">将来予定されている拡張</A></H2>
+<P>
+<A NAME="IDX774"></A>
+<A NAME="IDX775"></A>
+
+<PRE>
+<I>AWKはPERLに似た言語であるが、ちょっとばかし洗練されている。</I>
+Arnold Robbins
+
+<I>おい!</I>
+Larry Wall
+</PRE>
+
+<P>
+
+<P>
+このセクションでは、現在我々が<CODE>gawk</CODE>に対して
+行おうとしている拡張や、可能な改良点について簡単に説明する。
+<CODE>gawk</CODE>の配布キットにある<TT>`FUTURES'</TT>
+というファイルにはこれらの拡張がリストアップされている。
+
+</P>
+<P>
+以下のリストは<CODE>awk</CODE>プログラマーにとって有用な、
+将来行われるだろう改良案である。
+
+</P>
+<DL COMPACT>
+
+<DT>ローカライズ
+<DD>
+GNUプロジェクトは複数言語(multiple languages)のサポートを開始した。
+少なくとも、<CODE>gawk</CODE>が警告やエラーのメッセージを英語以外の
+言語で出力することを可能とする。
+これはおそらく、<CODE>awk</CODE>プログラムも同様に複数言語機能
+を使えるようになり、<CODE>gawk</CODE>そのものとは分離される。
+
+<DT>データベース
+<DD>
+<CODE>awk</CODE>の配列をGDBM/NDBM/SDBMのファイルにマッピングすることを
+可能にする。
+
+<DT>配列 <CODE>PROCINFO</CODE>
+<DD>
+プロセスに関係した情報を提供する特殊ファイル
+(セクション <A HREF="gawk_7.html#SEC66">Special File Names in <CODE>gawk</CODE></A>を参照)
+は、同じ情報をより簡単なやり方で提供する
+配列<CODE>PROCINFO</CODE>に取って代わられる。
+
+<DT><CODE>lint</CODE> によるより多くの警告
+<DD>
+移植性のためのチェック事項をより多くする。
+
+<DT>サブプロセスの環境の制御
+<DD>
+<CODE>gawk</CODE>のプログラム中で配列<CODE>ENVIRON</CODE>の内容を
+変更すると、<CODE>gawk</CODE>から実行する子プロセスにそれが伝播する。
+
+</DL>
+
+<P>
+以下のリストは<CODE>gawk</CODE>の能力をより向上させることのできる
+改良である。
+
+</P>
+<DL COMPACT>
+
+<DT>改良された<CODE>dfa</CODE>
+<DD>
+GNU <CODE>grep</CODE>から持ってきた<CODE>dfa</CODE>パターンマッチャーは幾つかの問題を 
+抱えている。新しく作るにしろ、問題点を修正するにしろ、一部の重要な正規表現
+のマッチングがこれを扱っている。
+
+<DT>mmapの使用
+<DD>
+<CODE>mmap</CODE>システムコールをサポートしているシステムでは、それを
+使うことによってファイルからの入力を高速化し、入力バッファの
+管理をかなり簡単にできるだろう。
+
+<DT>GNU <CODE>malloc</CODE>の使用
+<DD>
+<CODE>gawk</CODE>は動的なメモリ割当を多用してるので、GNUによる
+<CODE>malloc</CODE>を使うことによって<CODE>gawk</CODE>を高速化できる可能性がある。
+
+</DL>
+
+
+
+<H2><A NAME="SEC228" HREF="gawk_toc.html#SEC228">改良の提案</A></H2>
+<P>
+以下に挙げるのは <CODE>gawk</CODE>ハッカーが望むであろう幾つかの
+プロジェクトである。作業に要するのは数日から数週間であるが、
+プロジェクトやプログラマーの能力にもよる。
+もしなんらかの改良を行ったのなら、GNUプロジェクトの担当者まで
+送って欲しい。
+<CODE>gawk</CODE>に新しく機能を追加するときに従うガイドラインは
+セクション <A HREF="gawk_21.html#SEC225">Adding New Features</A>を参照,
+にある。
+メンテナンス担当者へコンタクトするための情報は
+セクション <A HREF="gawk_20.html#SEC220">問題やバグの報告</A>を参照.
+
+</P>
+
+<OL>
+<LI>
+
+<CODE>awk</CODE>プログラムのコンパイル。<CODE>gawk</CODE>は与えられた文法を解析木に変換
+するのにBison(YACCライクな)パーサを使っている。解析木は単純な再帰的評価器に
+よって実行される。このやり方は、再帰的評価器が単純なことであっても多くの手続
+きを呼出す為に大きなオーバーヘッドを招く。
+
+<CODE>gawk</CODE>がスクリプトを解析し、ユーザーがコンパイルできるような Cプログラ
+ムに変換するのを可能にする為に、普通のCコンパイラと、必要とされる関数全て
+(正規表現、フィールド、連想配列、type coercion など)を提供する
+特別な<CODE>gawk</CODE>ライブラリが使われる。
+
+もっと実現しやすいのは<CODE>awk</CODE>の中間フェイズで解析木を、GNU Emacs Lispで
+使用されているようなリニアバイトコードに変換するということである。再帰的評
+価器はstraight line byte code インタプリタに置き換えられるだろう。このイン
+タプリタはコンパイルしたプログラムの実行速度と<CODE>gawk</CODE>の現在の動作
+速度の中間で動作する。
+
+<LI>
+
+The programs in the test suite could use documenting in this マニュアル.
+テスト用のプログラムをこのマニュアルに記述する。
+
+<LI>
+
+そのほかのアイデアについては<TT>`FUTURES'</TT>というファイルを参照のこと。
+もしここに挙げた以外に良いアイデアがあれば我々に教えて欲しい。
+</OL>
+
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_20.html">前</A>, <A HREF="gawk_22.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

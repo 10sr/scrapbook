@@ -1,0 +1,3119 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - 実用的な awk プログラム</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_16.html">前</A>, <A HREF="gawk_18.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC155" HREF="gawk_toc.html#SEC155">実用的な <CODE>awk</CODE> プログラム</A></H1>
+
+<P>
+この章ではあなたが読むための<CODE>awk</CODE>プログラムの寄せ集めを提供する。
+この章には二つのセクションがある。最初の章は
+幾つかの一般的なPOSIXユーティリティの<CODE>awk</CODE>
+バージョンを提供し、二番目の章は面白いプログラムの
+福袋(grab-bag)である。
+
+</P>
+<P>
+これらのプログラムの多くは
+セクション <A HREF="gawk_16.html#SEC141"><CODE>awk</CODE>の関数ライブラリ</A>を参照.
+にあるライブラリ関数を使用している。
+
+</P>
+
+
+
+<H2><A NAME="SEC156" HREF="gawk_toc.html#SEC156">Re-inventing Wheels for Fun and Profit</A></H2>
+
+<P>
+このセクションでは、幾つかの<CODE>awk</CODE>によって実現したPOSIXユーティリテ 
+ィがある。これらのプログラムを<CODE>awk</CODE>で作成しなおすということは、アル
+ゴリズムが非常に明確に説明されているのと一般的にプログラムコードが簡潔か
+つ単純であるので楽しいことである。これは<CODE>awk</CODE>がそれをするのに適して
+いるからである。
+
+</P>
+<P>
+これらのプログラムが、今あなたの使っているシステムのそれを置き換えるため
+のものではないことに注意して欲しい。これらのプログラムの目的は、"現実世
+界"の作業における<CODE>awk</CODE>言語プログラミングを説明することである。
+
+</P>
+<P>
+プログラムはアルファベット順に並んでいる。
+
+</P>
+
+
+
+<H3><A NAME="SEC157" HREF="gawk_toc.html#SEC157">フィールドとカラムの切り出し</A></H3>
+
+<P>
+<A NAME="IDX708"></A>
+<CODE>cut</CODE>ユーティリティは、標準入力からの入力中にあるキャラクタかフィー
+ルドに対して選択もしくは"カット"(cut)を行い、その結果を標準出力に送る。
+<CODE>cut</CODE>はキャラクタのリストか、フィールドのリストを切り出すことができ
+る。デフォルトでは、フィールドはタブで区切られているとみなされるが、コマ
+ンドラインオプションで指定することによりフィールドデリミッタ(filed 
+delimiter)、言い換えればフィールドを区切るキャラクタを指定することもできる。
+<CODE>cut</CODE>の定義するフィールドは<CODE>awk</CODE>程には汎用性はない。
+
+</P>
+<P>
+一般的な<CODE>cut</CODE>の使用は<CODE>who</CODE>の出力からログオンしているユーザーの
+ログイン名だけを切り出すといったものだろう。たとえば、次の例に挙げるパイ
+プラインは、ログオンしているユーザーのソートされ、重複が取り除かれたリス
+トを生成する。
+
+</P>
+
+<PRE>
+who | cut -c1-8 | sort | uniq
+</PRE>
+
+<P>
+<CODE>cut</CODE>のオプションには以下に挙げるのものがある
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>-c <VAR>list</VAR></CODE>
+<DD>
+<VAR>list</VAR>を切り抜く(cut out)するキャラクタのリストとする。
+リスト中の要素はカンマで区切ったり、キャラクタの間にダッシュを置いて
+範囲を表わすこともできる。
+<SAMP>`1-8,15,22-35'</SAMP>というリストは1番目から8番め、15番め、22番目から
+35番めまでのキャラクタを指定するものである。
+
+<DT><CODE>-f <VAR>list</VAR></CODE>
+<DD>
+切り出すフィールドのリストとして<VAR>list</VAR>を使う。
+
+<DT><CODE>-d <VAR>delim</VAR></CODE>
+<DD>
+<VAR>delim</VAR>をタブキャラクタの代わりにフィールドを区切るキャラクタとする。
+
+<DT><CODE>-s</CODE>
+<DD>
+フィールド区切りがない行を出力しないようにする。
+</DL>
+
+<P>
+<CODE>awk</CODE>による<CODE>cut</CODE>は、<CODE>getopt</CODE>ライブラリ関数
+(セクション <A HREF="gawk_16.html#SEC151">コマンドラインオプションの処理</A>を参照),
+と
+<CODE>join</CODE>ライブラリ関数
+(セクション <A HREF="gawk_16.html#SEC147">Merging an Array Into a String</A>を参照).
+を使っている。
+
+</P>
+<P>
+プログラムは、プログラムのオプションと使用法を出力
+(そのあとプログラムを終了させる)する<CODE>uasge</CODE>という関数から
+始まっている。
+<CODE>usage</CODE>は不正な引数が渡されたときに呼び出される。
+
+</P>
+<P>
+<A NAME="IDX709"></A>
+
+<PRE>
+# cut.awk -- awkによるcut
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+# Options:
+#    -f list        Cut fields切り取るフィールド
+#    -d c           Field delimiter characterフィールド区切りのキャラクタ
+#    -c list        Cut characters切り取るキャラクタ
+#
+#    -s        Suppress lines without the delimiter character
+区切りキャラクタがない行の出力を抑制する
+
+function usage(    e1, e2)
+{
+    e1 = "usage: cut [-f list] [-d c] [-s] [files...]"
+    e2 = "usage: cut [-c list] [files...]"
+    print e1 &#62; "/dev/stderr"
+    print e2 &#62; "/dev/stderr"
+    exit 1
+}
+</PRE>
+
+<P>
+変数<CODE>e1</CODE>と<CODE>e2</CODE>は関数が
+ページ
+にフィットするために使われれている。
+
+</P>
+<P>
+次にくるのは<CODE>BEGIN</CODE>ルールで、ここではコマンドラインオプションの解析
+を行っている。<CODE>FS</CODE>には<CODE>cut</CODE>のデフォルトのキャラクタである単一 
+のタブキャラクタをセットし、出力フィールドセパレータも入力セパレータと同
+じにする。それから<CODE>getopt</CODE>はコマンドラインオプションを処理するため 
+に使われている。<CODE>by_fields</CODE>か<CODE>by_chars</CODE>という変数のいずれかが 
+セットされ、フィールドによって処理するのかキャラクタによって処理するのか
+を指示する。キャラクタによって切り出しを行うとき、出力のフィールドセパレ
+ータは空文字列である。
+
+</P>
+
+<PRE>
+BEGIN    \
+{
+    FS = "\t"    # デフォルト
+    OFS = FS
+    while ((c = getopt(ARGC, ARGV, "sf:c:d:")) != -1) {
+        if (c == "f") {
+            by_fields = 1
+            fieldlist = Optarg
+        } else if (c == "c") {
+            by_chars = 1
+            fieldlist = Optarg
+            OFS = ""
+        } else if (c == "d") {
+            if (length(Optarg) &#62; 1) {
+                printf("Using first character of %s" \
+                " for delimiter\n", Optarg) &#62; "/dev/stderr"
+                Optarg = substr(Optarg, 1, 1)
+            }
+            FS = Optarg
+            OFS = FS
+            if (FS == " ")    # awkのsemanticsを上書きする
+                FS = "[ ]"
+        } else if (c == "s")
+            suppress++
+        else
+            usage()
+    }
+
+    for (i = 1; i &#60; Optind; i++)
+        ARGV[i] = ""
+</PRE>
+
+<P>
+特に注意するのはフィールドデリミッタがスペースであるときである。
+<CODE>" "</CODE>(単一のスペース)を<CODE>FS</CODE>の値にするというのは正しくない。
+<CODE>awk</CODE>はこれによってスペース、タブ、改行の連続(一つでも良い)を、フィールド
+を分割するものとして扱う。我々はここでは個々のスペースで分割を行うことを
+望んでいる。また、<CODE>getopt</CODE>が処理した後では、<CODE>awk</CODE>がそれらのオ 
+プションをファイル名として扱わないようにするために<CODE>ARGV</CODE>の一番目か 
+ら<CODE>Optind</CODE>までの要素をクリアする必要がある
+ことにも注意すること。
+
+</P>
+<P>
+コマンドラインオプションを処理した後で、プログラムはそれらのオプションが
+正しいものであることを検査する。<SAMP>`-c'</SAMP>と<SAMP>`-f'</SAMP>はいずれか一つだけが
+使われ、かつどちらの場合もフィールドリストが必要である。
+<CODE>set_fieldlist</CODE>や<CODE>set_charlist</CODE>はそれぞれフィールドリストやキャ
+ラクタリストを取り出すために呼び出される。
+
+</P>
+
+<PRE>
+    if (by_fields &#38;&#38; by_chars)
+        usage()
+
+    if (by_fields == 0 &#38;&#38; by_chars == 0)
+        by_fields = 1    # デフォルト
+
+    if (fieldlist == "") {
+        print "cut: needs list for -c or -f" &#62; "/dev/stderr"
+        exit 1
+    }
+
+    if (by_fields)
+        set_fieldlist()
+    else
+        set_charlist()
+}
+</PRE>
+
+<P>
+下にあるコードは<CODE>set+fieldlist</CODE>である。最初にフィールドリストを
+カンマで分割し、配列にしている。それから配列の各要素を
+それが範囲指定であるかをチェックして、範囲指定であれば
+それをさらに分割する。
+続いて範囲指定が最初の数字が二番目の数字より小さいかどうかをチェックし、
+リスト中の各数字は<CODE>flist</CODE>という配列に加えていって
+出力するフィールドの単純なリストを作成する。
+そして、プログラムは<CODE>awk</CODE>にフィールド分割を行わせる。
+
+</P>
+
+<PRE>
+function set_fieldlist(        n, m, i, j, k, f, g)
+{
+    n = split(fieldlist, f, ",")
+    j = 1    # index in flist
+    for (i = 1; i &#60;= n; i++) {
+        if (index(f[i], "-") != 0) { # 範囲
+            m = split(f[i], g, "-")
+            if (m != 2 || g[1] &#62;= g[2]) {
+                printf("bad field list: %s\n",
+                                  f[i]) &#62; "/dev/stderr"
+                exit 1
+            }
+            for (k = g[1]; k &#60;= g[2]; k++)
+                flist[j++] = k
+        } else
+            flist[j++] = f[i]
+    }
+    nfields = j - 1
+}
+</PRE>
+
+<P>
+<CODE>seet_charlist</CODE>関数は<CODE>set_fieldlist</CODE>よりも複雑である。ここでは
+固定長の入力を記述する<CODE>gawk</CODE>の<CODE>FIELDWIDTHS</CODE>
+(セクション <A HREF="gawk_6.html#SEC44">固定長データの読み込み</A>を参照)を使っている。キャラク
+タリストを使うとき、我々はこれを使う。
+
+</P>
+<P>
+<CODE>FIELDWIDTHS</CODE>の設定は、単純なフィールドの設定よりも
+複雑である。出力するフィールドを記録しつつ、余計なキャラクタはスキップし
+なければならない。例えば、1番目から8番め、15番め、22番目から35番目までの
+キャラクタを取り出したいとする。これは<SAMP>`-c 1-8,15,22-35'</SAMP>という指定を
+すれば良い。このとき<CODE>FIELDWIDTHS</CODE>は<CODE>"8 6 1 6 14"</CODE>という値 
+になる。これには5つのフィールドがあり、出力すべきものは<CODE>$1</CODE>、<CODE>$3</CODE>、
+$code{$5}である。間にあるフィールドは"埋め草"(filler)であり、無 
+視されるデータである。
+
+</P>
+<P>
+<CODE>flist</CODE>は、出力するフィールドのリストであり、
+<CODE>t</CODE>は埋め草も含めた完全なフィールドのリストである。
+
+</P>
+
+<PRE>
+function set_charlist(    field, i, j, f, g, t,
+                          filler, last, len)
+{
+    field = 1   # count total fields フィールドの合計をカウントする
+    n = split(fieldlist, f, ",")
+    j = 1       # index in flist flistの添え字
+    for (i = 1; i &#60;= n; i++) {
+        if (index(f[i], "-") != 0) { # 範囲
+            m = split(f[i], g, "-")
+            if (m != 2 || g[1] &#62;= g[2]) {
+                printf("bad character list: %s\n",
+                               f[i]) &#62; "/dev/stderr"
+                exit 1
+            }
+            len = g[2] - g[1] + 1
+            if (g[1] &#62; 1)  # 埋め草の長さを計算する
+                filler = g[1] - last - 1
+            else
+                filler = 0
+            if (filler)
+                t[field++] = filler
+            t[field++] = len  # フィールドの長さ
+            last = g[2]
+            flist[j++] = field - 1
+        } else {
+            if (f[i] &#62; 1)
+                filler = f[i] - last - 1
+            else
+                filler = 0
+            if (filler)
+                t[field++] = filler
+            t[field++] = 1
+            last = f[i]
+            flist[j++] = field - 1
+        }
+    }
+    FIELDWIDTHS = join(t, 1, field - 1)
+    nfields = j - 1
+}
+</PRE>
+
+<P>
+次にあるコード片は実際にデータを処理するルールである。<SAMP>`-s'</SAMP>オプショ 
+ンが指定されている場合、<CODE>suppress</CODE>が真になる。最初の<CODE>if</CODE>文は入
+力レコードにフィールドセパレータが含まれているかどうかをチェックしている。
+<CODE>cut</CODE>がフィールドを処理し、<CODE>suppress</CODE>が真であり、フィールドセ 
+パレータがレコードにない場合には、そのレコードはスキップされる。
+
+</P>
+<P>
+レコードが正当なものであれば、<CODE>gawk</CODE>はこの時点で<CODE>FS</CODE>にあるキャ
+ラクタか、<CODE>FIELDWIDTHS</CODE>を使った固定長フィールドでのレコードのフィー
+ルドへの分割は完了している。ループは出力すべきフィールドのリストを参照し、
+対応するフィールドにデータがあればそのフィールドが出力される。同様に次の
+フィールドがデータを持っていれば、間にセパレータキャラクタが出力される。
+
+</P>
+
+
+<PRE>
+{
+    if (by_fields &#38;&#38; suppress &#38;&#38; $0 !~ FS)
+        next
+
+    for (i = 1; i &#60;= nfields; i++) {
+        if ($flist[i] != "") {
+            printf "%s", $flist[i]
+            if (i &#60; nfields &#38;&#38; $flist[i+1] != "")
+                printf "%s", OFS
+        }
+    }
+    print ""
+}
+</PRE>
+
+<P>
+この<CODE>cut</CODE>では、<CODE>gawk</CODE>の<CODE>FIELDWIDTHS</CODE>変数の
+キャラクタベースの取り出しに依存している。
+他の<CODE>awk</CODE>処理系では、<CODE>substr</CODE>を使って同じことが実現できるが
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)、
+それは実行するには実際骨の折れる作業となるだろう。
+<CODE>FIELDWIDTHS</CODE>変数は、キャラクタによって入力行を分けて
+取り出すような問題の優雅な解決策を提供する。
+
+</P>
+
+
+<H3><A NAME="SEC158" HREF="gawk_toc.html#SEC158">ファイル中の正規表現を探す</A></H3>
+
+<P>
+<A NAME="IDX710"></A>
+<CODE>egrep</CODE>ユーティリティはファイルからパターンを検索するが、
+<CODE>awk</CODE>で使えるものとほぼ同じ正規表現を使っている
+(セクション <A HREF="gawk_8.html#SEC71">正規表現定数</A>を参照)。
+<CODE>egrep</CODE>は次のように使用する。
+
+</P>
+
+<PRE>
+egrep [ <VAR>options</VAR> ] '<VAR>pattern</VAR>' <VAR>files</VAR> ...
+</PRE>
+
+<P>
+<VAR>patter</VAR>は正規表現である。典型的な使い方では、この正規表現はシェルが
+メタキャラクタをファイル名のワイルドカードと見なして展開してしまうのを防
+ぐためにクォートされている。通常、<CODE>egrep</CODE>は正規表現がマッチした行を
+出力する。コマンドラインには複数のファイル名を置くことができ、出力にはパ
+ターンが見つかったファイルの名前がコロンの前に置かれる。
+
+</P>
+<P>
+オプションは以下の通り。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>-c</CODE>
+<DD>
+パターンにマッチした行数を出力する。
+
+<DT><CODE>-s</CODE>
+<DD>
+静かにさせる。何も出力せず、終了コードが
+パターンにマッチしたかどうかの値を表わす。
+
+<DT><CODE>-v</CODE>
+<DD>
+テストの条件を逆にする。<CODE>egrep</CODE>は
+与えられたパターンに<EM>マッチしなかった</EM>ときに、その行を出力し、
+パターンがマッチしなかったときに成功の終了コードを返して
+終了する。
+
+<DT><CODE>-i</CODE>
+<DD>
+パターンと、入力データ両方の大小文字の区別を無視する。
+
+<DT><CODE>-l</CODE>
+<DD>
+マッチしたファイルの名前だけを出力し、マッチした行は出力しない。
+
+<DT><CODE>-e <VAR>pattern</VAR></CODE>
+<DD>
+<VAR>pattern</VAR>をマッチを試みる正規表現として使用する。
+これは、<SAMP>`-'</SAMP>で始まるパターンを許すためのものである。
+</DL>
+
+<P>
+このバージョンでは、<CODE>getopt</CODE>ライブラリ関数と
+(セクション <A HREF="gawk_16.html#SEC151">コマンドラインオプションの処理</A>を参照)、
+file transitionライブラリプログラム
+(セクション <A HREF="gawk_16.html#SEC150">Noting Data File Boundaries</A>を参照)
+を使っている。
+
+</P>
+<P>
+このプログラムはコメントで始まり、次いで
+<CODE>getopt</CODE>を使ってコマンドライン引数を処理する
+<CODE>BEGIN</CODE>ルールがくる。
+<SAMP>`-i'</SAMP>(太小文字の無視)オプションは<CODE>gawk</CODE>では
+とても簡単である。ただ単に<CODE>IGNORECASE</CODE>変数を
+(セクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照)使うだけで良い。
+
+</P>
+<P>
+<A NAME="IDX711"></A>
+
+<PRE>
+# egrep.awk -- awkを使ってegrepをシミュレートする
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+# Options:
+#    -c    行を数える
+#    -s    静かにする。終了コードを使用する。
+#    -v    テストを逆にして、マッチしなかったときに成功
+#    -i    大小文字の違いを無視する
+#    -l    ファイル名だけを出力する
+#    -e    引数がパターンであることを明示する
+
+BEGIN {
+    while ((c = getopt(ARGC, ARGV, "ce:svil")) != -1) {
+        if (c == "c")
+            count_only++
+        else if (c == "s")
+            no_print++
+        else if (c == "v")
+            invert++
+        else if (c == "i")
+            IGNORECASE = 1
+        else if (c == "l")
+            filenames_only++
+        else if (c == "e")
+            pattern = Optarg
+        else
+            usage()
+    }
+</PRE>
+
+<P>
+以下のコード片は<CODE>egrep</CODE>特有の動作を扱うものである。<SAMP>`-e'</SAMP>を使っ 
+てパターンが指定されていなかった場合、最初のオプションでないコマンドライ
+ン引数がパターンとして使用される。<CODE>awk</CODE>のコマンドライン引数は
+<CODE>ARGV[Optind]</CODE>までクリアされ、<CODE>awk</CODE>がそれらの引数をファイルと
+して扱わないようにする。ファイルが指定されていない場合には標準入力が使わ
+れ、複数のファイルが指定されている場合にはマッチした行を出力するときにフ
+ァイル名を前置するようにする。
+
+</P>
+<P>
+最後の二行は、<CODE>gawk</CODE>では不要なのでコメントアウトしている。
+この二行は他の<CODE>awk</CODE>を使う場合にはコメントをはずす
+必要がある。
+
+</P>
+
+<PRE>
+    if (pattern == "")
+        pattern = ARGV[Optind++]
+
+    for (i = 1; i &#60; Optind; i++)
+        ARGV[i] = ""
+    if (Optind &#62;= ARGC) {
+        ARGV[1] = "-"
+        ARGC = 2
+    } else if (ARGC - Optind &#62; 1)
+        do_filenames++
+
+#    if (IGNORECASE)
+#        pattern = tolower(pattern)
+}
+</PRE>
+
+<P>
+以下のコード片は<CODE>gawk</CODE>では使わないのでコメントアウトしている
+行である。
+このルールは
+<SAMP>`-i'</SAMP>オプションが指定されたときに
+入力された行を小文字に変換するものだが、
+<CODE>gawk</CODE>では必要ではないのでコメントアウトされている。
+
+</P>
+
+<PRE>
+#{
+#    if (IGNORECASE)
+#        $0 = tolower($0)
+#}
+</PRE>
+
+<P>
+<CODE>beginfile</CODE>という関数は、新しいファイルが処理されたときに
+<TT>`ftran.awk'</TT>から呼び出される。この例は非常に単純で、<CODE>fcount</CODE>と
+いう変数を0にすることが全てである。<CODE>fcount</CODE>はカレントファイルで、
+パターンがどれだけマッチしたかということを記録している。
+
+</P>
+
+<PRE>
+function beginfile(junk)
+{
+    fcount = 0
+}
+</PRE>
+
+<P>
+<CODE>endfile</CODE>は各ファイルを処理し終えたときに呼び出される。これは、ユー
+ザーがマッチした行数を希望したときにだけ使用される。<CODE>no_print</CODE>とい 
+う変数は終了コードが要求されたときにだけ真になる。<CODE>count_only</CODE>はマ 
+ッチした行数だけを要求されたときに真となる。<CODE>egrep</CODE>はしたがって、出
+力とカウントがイネーブルのときだけ行数を出力する。出力のフォーマットは処
+理するファイルの数によって調整されなければならない。最後に、<CODE>fcount</CODE>
+が<CODE>total</CODE>に足しこまる。これはパターンが全体でどれだけの行にマッチ
+したかということを知るためのものである。
+
+</P>
+
+
+<PRE>
+function endfile(file)
+{
+    if (! no_print &#38;&#38; count_only)
+        if (do_filenames)
+            print file ":" fcount
+        else
+            print fcount
+
+    total += fcount
+}
+</PRE>
+
+<P>
+以下のルールは、行のマッチング作業のほとんどを行っている。<CODE>matches</CODE>
+という変数は行がパターンにマッチしたときに真となる。ユーザーがマッチしな
+かった行を望んだ場合には、<SAMP>`!'</SAMP>演算子を使って<CODE>matches</CODE>の意味を逆
+転している。<CODE>fcount</CODE>は<CODE>matches</CODE>の数だけインクリメントされる。 
+インクリメントする値は0か1であり、これはマッチが成功したかしなかったかに
+よる。行がマッチしなければ、<CODE>next</CODE>文を使って次のレコードへ単に移行 
+させる。
+
+</P>
+<P>
+幾つかの、パフォーマンスを向上させるための二、三行のコードがある。ユーザ
+ーが終了ステータスだけを必要としているとき(<CODE>no_print</CODE>が真のとき)に 
+は行をカウントする必要はなく、ファイルには一行マッチすれば十分でありその
+時点で<CODE>nextfile</CODE>を使って次のファイルへ処理を移すことができる。同様 
+に、ファイル名だけを出力すればいい場合にも行をカウントする必要はなく、フ
+ァイル名を出力してしまえば<CODE>nextfile</CODE>を使って次のファイルへ処理を移 
+すことができる。
+
+</P>
+<P>
+最後に各行を出力し、必要であればファイル名とコロンを前置する。
+
+</P>
+
+
+<PRE>
+{
+    matches = ($0 ~ pattern)
+    if (invert)
+        matches = ! matches
+
+    fcount += matches    # 1 か 0
+
+    if (! matches)
+        next
+
+    if (no_print &#38;&#38; ! count_only)
+        nextfile
+
+    if (filenames_only &#38;&#38; ! count_only) {
+        print FILENAME
+        nextfile
+    }
+
+    if (do_filenames &#38;&#38; ! count_only)
+        print FILENAME ":" $0
+    else if (! count_only)
+        print
+}
+</PRE>
+
+<P>
+<CODE>END</CODE>ルールは正しい終了ステータスを取り扱う。
+マッチした行がなければ、終了ステータスは1、あれば0となる。
+
+</P>
+
+<PRE>
+END    \
+{
+    if (total == 0)
+        exit 1
+    exit 0
+}
+</PRE>
+
+<P>
+<CODE>usage</CODE>関数は不正なオプションが渡されたときに使用法のメッセージを出
+力し、実効を終了する。
+
+</P>
+
+<PRE>
+function usage(    e)
+{
+    e = "Usage: egrep [-csvil] [-e pat] [files ...]"
+    print e &#62; "/dev/stderr"
+    exit 1
+}
+</PRE>
+
+<P>
+<CODE>e</CODE>という変数は関数を印刷されるページに
+きちんと納めるために使われている。
+
+</P>
+<P>
+<A NAME="IDX712"></A>
+プログラミングスタイルに関するのと同じように、<CODE>END</CODE>ルールに
+バックスラッシュによる行継続を使って、開きブレースのみを行に置く
+ようなことをしたいと思うかもしれない。これは
+この章にある
+多くの例で使っている関数の記述スタイルにより近づけるものである。
+あなたは<CODE>BEGIN</CODE>ルールや<CODE>END</CODE>ルールを記述するときに
+このスタイルを使って書くかどうかを自由に決めることができる。
+
+</P>
+
+
+<H3><A NAME="SEC159" HREF="gawk_toc.html#SEC159">ユーザー情報を出力する</A></H3>
+
+<P>
+<A NAME="IDX713"></A>
+<CODE>id</CODE>ユーティリティはあるユーザーの実ユーザーID、実効ユーザーID、実 
+グループID、実効グループID、そして(存在していれば)ユーザーのグループセッ
+トをリストアップするものである。<CODE>id</CODE>は本人以外の誰かを指定して実行 
+した場合には、実効IDと実効グループIDだけを出力するもし可能なら、<CODE>id</CODE>
+は対応するユーザー名とグループ名を出力する。<CODE>id</CODE>の出力は以下のよ 
+うなものである。
+
+</P>
+
+<PRE>
+$ id
+-| uid=2076(arnold) gid=10(staff) groups=10(staff),4(tty)
+</PRE>
+
+<P>
+この情報は実際に<CODE>gawk</CODE>の特殊ファイル<TT>`/dev/user'</TT>
+から得られたものである
+(セクション <A HREF="gawk_7.html#SEC66">Special File Names in <CODE>gawk</CODE></A>を参照)。
+
+</P>
+<P>
+しかし、<CODE>id</CODE>ユーティリティは単なる数字の並びよりも
+よりわかりやすい出力を行う。
+
+</P>
+<P>
+次に挙げるのはシンプルなバージョンの
+<CODE>awk</CODE>による<CODE>id</CODE>である。
+この例ではユーザーデータベースライブラリの関数
+(セクション <A HREF="gawk_16.html#SEC152">Reading the User Database</A>を参照)と
+グループデータベースライブラリの関数
+(セクション <A HREF="gawk_16.html#SEC153">Reading the Group Database</A>を参照)を
+使っている。
+
+</P>
+<P>
+プログラムは実に簡単なものであって、<CODE>BEGIN</CODE>ルール中で全てのことを行
+っている。ユーザーID番号とグループID番号は<TT>`/dev/user'</TT>から取得してい
+る。もし<TT>`/dev/user'</TT>がサポートされていなければ、プログラムはその時点
+でギブアップする。
+
+</P>
+<P>
+プログラムコードは反復的である。実ユーザーID番号のためのユーザーデータベ
+ースのエントリは<SAMP>`:'</SAMP>を区切りとして分割される。名前は最初のフィールド
+にある。同様のコードが実効ユーザーID番号とグループ番号のために使われてい
+る。
+
+</P>
+
+<P>
+<A NAME="IDX714"></A>
+
+<PRE>
+# id.awk -- idのawkによる実装
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+# output is:
+# uid=12(foo) euid=34(bar) gid=3(baz) \
+#             egid=5(blat) groups=9(nine),2(two),1(one)
+
+BEGIN    \
+{
+    if ((getline &#60; "/dev/user") &#60; 0) {
+        err = "id: no /dev/user support - cannot run"
+        print err &#62; "/dev/stderr"
+        exit 1
+    }
+    close("/dev/user")
+
+    uid = $1
+    euid = $2
+    gid = $3
+    egid = $4
+
+    printf("uid=%d", uid)
+    pw = getpwuid(uid)
+    if (pw != "") {
+        split(pw, a, ":")
+        printf("(%s)", a[1])
+    }
+
+    if (euid != uid) {
+        printf(" euid=%d", euid)
+        pw = getpwuid(euid)
+        if (pw != "") {
+            split(pw, a, ":")
+            printf("(%s)", a[1])
+        }
+    }
+
+    printf(" gid=%d", gid)
+    pw = getgrgid(gid)
+    if (pw != "") {
+        split(pw, a, ":")
+        printf("(%s)", a[1])
+    }
+
+    if (egid != gid) {
+        printf(" egid=%d", egid)
+        pw = getgrgid(egid)
+        if (pw != "") {
+            split(pw, a, ":")
+            printf("(%s)", a[1])
+        }
+    }
+
+    if (NF &#62; 4) {
+        printf(" groups=");
+        for (i = 5; i &#60;= NF; i++) {
+            printf("%d", $i)
+            pw = getgrgid($i)
+            if (pw != "") {
+                split(pw, a, ":")
+                printf("(%s)", a[1])
+            }
+            if (i &#60; NF)
+                printf(",")
+        }
+    }
+    print ""
+}
+</PRE>
+
+
+
+<H3><A NAME="SEC160" HREF="gawk_toc.html#SEC160">大きなファイルを分割する</A></H3>
+
+<P>
+<A NAME="IDX715"></A>
+<CODE>split</CODE>ユーティリティは大きなテキストファイルを小さな塊に分ける。デ
+フォルトでは出力ファイルの名前は<TT>`xaa'</TT>, <TT>`xab'</TT>, ... のようにつけ
+られる。分割された各々のファイルは1000行の長さ(最後のファイルを除く)とな
+る。分割したファイルの行数を変更するには、コマンドラインにマイナス記号を
+前置した数字を置いて指定する。例えば、500行毎にファイルを分割するように 
+するには<SAMP>`-500'</SAMP>とする。出力ファイルの名前を<TT>`myfileaa'</TT>, 
+<TT>`myfileab'</TT>,...のように 変更するには、その様なファイル名を指定するコ
+マンドライン引数を置く。
+
+</P>
+<P>
+以下に挙げたのは<CODE>awk</CODE>による<CODE>split</CODE>である。
+このプログラムは
+セクション <A HREF="gawk_16.html#SEC146">Translating Between Characters and Numbers</A>を参照.
+にある<CODE>ord</CODE>関数と<CODE>chr</CODE>関数を使っている。
+
+</P>
+<P>
+プログラムは最初にデフォルトの設定を行い、次いでコマンドライン引数が多す
+ぎないかどうかをチェックする。それからそれぞれの引数のチェックを行う。最
+初の引数はマイナス記号に続いた数字であってもよく、もしそういったものなら
+ば、それは負の数のように見えるので、符号を反転しそれを分割するときの行数
+とする。データファイルの名前はスキップし、最後の引数を出力ファイルの
+prefixとして使用する。
+
+</P>
+<P>
+<A NAME="IDX716"></A>
+
+<PRE>
+# split.awk -- awkによるsplit
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+# usage: split [-num] [file] [outname]
+
+BEGIN {
+    outfile = "x"    # デフォルト
+    count = 1000
+    if (ARGC &#62; 4)
+        usage()
+
+    i = 1
+    if (ARGV[i] ~ /^-[0-9]+$/) {
+        count = -ARGV[i]
+        ARGV[i] = ""
+        i++
+    }
+    # ファイルではなく標準入力から読み込むときにargvを検査する
+    if (i in ARGV)
+        i++    # データファイル名をスキップする
+    if (i in ARGV) {
+        outfile = ARGV[i]
+        ARGV[i] = ""
+    }
+
+    s1 = s2 = "a"
+    out = (outfile s1 s2)
+}
+</PRE>
+
+<P>
+次のルールで作業のほとんどを行っている。<CODE>tcount</CODE>(temporary count)は
+出力ファイルにどれだけの行が出力したのかを記録している。もしこれが
+<CODE>count</CODE>より大くなったとき、カレントファイルをクローズし、新しいファイル 
+を始めるときである。<CODE>s1</CODE>と<CODE>s2</CODE>はファイル名につけるsuffixの現在
+の値を保持している。これが両方とも<SAMP>`z'</SAMP>であるとき、処理対象のファイル
+が大きすぎるということである。そうでない場合には<CODE>s1</CODE>は次のアルファ 
+ベットに変わり、<CODE>s2</CODE>はまた<CODE>a</CODE>から再度始まる。
+
+</P>
+
+<PRE>
+{
+    if (++tcount &#62; count) {
+        close(out)
+        if (s2 == "z") {
+            if (s1 == "z") {
+                printf("split: %s is too large to split\n", \
+                       FILENAME) &#62; "/dev/stderr"
+                exit 1
+            }
+            s1 = chr(ord(s1) + 1)
+            s2 = "a"
+        } else
+            s2 = chr(ord(s2) + 1)
+        out = (outfile s1 s2)
+        tcount = 1
+    }
+    print &#62; out
+}
+</PRE>
+
+<P>
+<CODE>usage</CODE>関数は単純にエラーメッセージを出力して、実行を終了する。
+
+</P>
+
+<PRE>
+function usage(   e)
+{
+    e = "usage: split [-num] [file] [outname]"
+    print e &#62; "/dev/stderr"
+    exit 1
+}
+</PRE>
+
+<P>
+<CODE>e</CODE>という変数は関数を
+ページ
+にフィットするよために使われている。
+
+</P>
+<P>
+このプログラムはちょっとばかりいい加減である。最後のファイルのクローズを
+<CODE>END</CODE>ルール中で行うのではなく、<CODE>awk</CODE>が自動的に行うことに依存し
+ている。
+
+</P>
+
+
+<H3><A NAME="SEC161" HREF="gawk_toc.html#SEC161">出力を複数のファイルに複製する</A></H3>
+
+<P>
+<A NAME="IDX717"></A>
+<CODE>tee</CODE>プログラムは"pipe fitting" として知られている。<CODE>tee</CODE>は 
+それに対する標準入力からの入力を標準出力にコピーするとともに、コマンドラ
+インで指定されたファイルに複製する。その使用方法は以下の通り、
+
+</P>
+
+<PRE>
+tee [-a] file ...
+</PRE>
+
+<P>
+<SAMP>`-a'</SAMP>オプションは<CODE>tee</CODE>に対して、開始時に指定したファイルを切り詰め
+るのではなくファイルに追加を行うように指示する。
+
+</P>
+<P>
+<CODE>BEGIN</CODE>ルールは最初にすべてのコマンドライン引数のコピーを<CODE>copy</CODE>
+という名前の配列に作成する。<CODE>ARGV[0]</CODE>は必要でないのでコピーされな
+い。<CODE>tee</CODE>は、<CODE>awk</CODE>が<CODE>ARGV</CODE>にあるファイル名を入力データと 
+して扱おうとするので<CODE>ARGV</CODE>を直接は使わない。
+
+</P>
+<P>
+最初の引数が<SAMP>`-a'</SAMP>であれば、<CODE>append</CODE>という名前のフラグ変数を
+真にセットし、<CODE>ARGV[1]</CODE>と<CODE>coppy[1]</CODE>を削除する。
+<CODE>ARGC</CODE>が2未満であれば、ファイル名が指定されていないという
+ことであり、<CODE>tee</CODE>は使用方のメッセージを出力し、
+実行を終了する。最後に、<CODE>awk</CODE>は
+<CODE>ARGV[1]</CODE>に<CODE>"-"</CODE>がセットされ、<CODE>ARGC</CODE>が2に
+セットされたことにより、標準入力から読み込みを行うことを強制される。
+
+</P>
+
+<P>
+<A NAME="IDX718"></A>
+
+<PRE>
+# tee.awk -- awkによるtee
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+# Revised December 1995
+
+BEGIN    \
+{
+    for (i = 1; i &#60; ARGC; i++)
+        copy[i] = ARGV[i]
+
+    if (ARGV[1] == "-a") {
+        append = 1
+        delete ARGV[1]
+        delete copy[1]
+        ARGC--
+    }
+    if (ARGC &#60; 2) {
+        print "usage: tee [-a] file ..." &#62; "/dev/stderr"
+        exit 1
+    }
+    ARGV[1] = "-"
+    ARGC = 2
+}
+</PRE>
+
+<P>
+パターンがなく、すべての行に対して処理するので、一つのルールで作業の全て
+を行っている。ルールの本体は、単純にその行をコマンドラインで指定されたフ
+ァイルに出力してから、標準出力にも出力する。
+
+</P>
+
+
+<PRE>
+{
+    # if文をループの外に出せば高速化できる。
+    if (append)
+        for (i in copy)
+            print &#62;&#62; copy[i]
+    else
+        for (i in copy)
+            print &#62; copy[i]
+    print
+}
+</PRE>
+
+<P>
+このコードはループを次の様に書くこともできる。
+
+</P>
+
+<PRE>
+for (i in copy)
+    if (append)
+        print &#62;&#62; copy[i]
+    else
+        print &#62; copy[i]
+</PRE>
+
+<P>
+これはより簡潔なものではあるが、効率は良くない。<SAMP>`if'</SAMP>はすべてのレコ 
+ードのすべての出力ファイルでテストループの本体を複製することによって、
+<SAMP>`if'</SAMP>は入力レコード一つにつき一度だけテストを行うようになる。<VAR>N</VAR>個
+の入力レコードがあり、<VAR>M</VAR>個の入力ファイルがあった場合、最初のやり方 
+では<VAR>N</VAR>回<SAMP>`if'</SAMP>文が実行されるが、二番目のやり方では<VAR>N</VAR>×<VAR>M</VAR>
+回も<SAMP>`if'</SAMP>文が実行されてしまうことになる。
+
+</P>
+<P>
+最後に<CODE>END</CODE>ルールですべての出力ファイルをクローズするという
+後始末を行う。
+
+</P>
+
+<PRE>
+END    \
+{
+    for (i in copy)
+        close(copy[i])
+}
+</PRE>
+
+
+
+<H3><A NAME="SEC162" HREF="gawk_toc.html#SEC162">テキストの重複のない行を出力する</A></H3>
+
+<P>
+<A NAME="IDX719"></A>
+<CODE>uniq</CODE>ユーティリティは入力としてソートされた行を標準入力からとり、 
+(デフォルトでは)重複した行を取り除く。言い換えれば、ユニークな行だけが出
+力される。この名前はそこから来ている。<CODE>uniq</CODE>は幾つかのオプションが 
+あり、その使い方は以下の通り。
+
+</P>
+
+<PRE>
+uniq [-udc [-<VAR>n</VAR>]] [+<VAR>n</VAR>] [ <VAR>input file</VAR> [ <VAR>output file</VAR> ]]
+</PRE>
+
+<P>
+オプションの意味は以下の通り。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>-d</CODE>
+<DD>
+繰り返している行だけを出力する。
+
+<DT><CODE>-u</CODE>
+<DD>
+くり返しのない行だけを出力する。
+
+<DT><CODE>-c</CODE>
+<DD>
+行をカウントする。このオプションは<SAMP>`-d'</SAMP> や<SAMP>`-u'</SAMP>を
+オーバーライドする。繰り返しのある行もない行も共にカウントする。
+
+<DT><CODE>-<VAR>n</VAR></CODE>
+<DD>
+行の比較を行う前にｍ<VAR>n</VAR>個のフィールドをスキップする。フィールドの定 
+義は<CODE>awk</CODE>のデフォルトと同じであり、スペースやタブ、あるいは改行(の連なり、run)で 
+区切られた非空白キャラクタ(non-whitespace character)である。
+
+<DT><CODE>+<VAR>n</VAR></CODE>
+<DD>
+行の比較を行う前に<VAR>n</VAR>キャラクタをスキップする。<SAMP>`-<VAR>n</VAR>'</SAMP>で指定
+されたすべてのフィールドが最初にスキップされる。
+
+<DT><CODE><VAR>input file</VAR></CODE>
+<DD>
+データを標準入力からではなく、
+コマンドラインで指定された入力ファイルから入力する。
+
+<DT><CODE><VAR>output file</VAR></CODE>
+<DD>
+生成した出力を標準出力ではなく、指定された名前のファイルに送る。
+</DL>
+
+<P>
+通常の<CODE>uniq</CODE>は<SAMP>`-d'</SAMP>オプションと<SAMP>`-u'</SAMP>オプションの両方が
+指定されたかのように動作する。
+
+</P>
+<P>
+以下に挙げるのは<CODE>awk</CODE>による<CODE>uniq</CODE>の実装である。
+このプログラムはライブラリ関数の<CODE>getopt</CODE>
+(セクション <A HREF="gawk_16.html#SEC151">コマンドラインオプションの処理</A>を参照)と
+<CODE>join</CODE>
+(セクション <A HREF="gawk_16.html#SEC147">Merging an Array Into a String</A>を参照)を
+を使っている。
+
+</P>
+<P>
+このプログラムは<CODE>usage</CODE>関数と
+オプションの一覧とその意味の説明から始まっている。
+
+</P>
+<P>
+<CODE>BEGIN</CODE>ルールはコマンドライン上の引数とオプションを扱っている。
+<SAMP>`-25'</SAMP>という形式のオプションを、<SAMP>`2'</SAMP>というオプションとそれに対する
+<SAMP>`5'</SAMP>という引数のように扱うために、<CODE>getopt</CODE>のトリックを使っている。
+二文字以上の数字が与えられた(<CODE>Optarg</CODE>が数字である)場合、<CODE>Optarg</CODE>
+はオプションの数字と連結され、0を加えることによってそれを数値にする。 
+もし一つの数字だけがオプションにあれば、<CODE>Optarg</CODE>は必要ではなく、次 
+回の<CODE>getopt</CODE>の処理のために<CODE>Optind</CODE>をデクリメントせねばならない。
+このコードは明らかにちょっとトリッキーである。
+
+</P>
+<P>
+オプションが一つも与えられていなければデフォルトが採用され、
+繰り返しのある行もない行も共に出力することになる。
+出力ファイルが指定されていれば、それを<CODE>outputfile</CODE>に代入する。
+それ以前に、<CODE>outputfile</CODE>は標準出力<TT>`/dev/stdout'</TT>に
+初期化されている。
+
+</P>
+<P>
+<A NAME="IDX720"></A>
+
+<PRE>
+# uniq.awk -- awkで uniq をする
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+function usage(    e)
+{
+    e = "Usage: uniq [-udc [-n]] [+n] [ in [ out ]]"
+    print e &#62; "/dev/stderr"
+    exit 1
+}
+
+# -c    行をカウントする。-dと-uをオーバーライドするcount lines. overrides -d and -u
+# -d    繰り返しのある行だけを出力するonly repeated lines
+# -u    繰り返しのない行だけを出力するonly non-repeated lines
+# -n    フィールドをn個スキップするskip n fields
+# +n    n個のキャラクタをスキップskip n characters, skip fields first
+
+BEGIN    \
+{
+    count = 1
+    outputfile = "/dev/stdout"
+    opts = "udc0:1:2:3:4:5:6:7:8:9:"
+    while ((c = getopt(ARGC, ARGV, opts)) != -1) {
+        if (c == "u")
+            non_repeated_only++
+        else if (c == "d")
+            repeated_only++
+        else if (c == "c")
+            do_count++
+        else if (index("0123456789", c) != 0) {
+            # getoptはオプションに引数を要求している。
+            # -5のようなものに対処するために干渉する
+            if (Optarg ~ /^[0-9]+$/)
+                fcount = (c Optarg) + 0
+            else {
+                fcount = c + 0
+                Optind--
+            }
+        } else
+            usage()
+    }
+
+    if (ARGV[Optind] ~ /^\+[0-9]+$/) {
+        charcount = substr(ARGV[Optind], 2) + 0
+        Optind++
+    }
+
+    for (i = 1; i &#60; Optind; i++)
+        ARGV[i] = ""
+
+    if (repeated_only == 0 &#38;&#38; non_repeated_only == 0)
+        repeated_only = non_repeated_only = 1
+
+    if (ARGC - Optind == 2) {
+        outputfile = ARGV[ARGC - 1]
+        ARGV[ARGC - 1] = ""
+    }
+}
+</PRE>
+
+<P>
+以下にある<CODE>are_equal</CODE>という関数は、現在行の<CODE>$0</CODE>と一つ前の行
+<CODE>last</CODE>との比較を行っている。この関数はまたフィールドやキャラクタのスキ
+ップも処理している。
+
+</P>
+<P>
+フィールドカウントやキャラクタカウントが指定されていなければ、
+<CODE>are_equal</CODE>は単純に<CODE>last</CODE>と<CODE>$0</CODE>を文字列として
+比較し、その結果を1または0として返す。そうでない場合には複雑になる。
+
+</P>
+<P>
+フィールドをスキップしなければならない場合、各行を<CODE>split</CODE>
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)
+を使って配列に分割し、それから<CODE>join</CODE>を使って必要なフィールドを
+組み立てる。連結された行は<CODE>clast</CODE>と<CODE>cline</CODE>に格納される。
+スキップするフィールドがなければ、<CODE>clast</CODE>と<CODE>cline</CODE>には
+それぞれ<CODE>last</CODE>と<CODE>$0</CODE>の内容がそのままセットされる。
+
+</P>
+<P>
+最後に、キャラクタをスキップする必要がある場合に、<CODE>substr</CODE>が
+<CODE>clast</CODE>や<CODE>cline</CODE>の先頭のキャラクタ<CODE>charcount</CODE>個スキップする
+ために使われる。
+
+</P>
+
+<PRE>
+function are_equal(    n, m, clast, cline, alast, aline)
+{
+    if (fcount == 0 &#38;&#38; charcount == 0)
+        return (last == $0)
+
+    if (fcount &#62; 0) {
+        n = split(last, alast)
+        m = split($0, aline)
+        clast = join(alast, fcount+1, n)
+        cline = join(aline, fcount+1, m)
+    } else {
+        clast = last
+        cline = $0
+    }
+    if (charcount) {
+        clast = substr(clast, charcount + 1)
+        cline = substr(cline, charcount + 1)
+    }
+
+    return (clast == cline)
+}
+</PRE>
+
+<P>
+次に挙げる二つのルールはプログラムの本体である。最初のルールは
+データの最初の行だけに実行される。このルールでは、
+次の行に比較すべきものがあるので、<CODE>last</CODE>に<CODE>$0</CODE>をセットしている。
+
+</P>
+<P>
+二番目のルールが仕事をする。
+<CODE>equal</CODE>という変数の内容は、<CODE>are_equal</CODE>で行った比較の結果に
+よって、1か0のいずれかになる。<CODE>uniq</CODE>は行の重複を数え、
+行が同じ内容であれば<CODE>count</CODE>という変数をインクリメントする。
+内容が異なっていれば行の内容を出力し、<CODE>count</CODE>をリセットする
+
+</P>
+<P>
+<CODE>uniq</CODE>が数えることをしていなければ、<CODE>count</CODE>は
+二つの行の内容が等しかったときにインクリメントされる。
+<CODE>uniq</CODE>が繰り返しの行をカウントしていて二回以上その同じ行が
+出現したり、逆に<CODE>uniq</CODE>が繰り返しのない行をカウントしていて
+ある行が一度しか出現しなければ、その様な行は出力され、<CODE>count</CODE>が
+リセットされる。
+
+</P>
+<P>
+同様のロジックが、<CODE>END</CODE>ルールの中で
+入力の最後の行を出力するために使われている。
+
+</P>
+
+<PRE>
+NR == 1 {
+    last = $0
+    next
+}
+    
+{
+    equal = are_equal()
+
+    if (do_count) {    # -d と-uをオーバーライド
+        if (equal)
+            count++
+        else {
+            printf("%4d %s\n", count, last) &#62; outputfile
+            last = $0
+            count = 1    # カウンタをリセット
+        }
+        next
+    }
+
+    if (equal)
+        count++
+    else {
+        if ((repeated_only &#38;&#38; count &#62; 1) ||
+            (non_repeated_only &#38;&#38; count == 1))
+                print last &#62; outputfile
+        last = $0
+        count = 1
+    }
+}
+
+END {
+    if (do_count)
+        printf("%4d %s\n", count, last) &#62; outputfile
+    else if ((repeated_only &#38;&#38; count &#62; 1) ||
+            (non_repeated_only &#38;&#38; count == 1))
+        print last &#62; outputfile
+}
+</PRE>
+
+
+
+<H3><A NAME="SEC163" HREF="gawk_toc.html#SEC163">数え上げ</A></H3>
+
+<P>
+<A NAME="IDX721"></A>
+<CODE>wc</CODE>(word count)ユーティリティは、一つ以上の入力ファイルに
+対して、行、単語、キャラクタの数をカウントする。その使い方は以下の通り。
+
+</P>
+
+<PRE>
+wc [-lwc] [ <VAR>files</VAR> ... ]
+</PRE>
+
+<P>
+コマンドラインで入力ファイルが指定されなかった場合には、<CODE>wc</CODE>は標準 
+入力から読み込みを行う。複数のファイルが指定された場合、すべてのファイル
+でカウントした合計を同様に出力する。<CODE>wc</CODE>のオプションとその意味は以 
+下の通り。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>-l</CODE>
+<DD>
+行だけを数える。
+
+<DT><CODE>-w</CODE>
+<DD>
+単語だけを数える。"単語"とはスペースやタブで区切られた、非空白キャラク
+タの並びである。幸運にも、これは<CODE>awk</CODE>が通常行う入力データの分割方法
+と同じである。
+
+<DT><CODE>-c</CODE>
+<DD>
+キャラクタだけを数える。
+</DL>
+
+<P>
+<CODE>awk</CODE>を使った<CODE>wc</CODE>の実装は<CODE>awk</CODE>が仕事のほとんどを、つまり 
+行の単語(つまりはフィールド)への切り分けと、行(レコード)のカウントを
+<CODE>awk</CODE>自身が行い、行の長さがどれくらいかということも簡単に知ることが
+できるので実にエレガントである。
+
+</P>
+<P>
+このバージョンではライブラリ関数の
+<CODE>getopt</CODE>
+(セクション <A HREF="gawk_16.html#SEC151">コマンドラインオプションの処理</A>を参照)と
+transition 関数
+(セクション <A HREF="gawk_16.html#SEC150">Noting Data File Boundaries</A>を参照)
+を使用している。
+
+</P>
+<P>
+このバージョンと伝統的な<CODE>wc</CODE>では大きな違いがある。我々のバージョン 
+では、常に行、単語、キャラクタの順序でカウントした数を出力する。伝統的な
+<CODE>wc</CODE>では<SAMP>`-l'</SAMP>、<SAMP>`-w'</SAMP>、<SAMP>`-c'</SAMP>といったオプションをコマンド
+ライン上で使用してして出力する順序を指定することができる。
+
+</P>
+<P>
+<CODE>BEGIN</CODE>ルールは引数の処理を行う。コマンドラインで二つ以上のファイル
+が指定されたときには変数<CODE>print_total</CODE>の値が真となる。
+
+</P>
+<P>
+<A NAME="IDX722"></A>
+
+<PRE>
+# wc.awk -- 行、単語、キャラクタを数える
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+# Options:
+#    -l    行だけを数える
+#    -w    単語だけを数える
+#    -c    キャラクタだけを数える
+#
+# デフォルトでは、行、単語、キャラクタを数える
+
+BEGIN {
+    # getoptに不正なオプションについてはメッセージを出力するよう
+    # にし、ここではそのようなオプションを無視するようにする
+    while ((c = getopt(ARGC, ARGV, "lwc")) != -1) {
+        if (c == "l")
+            do_lines = 1
+        else if (c == "w")
+            do_words = 1
+        else if (c == "c")
+            do_chars = 1
+    }
+    for (i = 1; i &#60; Optind; i++)
+        ARGV[i] = ""
+
+    # オプションが何もなければ、全てを行う
+    if (! do_lines &#38;&#38; ! do_words &#38;&#38; ! do_chars)
+        do_lines = do_words = do_chars = 1
+
+    print_total = (ARGC - i &#62; 2)
+}
+</PRE>
+
+<P>
+<CODE>beginfile</CODE>は単純で、行、単語、キャラクタのカウントを0にリセットし、
+<CODE>fname</CODE>に入っている処理対象のファイルの名前をセーブする。
+
+</P>
+<P>
+関数<CODE>endfile</CODE>は、それまで処理していたファイルで見つかった行、単語、
+キャラクタの数をそれまでのそれぞれの合計に加える。その後でそのファイルで
+のカウンタの値を出力する。このカウンタは<CODE>beginfile</CODE>で処理するのを当
+てにしている。
+
+</P>
+
+<PRE>
+function beginfile(file)
+{
+    chars = lines = words = 0
+    fname = FILENAME
+}
+
+function endfile(file)
+{
+    tchars += chars
+    tlines += lines
+    twords += words
+    if (do_lines)
+        printf "\t%d", lines
+    if (do_words)
+        printf "\t%d", words
+    if (do_chars)
+        printf "\t%d", chars
+    printf "\t%s\n", fname
+}
+</PRE>
+
+<P>
+各行毎に実行される一つのルールがある。そのルールでは<CODE>chars</CODE>にレコー
+ドの長さを加えている。ここで、改行キャラクタがレコードを分割していて
+(<CODE>RS</CODE>の値)レコード自身には含まれていないためさらに1を足す必要がある
+<CODE>lines</CODE>は行が読まれる度にインクリメントされ、<CODE>words</CODE>はその行にある
+"単語"の数、<CODE>NF</CODE>の値だけ増加される。
+<A NAME="FOOT22" HREF="gawk_foot.html#FOOT22">(22)</A>
+
+</P>
+<P>
+最後に、<CODE>END</CODE>ルールはすべてのファイルでの合計値を
+出力する。
+
+</P>
+
+<PRE>
+# do per line
+{
+    chars += length($0) + 1    # 改行の分も忘れずに
+    lines++
+    words += NF
+}
+
+END {
+    if (print_total) {
+        if (do_lines)
+            printf "\t%d", tlines
+        if (do_words)
+            printf "\t%d", twords
+        if (do_chars)
+            printf "\t%d", tchars
+        print "\ttotal"
+    }
+}
+</PRE>
+
+
+
+<H2><A NAME="SEC164" HREF="gawk_toc.html#SEC164">A Grab Bag of <CODE>awk</CODE> Programs</A></H2>
+
+<P>
+このセクションは雑多なプログラムの"福袋"である。
+我々はあなたがそれらが共に面白くて、楽しいことを見いだすことを
+希望する。
+
+</P>
+
+
+
+<H3><A NAME="SEC165" HREF="gawk_toc.html#SEC165">ドキュメント中の重複した語を探しだす</A></H3>
+
+<P>
+長い文章を書くときにありがちなエラーは
+間違って単語を重複させてしまうというものである。
+テキスト中では
+"the the program does the following ...." 
+のようなものをしばしばみかけることだろう
+テキストがオンラインにある場合には、しばしば重複した単語は
+行末と次の行の先頭とで発生し、それは非常に見つけにくい場所である。
+
+</P>
+<P>
+このプログラム、<TT>`dupword.awk'</TT>はファイルを一度に一行読み、同じ単語が
+隣接していないかをチェックする。同様に、その行の最後の単語を(<CODE>prev</CODE>
+という変数に)次の行の最初の単語と比較するためにセーブしておく。
+
+</P>
+<P>
+最初の二つのステートメントは行の内容を、
+"The"から"the"の比較の結果が等しいものになるように
+全て小文字にしている。
+二番目のステートメントでは
+アルファベット、数字、空白以外のすべてのキャラクタを
+句読点が比較に影響しないように取り去っている。
+これによりときとして、本当は違う単語を重複していると報告する
+ときがあるが、これは滅多にないことである。
+
+</P>
+<P>
+<A NAME="IDX723"></A>
+
+<PRE>
+# dupword -- テキスト中の重複した単語を探し出す
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# December 1991
+
+{
+    $0 = tolower($0)
+    gsub(/[^A-Za-z0-9 \t]/, "");
+    if ($1 == prev)
+        printf("%s:%d: duplicate %s\n",
+            FILENAME, FNR, $1)
+    for (i = 2; i &#60;= NF; i++)
+        if ($i == $(i-1))
+            printf("%s:%d: duplicate %s\n",
+                FILENAME, FNR, $i)
+    prev = $NF
+}
+</PRE>
+
+
+
+<H3><A NAME="SEC166" HREF="gawk_toc.html#SEC166">アラーム時計プログラム</A></H3>
+
+<P>
+次に挙げるプログラムはシンプルな"アラーム時計"プログラムである。プログ
+ラムには、時刻とメッセージ(こちらは省略可能)を渡す。指定した時刻になった
+ときに、このプログラムはメッセージを標準出力に出力する。それに加えて、メ
+ッセージを繰り返す回数も指定することができ、さらにその繰り返しの間隔も指
+定できる。
+
+</P>
+<P>
+このプログラムでは
+セクション <A HREF="gawk_16.html#SEC149">Managing the Time of Day</A>を参照.
+にある<CODE>gettimeofday</CODE>関数を使っている。
+
+</P>
+<P>
+作業の全ては<CODE>BEGIN</CODE>ルールで行っている。最初の部分では引数のチェック
+と、ディレイ、カウント、出力メッセージのデフォルト値のセットを行っている。
+ユーザーがメッセージを指定しているが、そこにASCIIのベルキャラクタ("警告
+"キャラクタとして知られているもの、<SAMP>`\a'</SAMP>)が含まれていない場合、それ
+をメッセージに追加する(多くのシステムでは、ASCIIのベルキャラクタを出力す
+ると警告の類の音を生成する。したがって、ユーザーがコンピュータやターミナ
+ルを見ていない場合にアラームが作動したときにシステムが注意を喚起するので
+ある)。
+
+</P>
+<P>
+<A NAME="IDX724"></A>
+
+<PRE>
+# alarm -- アラームをセットする
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+# usage: alarm time [ "message" [ count [ delay ] ] ]
+
+BEGIN    \
+{
+    # Initial argument sanity checking
+    usage1 = "usage: alarm time ['message' [count [delay]]]"
+    usage2 = sprintf("\t(%s) time ::= hh:mm", ARGV[1])
+
+    if (ARGC &#60; 2) {
+        print usage &#62; "/dev/stderr"
+        exit 1
+    } else if (ARGC == 5) {
+        delay = ARGV[4] + 0
+        count = ARGV[3] + 0
+        message = ARGV[2]
+    } else if (ARGC == 4) {
+        count = ARGV[3] + 0
+        message = ARGV[2]
+    } else if (ARGC == 3) {
+        message = ARGV[2]
+    } else if (ARGV[1] !~ /[0-9]?[0-9]:[0-9][0-9]/) {
+        print usage1 &#62; "/dev/stderr"
+        print usage2 &#62; "/dev/stderr"
+        exit 1
+    }
+
+    # set defaults for once we reach the desired time
+    if (delay == 0)
+        delay = 180    # 3 分
+    if (count == 0)
+        count = 5
+    if (message == "")
+        message = sprintf("\aIt is now %s!\a", ARGV[1])
+    else if (index(message, "\a") == 0)
+        message = "\a" message "\a"
+</PRE>
+
+<P>
+次のコードは、アラームの時刻を時間と分に変換し、必要ならば24時間制の時間
+にする。そのとき、この時間は真夜中からの経過秒数に変換される。次いで真夜
+中からその時点までの経過秒数を計算する。これら二つの間の差は、アラームを
+起動するまでどのくらいの長さがあるかということになる。
+
+</P>
+
+<PRE>
+    #目的時刻を分解する
+    split(ARGV[1], atime, ":")
+    hour = atime[1] + 0    # 強制的に数値に変換する
+    minute = atime[2] + 0  # 強制的に数値に変換する
+
+    #現在時刻を取得する
+    gettimeofday(now)
+
+    #与えられた時刻が12時間制の時刻で、現在より後、
+    #例えば午前9時に`alarm 5:30'とされたときに
+    #目的時刻が午後5:30になるように、12を足す。
+    if (hour &#60; 12 &#38;&#38; now["hour"] &#62; hour)
+        hour += 12
+
+    #目的時刻を深夜からの秒数で取得する
+    target = (hour * 60 * 60) + (minute * 60)
+
+    #現在時刻を深夜からの秒数で取得する
+    current = (now["hour"] * 60 * 60) + \
+               (now["minute"] * 60) + now["second"]
+
+    #どのくらい寝るのか
+    naptime = target - current
+    if (naptime &#60;= 0) {
+        print "time is in the past!" &#62; "/dev/stderr"
+        exit 1
+    }
+</PRE>
+
+<P>
+最後にプログラムは<CODE>system</CODE>関数
+(セクション <A HREF="gawk_13.html#SEC127">Built-in Functions for Input/Output</A>を参照)
+を使って<CODE>sleep</CODE>ユーティリティを呼び出す。
+<CODE>sleep</CODE>ユーティリティは単純に与えられた秒数だけ停止する。もし
+<CODE>sleep</CODE>ユーティリティの終了ステータスが0でなければ、このプログラム
+は<CODE>sleep</CODE>が中断されたとみなし、実行を終了する。<CODE>sleep</CODE>がOKのス
+テータス (0)を返した場合には、ループの中でメッセージを出力し、メッセージ
+の出力間隔に必要な秒数だけ待つために<CODE>sleep</CODE>をもう一度使用する。
+
+</P>
+
+
+<PRE>
+    # zzzzzz..... 中断されたら終わり
+    if (system(sprintf("sleep %d", naptime)) != 0)
+        exit 1
+
+    # time to notify!
+    command = sprintf("sleep %d", delay)
+    for (i = 1; i &#60;= count; i++) {
+        print message
+        # sleepコマンドが中断されたら終わり
+        if (system(command) != 0)
+            break
+    }
+
+    exit 0
+}
+</PRE>
+
+
+
+<H3><A NAME="SEC167" HREF="gawk_toc.html#SEC167">キャラクタを変換する</A></H3>
+
+<P>
+システムの<CODE>tr</CODE>ユーティリティはキャラクタの変換を行う。例えば、大文 
+字のキャラクタを小文字に変換するのによく次のように使われる。
+
+</P>
+
+<PRE>
+<VAR>generate data</VAR> | tr '[A-Z]' '[a-z]' | <VAR>process data</VAR> ...
+</PRE>
+
+<P>
+<CODE>tr</CODE>ユーティリティにはブラケットで囲まれた二つのキャラクタリストを 
+渡す。通常は、これらのリストはシェルがファイル名の拡張子として扱うことの
+内容にクォートされている。<A NAME="FOOT23" HREF="gawk_foot.html#FOOT23">(23)</A>入力を処理するときに、最初のリストにあ 
+る最初のキャラクタは二番目のリストにある最初のキャラクタに変換され、最初
+のリストにある二番目のキャラクタは二番目のリストにある二番目のキャラクタ
+に変換され、以後同様な変換が行われる。もし、"from"リストが"to'リスト 
+よりも長ければ、"to"リストの最後のキャラクタが、"from"の残りのキャラ
+クタの変換後のキャラクタとして扱われる。
+
+</P>
+
+<P>
+ちょっと前に、
+あるユーザーが、我々に
+<CODE>gawk</CODE>に変換を行う関数を追加するように提案をしてきた。
+これは(追加することに)反対するような"crepping featurism"であり、
+私はそれを証明するために、
+キャラクタの変換をユーザーレベルの関数で行うことのできる
+後述するようなプログラムを作成した。
+このプログラムはシステムの<CODE>tr</CODE>ユーティリティほどには
+完璧ではないが、ほとんどの仕事はきちんと行う。
+
+</P>
+<P>
+<CODE>translate</CODE>プログラムは標準の<CODE>awk</CODE>の持つ幾つかの弱点の
+一つを浮き彫りにする。それは、個々のキャラクタを扱うのが非常に
+苦手であり、組込み関数の<CODE>substr</CODE>、<CODE>index</CODE>、<CODE>gsub</CODE>を
+くり返し使うことが要求されるということである
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)。
+<A NAME="FOOT24" HREF="gawk_foot.html#FOOT24">(24)</A>
+
+</P>
+<P>
+二つの関数があり、最初の一つは<CODE>stranslate</CODE>で、
+これは三つの引数をとる。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>from</CODE>
+<DD>
+変換の対象となるキャラクタのリスト。
+
+<DT><CODE>to</CODE>
+<DD>
+変換後のキャラクタのリスト。
+
+<DT><CODE>target</CODE>
+<DD>
+変換対象の文字列
+</DL>
+
+<P>
+連想配列は変換部分を実に簡単にしている。<CODE>t_ar</CODE>は"from"中のキャラ 
+クタで添え字付けされる"to"キャラクタを保持している。そして、単純なルー
+プを通じて<CODE>from</CODE>のキャラクタが一度に一文字ずつ変換されていく。
+<CODE>from</CODE>の各キャラクタは、そのキャラクタが<CODE>target</CODE>にあれば
+<CODE>gsub</CODE>を使って、対応する<CODE>to</CODE>のキャラクタに変換される。
+
+</P>
+<P>
+関数<CODE>translate</CODE>は単に<CODE>$0</CODE>をターゲットとして<CODE>stranslate</CODE>を
+呼び出すことだけをしている。メインプログラムは二つのグローバル変数、
+<CODE>FROM</CODE>と<CODE>TO</CODE>をコマンドラインからセットして、それから<CODE>awk</CODE>
+が標準入力から読み込みを行うようにするために<CODE>ARGV</CODE>を変更する。
+
+</P>
+<P>
+Finally, the processing rule simply calls <CODE>translate</CODE> for each record.
+最後に、単に<CODE>translate</CODE>を呼ぶだけのルールが各レコードの処理を行う。
+
+</P>
+<P>
+<A NAME="IDX725"></A>
+
+<PRE>
+# translate -- trと同じようなことをする
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# August 1989
+
+# bugs: does not handle things like: tr A-Z a-z, it has
+# to be spelled out. However, if `to' is shorter than `from',
+# the last character in `to' is used for the rest of `from'.
+
+function stranslate(from, to, target,     lf, lt, t_ar, i, c)
+{
+    lf = length(from)
+    lt = length(to)
+    for (i = 1; i &#60;= lt; i++)
+        t_ar[substr(from, i, 1)] = substr(to, i, 1)
+    if (lt &#60; lf)
+        for (; i &#60;= lf; i++)
+            t_ar[substr(from, i, 1)] = substr(to, lt, 1)
+    for (i = 1; i &#60;= lf; i++) {
+        c = substr(from, i, 1)
+        if (index(target, c) &#62; 0)
+            gsub(c, t_ar[c], target)
+    }
+    return target
+}
+
+function translate(from, to)
+{
+    return $0 = stranslate(from, to, $0)
+}
+
+# メインプログラム
+BEGIN {
+    if (ARGC &#60; 3) {
+        print "usage: translate from to" &#62; "/dev/stderr"
+        exit
+    }
+    FROM = ARGV[1]
+    TO = ARGV[2]
+    ARGC = 2
+    ARGV[1] = "-"
+}
+
+{
+    translate(FROM, TO)
+    print
+}
+</PRE>
+
+<P>
+ユーザーレベルの関数でキャラクタの変換をすることは可能であるが、それは必
+ずしも能率的ではない。そのため我々は組み込みの機能を追加することを検討し
+始めた。しかしながら、このプログラムを書いた後で、我々はSystem V Release 4
+の<CODE>awk</CODE>に<CODE>toupper</CODE>と<CODE>tolower</CODE>が追加されていることを学ん 
+だ(?)。これらの関数は必要があればキャラクタの大小文字の変換をするような 
+関数であり、<CODE>gawk</CODE>にこれらの関数をそれのみ(<CODE>gawk</CODE>だけ)で十分な
+ことができるように追加することを決めた。
+
+</P>
+<P>
+このプログラムの明らかな改良策は、配列<CODE>t_ar</CODE>のセットアップを
+<CODE>BEGIN</CODE>ルール中で一度だけ行うということである。しかしながら、これは
+"from"と"to"の二つのリストがプログラムの実行中を通じて決して変更され
+ないということを仮定したものである。
+
+</P>
+
+
+<H3><A NAME="SEC168" HREF="gawk_toc.html#SEC168">郵便の宛て名を出力する</A></H3>
+
+<P>
+次に挙げるプログラムは"real world"<A NAME="FOOT25" HREF="gawk_foot.html#FOOT25">(25)</A>プログラムである。 
+このスクリプトは名前とアドレスのリストを入力として読み込み、宛て名ラベル
+を生成する。各ページは20のラベルがあり、10個ずつの二段組みにされる。アド
+レスは5行を越えないように保証される。各アドレスは、空行で区切られる。
+
+</P>
+<P>
+基本的なアイデアは、ラベル20個分のデータを読むことである。各ラベルの各行
+は、<CODE>line</CODE>という配列に格納される。この単一のルールは、<CODE>line</CODE>と
+いう配列を満たすことを行い、そして20個のラベルが読み込まれたときにそのペ
+ージを出力するということを行っている。
+
+</P>
+<P>
+<CODE>BEGIN</CODE>ルールでは<CODE>awk</CODE>がレコードを空行で分割するようにするため
+に<CODE>RS</CODE>に空文字列をセットする
+(セクション <A HREF="gawk_6.html#SEC34">入力をレコードへと分割をするやりかた</A>を参照)。また、一ページの最大行
+が(20×5=100)なので、<CODE>MAXLINES</CODE>に100をセットする。
+
+</P>
+<P>
+作業のほとんどは関数<CODE>printpage</CODE>で行われている。ラベル行は順番に配列
+<CODE>line</CODE>に格納されるが、それは水平方向に印刷する必要がある。つまり、
+<CODE>line[1]</CODE>の次は<CODE>line[6]</CODE>であり、<CODE>line[2]</CODE>の次は
+<CODE>line[7]</CODE>、という具合になる。二つのループがこれを達成するために使わ
+れている。 外側の、<CODE>i</CODE>で制御されるループはデータ10行毎に一段落し、
+これはラベルの各列(row)である。内側の<CODE>j</CODE>で制御されるループは列(row)
+にある各行を処理する。<CODE>j</CODE>は0から4まで変化し、<SAMP>`i+j'</SAMP>はその列の
+<CODE>j</CODE>番目の行である。<CODE>i+j+5</CODE>は次に処理するエントリとなる。出力は
+最終的に次のようなものになる。
+
+</P>
+
+<PRE>
+line 1          line 6
+line 2          line 7
+line 3          line 8
+line 4          line 9
+line 5          line 10
+</PRE>
+
+<P>
+21行目と61行目では、ラベルにきちんと印字されるようにするために空行が出力
+される。これはプログラムが書かれたときに使っていたラベルに依存するもので
+ある。同様に、ページの一番上二行と、一番下二行が空行であることに注意する
+こと。
+
+</P>
+
+<P>
+<CODE>END</CODE>ルールはラベルの最終ページのフラッシュを行っている。
+データが、20ラベルの倍数である場合には、フラッシュされるようなデータは
+ない。
+
+</P>
+<P>
+<A NAME="IDX726"></A>
+
+<PRE>
+# labels.awk
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# June 1992
+
+# Program to print labels.  Each label is 5 lines of data
+# that may have blank lines.  The label sheets have 2
+# blank lines at the top and 2 at the bottom.
+
+BEGIN    { RS = "" ; MAXLINES = 100 }
+
+function printpage(    i, j)
+{
+    if (Nlines &#60;= 0)
+        return
+
+    printf "\n\n"        # ヘッダー
+
+    for (i = 1; i &#60;= Nlines; i += 10) {
+        if (i == 21 || i == 61)
+            print ""
+        for (j = 0; j &#60; 5; j++) {
+            if (i + j &#62; MAXLINES)
+                break
+            printf "   %-41s %s\n", line[i+j], line[i+j+5]
+        }
+        print ""
+    }
+
+    printf "\n\n"        # フッター
+
+    for (i in line)
+        line[i] = ""
+}
+
+# メインルール
+{
+    if (Count &#62;= 20) {
+        printpage()
+        Count = 0
+        Nlines = 0
+    }
+    n = split($0, a, "\n")
+    for (i = 1; i &#60;= n; i++)
+        line[++Nlines] = a[i]
+    for (; i &#60;= 5; i++)
+        line[++Nlines] = ""
+    Count++
+}
+
+END    \
+{
+    printpage()
+}
+</PRE>
+
+
+
+<H3><A NAME="SEC169" HREF="gawk_toc.html#SEC169">単語の使用数を調べる</A></H3>
+
+<P>
+次の<CODE>awk</CODE>プログラムは入力中にあった単語がどのくらい現れたの数を出力
+するものである。このプログラムは<CODE>awk</CODE>の配列の性質が、添え字に文字列
+を使った連想的なものであるということを示している。また、
+<SAMP>`for @var {x'</SAMP> in <VAR>array</VAR>}という構成を例示したものでもある。結局
+のところこれは、最少限度の努力で少々複雑な有用な仕事をさせるために、
+<CODE>awk</CODE>をどのように他の有益なプログラムと共に使うことをできるかという
+ことを示している。若干の説明がプログラムリストの後にある。
+
+</P>
+
+<PRE>
+awk '
+#単語の出現頻度のリストを出力する
+{
+    for (i = 1; i &#60;= NF; i++)
+        freq[$i]++
+}
+
+END {
+    for (word in freq)
+        printf "%s\t%d\n", word, freq[word]
+}'
+</PRE>
+
+<P>
+このプログラムを理解するにあたっての最初の点は、二つのルールがあるという
+ことである。最初のルールは、パターンが空であるので入力のすべての行で実行
+される。<CODE>awk</CODE>のフィールドアクセス機構
+(セクション <A HREF="gawk_6.html#SEC35">フィールドの検査</A>を参照) を行の中にある個々の単語を取り出すた
+めに使っていて、どのくらいのフィールドがあるかを知るために<CODE>NF</CODE>
+(セクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照)という組込み変数を使っている。
+
+</P>
+<P>
+入力中にある各単語は、その単語が現れる度に一つ値が増える
+<CODE>freq</CODE>という配列の要素のために使われる。
+
+</P>
+<P>
+二番目のルールは<CODE>END</CODE>というパターンを持っているので、入力がつきるま
+では実行されない。そこでは最初のアクションで構築したテーブル、
+<CODE>freq</CODE>の内容を出力している。
+
+</P>
+<P>
+このプログラムは実際のテキストファイルに使用するには幾つかの問題点がある。
+
+</P>
+
+<UL>
+<LI>
+
+単語は<CODE>awk</CODE>の規則を使って検索される。この規則は、フィールドはホワイ
+トスペースによって区切られるというものであり、このため入力にあるその他の
+キャラクタ(改行を除く)は<CODE>awk</CODE>にとって特別な意味を持つものではない。
+これは、句読点キャラクタを単語の一部として数えてしまうということである。
+
+<LI>
+
+<CODE>awk</CODE>言語はキャラクタの大文字と小文字とを区別する。このため。
+<SAMP>`bartender'</SAMP> と <SAMP>`Bartender'</SAMP>は異なる単語として扱われる。標準的なテキ 
+ストでは、文章の始めにある場合には単語はキャピタライズされるので、これは
+望ましいことではない。また、頻度アナライザーはキャピタライズに影響される
+べきではない。
+
+<LI>
+
+出力が便利な順番で行われていない。単語の出現数や、単語のアルファベット順
+にテーブルの内容が出力されるのが望まれるだろう。
+</UL>
+
+<P>
+これらの問題を解決する方法はより進んだ<CODE>awk</CODE>言語の機能を使うことであ
+る。第一に、大小文字の区別を取り除くために、<CODE>tolower</CODE>を使用する。次
+いで、句読点キャラクタを取り除くために<CODE>gsub</CODE>を使用する。最後に、
+<CODE>awk</CODE>スクリプトの出力に対して<CODE>sort</CODE>ユーティリティを使用する。
+次に新しいバージョンのプログラムを挙げる。
+
+</P>
+<P>
+<A NAME="IDX727"></A>
+
+<PRE>
+# Print list of word frequencies
+# 単語の出現頻度のリストを出力する。
+{
+    $0 = tolower($0)    # 大小文字の区別をなくす
+    gsub(/[^a-z0-9_ \t]/, "", $0)  # 句読点をとる
+    for (i = 1; i &#60;= NF; i++)
+        freq[$i]++
+}
+
+END {
+    for (word in freq)
+        printf "%s\t%d\n", word, freq[word]
+}
+</PRE>
+
+<P>
+このプログラムを<TT>`wordref.awk'</TT>というファイルにセーブし、データが
+<TT>`file1'</TT>というファイルにあったとすると、次のパイプライン
+
+</P>
+
+<PRE>
+awk -f wordfreq.awk file1 | sort +1 -nr
+</PRE>
+
+<P>
+これは、<TT>`file1'</TT>中にある単語を出現頻度順に並べた
+テーブルを出力する。
+
+</P>
+<P>
+<CODE>awk</CODE>プログラムは適切にデータを扱って、きちんと並べられては
+いない単語テーブルを作り出す。
+
+</P>
+<P>
+<CODE>awk</CODE>スクリプトの出力は、その後で<CODE>sort</CODE>ユーティリティによって 
+ソートされ、ターミナルに出力される。この例で<CODE>sort</CODE>に与えられている 
+オプションは、ソートユーティリティが各行二番目のフィールド(最初のフィー 
+ルドはスキップする)を数値と見なした(<SAMP>`15'</SAMP>が<SAMP>`5'</SAMP>の前にくる)ソート
+キーにして使って降順(逆順)並べかえを行うように指示している。
+
+</P>
+<P>
+<CODE>sort</CODE>で行っていることを、<CODE>END</CODE>アクションを変えることによって
+プログラムの中で行うこともできる。
+
+</P>
+
+<PRE>
+END {
+    sort = "sort +1 -nr"
+    for (word in freq)
+        printf "%s\t%d\n", word, freq[word] | sort
+    close(sort)
+}
+</PRE>
+
+<P>
+本当のパイプ(true pipe)を持ってないシステム上で
+ソートをするにはこのやり方を使わなければならないだろう。
+
+</P>
+<P>
+<CODE>sort</CODE>プログラムの使い方に関するより詳しい情報は、
+一般的なオペレーティングシステムのドキュメントを参照のこと。
+
+</P>
+
+
+<H3><A NAME="SEC170" HREF="gawk_toc.html#SEC170">ソートされていないテキストから重複を取り除く</A></H3>
+
+<P>
+<CODE>uniq</CODE>プログラム
+(セクション <A HREF="gawk_17.html#SEC162">テキストの重複のない行を出力する</A>を参照)
+は<EM>ソートされた</EM>データの重複を取り除く。
+
+</P>
+<P>
+さてここで、あるデータファイルから重複したデータを取り除く必要があるが、
+その順番はそのままにして置きたいということを望むようなことがあるだろう  
+か?これは、シェルのヒストリーファイルが良い例かもしれない。ヒストリーフ 
+ァイルは、ユーザーが入力したすべてのコマンドのコピーを保持する。そして、
+数回同じコマンドを繰り返すことは希なことではない。ユーザーはときどき、ヒ
+ストリーファイルから重複したエントリを削除して、ヒストリーファイルをコン
+パクトにしたいと思うかもしれない。その場合にも元のコマンドの順序はそのま
+まにして置くことが望ましい。
+
+</P>
+<P>
+次に挙げる単純なプログラムは、この仕事をこなす。このプログラムは二つの配
+列を使い、<CODE>data</CODE>という配列は各行のテキストによって添え字付けされる。
+
+</P>
+<P>
+ある行がそれまでに現れていないコマンドでああれば、<CODE>data[$0]</CODE>はゼロ 
+である。この場合、その行のテキストは<CODE>lines[count]</CODE>に格納される。
+<CODE>lines</CODE>の各要素はユニークものであり、また、<CODE>[lines]</CODE>は行の出現
+順 序に添え字付けされる。<CODE>END</CODE>ルールは、単に順番に<CODE>[lines]</CODE>の要
+素を出力しているだけである。
+
+</P>
+<P>
+<A NAME="IDX728"></A>
+<A NAME="IDX729"></A>
+
+<PRE>
+# histsort.awk -- シェルのヒストリーファイルを小さくする
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+# Thanks to Byron Rakitzis for the general idea
+{
+    if (data[$0]++ == 0)
+        lines[++count] = $0
+}
+
+END {
+    for (i = 1; i &#60;= count; i++)
+        print lines[i]
+}
+</PRE>
+
+<P>
+このプログラムにはまた、他の便利な情報を生成するための土台を提供する。
+例えば、次のような<CODE>print</CODE>文を<CODE>END</CODE>ルールで使うことによって
+ある特定のコマンドがどのくらいの回数使われたのかを示すようになる。
+
+</P>
+
+<PRE>
+print data[lines[i]], lines[i]
+</PRE>
+
+<P>
+これは<CODE>data[$0]</CODE>が見つかる度にインクリメントされているので
+きちんと働く。
+
+</P>
+
+
+<H3><A NAME="SEC171" HREF="gawk_toc.html#SEC171">Texinfoのソースファイルからプログラムを取り出す</A></H3>
+
+<P>
+この章と一つ前の章
+(セクション <A HREF="gawk_16.html#SEC141"><CODE>awk</CODE>の関数ライブラリ</A>を参照)
+では、多くの<CODE>awk</CODE>プログラムを例示している。
+もしこれらのプログラムを試してみたいのであれば、
+手でこれらのプログラムをタイプしなければならないというのは退屈である。  
+そこで、Texinfoの入力ファイルの一部を引き抜いて個々のファイルに納める
+ことのできるプログラムを提供する。
+
+</P>
+<P>
+このマニュアルはGNUプロジェクトのドキュメントフォーマッティング
+言語であるTexinfoで記述されている。
+TexinfoはFree Software Foundationから入手可能な
+<CITE>Texinfo--The GNU Documentation Format</CITE>
+で詳しく説明されている。
+
+</P>
+<P>
+上述した目的のためには、Texinfoファイルに関して
+三つの事柄を知っておけば十分である。
+
+</P>
+
+<UL>
+<LI>
+
+アットマーク、<SAMP>`@'</SAMP>はTexinfo中では特別であり、
+Cや<CODE>awk</CODE>での<SAMP>`\'</SAMP>のようなものである。
+<SAMP>`@'</SAMP>という文字そのものはTexinfoソースの中では
+<SAMP>`@@'</SAMP>で表わされる。
+
+<LI>
+
+コメントは<SAMP>`@c'</SAMP>、もしくは<SAMP>`@comment'</SAMP>で始まる。ファイル展開プロ 
+グラムはファイルの最初を示す特殊なコメントを使って動作する。
+
+<LI>
+
+ページの区切りを越えて分割すべきでないサンプルテキストは<SAMP>`@group'</SAMP>と
+<SAMP>`@end group'</SAMP>コマンドで囲む。
+</UL>
+
+<P>
+以下に挙げるプログラム、<TT>`extract.awk'</TT>はTexinfoソースファイルを
+読み、特殊なコメントに基づいて二つの事柄を行う。
+<SAMP>`@c system ...'</SAMP>というシーケンスを見つけたときには、
+コマンドのテキストを制御行から抜き取り、それを
+<CODE>system</CODE>関数に渡すことによりコマンドを実行する
+(セクション <A HREF="gawk_13.html#SEC127">Built-in Functions for Input/Output</A>を参照)。
+<SAMP>`@c file <VAR>filename</VAR>'</SAMP>というシーケンスを見つけたときには、
+<SAMP>`@c endfile'</SAMP>というシーケンスに出会うまで
+各行を<VAR>filename</VAR>というファイルに出力する。
+<TT>`extract.awk'</TT>のルールは、<SAMP>`oment'</SAMP>の部分をオプショナルに
+することによって<SAMP>`@c'</SAMP>と<SAMP>`@comment'</SAMP>の両方にマッチするように
+なっている。<SAMP>`@group'</SAMP>か<SAMP>`@end group'</SAMP>を含んでいる行は
+単に削除される。<TT>`extract.awk'</TT>はライブラリ関数の<CODE>join</CODE>
+(セクション <A HREF="gawk_16.html#SEC147">Merging an Array Into a String</A>を参照)を
+使用している。
+
+</P>
+<P>
+オンラインTexinfoソース、<CITE>Effective AWK Programming</CITE>(<TT>`gawk.texi'</TT>)にあるサ 
+ンプルプログラムは全て<SAMP>`file'</SAMP>と<SAMP>`endfile'</SAMP>に囲まれた中に置かれて 
+いる。<CODE>gawk</CODE>の配布キットでは、サンプルプログラムを展開するためと、 
+それらを<CODE>gawk</CODE>が見つけることのできる標準的なディレクトリにインスト 
+ールするために<TT>`extract.awk'</TT>を使っている。
+Texiinfoファイルは以下のような形式である:
+
+</P>
+
+<PRE>
+...
+This program has a @code{BEGIN} block,
+which prints a nice message:
+
+@example
+@c file examples/messages.awk
+BEGIN @{ print "Don't panic!" @}
+@c end file
+@end example
+
+これは最後に次のような出力をする:
+
+@example
+@c file examples/messages.awk
+END @{ print "Always avoid bored archeologists!" @}
+@c end file
+@end example
+...
+</PRE>
+
+<P>
+<TT>`extract.awk'</TT>はディレクティブの大小文字の違いを気にしないために、
+<CODE>IGNORECASE</CODE>に1をセットすることから始まっている。
+
+</P>
+<P>
+最初のルールでは<CODE>system</CODE>を扱い、与えられたコマンドをチェックし(少な
+くとも<CODE>NF</CODE>が三つある)、そのコマンドが正しく実行されたことを表わす終
+了ステータス0を返すことをチェックする。
+
+</P>
+<P>
+<A NAME="IDX730"></A>
+
+<PRE>
+# extract.awk -- extract files and run programs
+#                 from texinfo files
+# texinfoファイルからファイルを取り出し、プログラムを実行する
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# May 1993
+
+BEGIN    { IGNORECASE = 1 }
+
+/^@c(omment)?[ \t]+system/    \
+{
+    if (NF &#60; 3) {
+        e = (FILENAME ":" FNR)
+        e = (e  ": badly formed `system' line")
+        print e &#62; "/dev/stderr"
+        next
+    }
+    $1 = ""
+    $2 = ""
+    stat = system($0)
+    if (stat != 0) {
+        e = (FILENAME ":" FNR)
+        e = (e ": warning: system returned " stat)
+        print e &#62; "/dev/stderr"
+    }
+}
+</PRE>
+
+<P>
+<CODE>e</CODE>という変数は関数を
+page.
+ページ
+に体裁よく納めるために使っている。
+
+</P>
+<P>
+二番目のルールでは、データをファイルに取り出すことを行っている。ディレク
+ティブで与えられたファイル名の確認を行い、もしそれがそのときに処理してい
+るファイルでなければ、以前のファイルをクローズする。これは<SAMP>`@c endfile'</SAMP>
+ではファイル名を与えないでも良いということである(この場合、今行って 
+はいないが診断メッセージを出すべきである)。
+
+</P>
+<P>
+<SAMP>`for'</SAMP>ループ中で<CODE>getline</CODE>
+(セクション <A HREF="gawk_6.html#SEC46"><CODE>getline</CODE>を使った入力</A>を参照).
+を使って、行の読み込み作業を行っている。予期しないファイルの終了に対して
+は、<CODE>unexpected_eof</CODE>という関数を呼び出す。行が"endfile"の行に
+あった場合には、ループを脱出する。注目している行に<SAMP>`@group'</SAMP>か
+<SAMP>`@end group'</SAMP>があった場合、それを無視し、次の行の処理に移る
+(これらTexinfo制御の行は一ページにまとまるコードのブロックを
+保持している。残念ながら、TeX はこの作業を常に正しく行うほどには
+賢くない。そのために、ちょっとしたアドバイスをしなければならない)。
+
+</P>
+<P>
+作業のほとんどは、それに続く数行で行っている。もし、読み込んだ行に@samp 
+{@}シンボルがなければ、それは直接出力することができる。<SAMP>`@'</SAMP>があっ 
+て、それが先頭にある行は取り除かなければならない。
+
+</P>
+<P>
+<SAMP>`@'</SAMP>を取り除くために<CODE>split</CODE>関数
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照).
+を使って、その行は<CODE>a</CODE>という配列の要素に分割される。<CODE>a</CODE>の空に
+なっている要素は二つの連続した<SAMP>`@'</SAMP>シンボルが元の行にあったことを示し
+ている。二つの空要素(元のファイルの<SAMP>`@@'</SAMP>)毎に、<SAMP>`@'</SAMP>シンボル一
+つを戻す必要がある。
+
+</P>
+<P>
+配列の処理が終わったとき、<CODE>join</CODE>を<CODE>SUBSEP</CODE>の値を引数に
+使って呼び出し、配列を単一の行に戻す。
+この行は、その後出力先のファイルに出力される。
+
+</P>
+
+<PRE>
+/^@c(omment)?[ \t]+file/    \
+{
+    if (NF != 3) {
+        e = (FILENAME ":" FNR ": badly formed `file' line")
+        print e &#62; "/dev/stderr"
+        next
+    }
+    if ($3 != curfile) {
+        if (curfile != "")
+            close(curfile)
+        curfile = $3
+    }
+
+    for (;;) {
+        if ((getline line) &#60;= 0)
+            unexpected_eof()
+        if (line ~ /^@c(omment)?[ \t]+endfile/)
+            break
+        else if (line ~ /^@(end[ \t]+)?group/)
+            continue
+        if (index(line, "@") == 0) {
+            print line &#62; curfile
+            continue
+        }
+        n = split(line, a, "@")
+        # if a[1] == "", means leading @,
+        # don't add one back in.
+        for (i = 2; i &#60;= n; i++) {
+            if (a[i] == "") { # @@だった
+                a[i] = "@"
+                if (a[i+1] == "")
+                    i++
+            }
+        }
+        print join(a, 1, n, SUBSEP) &#62; curfile
+    }
+}
+</PRE>
+
+<P>
+注意すべきことは、<SAMP>`&#62;'</SAMP>を使ったリダイレクトである。<SAMP>`&#62;'</SAMP>を使った出
+力はファイルを一度だけオープンし、ファイルをオープンし続けてその後の出力
+はファイルに追加する
+(セクション <A HREF="gawk_7.html#SEC65">Redirecting Output of <CODE>print</CODE> and <CODE>printf</CODE></A>を参照)。
+このことは、プログラムのテキストと、それ対しての説明をする文(ここでやっ 
+ているように!)を何の面倒もなしに、簡単に混ぜることができることを可能とす
+る。ファイルは新しいデータファイル名に出会ったときか、入力ファイルの最後
+にきたときだけクローズされる。
+
+</P>
+
+<P>
+最後に<CODE>unexpected_eof</CODE>という関数が適切な
+エラーメッセージを出力し、実行を終了する。
+
+</P>
+<P>
+<CODE>END</CODE>ルールは、オープンしたファイルをクローズする
+最後のクリーンアップ作業を行っている。
+
+</P>
+
+<PRE>
+function unexpected_eof()
+{
+    printf("%s:%d: unexpected EOF or error\n", \
+        FILENAME, FNR) &#62; "/dev/stderr"
+    exit 1
+}
+
+END {
+    if (curfile)
+        close(curfile)
+}
+</PRE>
+
+
+
+<H3><A NAME="SEC172" HREF="gawk_toc.html#SEC172">シンプルなストリームエディター</A></H3>
+
+<P>
+<A NAME="IDX731"></A>
+<CODE>sed</CODE>ユーティリティはデータストリームを読み取り、変更を行い、変更し
+たデータを出力するプログラム、"ストリームエディタ"(stream editor)であ 
+る。これはしばしば大きなファイルやパイプラインを通じて他のコマンドが生成
+したデータストリームに対して全面的な変更を加えるときに用いられる
+
+</P>
+<P>
+<CODE>sed</CODE>はそれ自身が複雑なプログラムでもあるが、
+ほとんどの使用目的はパイプラインの真ん中で全面的な置換を行うことである。
+
+</P>
+
+<PRE>
+command1 &#60; orig.data | sed 's/old/new/g' | command2 &#62; result
+</PRE>
+
+<P>
+この例の<SAMP>`s/old/new/g'</SAMP>は<CODE>sed</CODE>に対して
+入力行から<SAMP>`old'</SAMP>という正規表現にマッチするものを検索し、
+(見つかったら)それを<SAMP>`new'</SAMP>に
+置換する作業を
+グローバル(つまり、その行のすべてのマッチするものに対して)
+に行えということを指示している。
+これは、<CODE>awk</CODE>の<CODE>gsub</CODE>関数と似ている
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)。
+
+</P>
+<P>
+次のプログラム、<TT>`awksed.awk'</TT>は、少なくとも二つのコマンドライン引数を
+受け付ける。その二つは、テキストから検索するパターンと、それを置き換える
+パターンである。さらに引数がある場合には、それは処理する対象の
+ファイル名として扱われる。もしファイル名が一つも与えられなければ、
+標準入力が入力元として扱われる。
+
+</P>
+<P>
+<A NAME="IDX732"></A>
+<A NAME="IDX733"></A>
+<A NAME="IDX734"></A>
+
+<PRE>
+# awksed.awk -- s/foo/bar/g をprintだけでやる
+#    アイデアを出してくれたMichael Brennanに感謝
+
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# August 1995
+
+function usage()
+{
+    print "usage: awksed pat repl [files...]" &#62; "/dev/stderr"
+    exit 1
+}
+
+BEGIN {
+    # 引数を検査する
+    if (ARGC &#60; 3)
+        usage()
+
+    RS = ARGV[1]
+    ORS = ARGV[2]
+
+    # 引数をファイルとして使用しない
+    ARGV[1] = ARGV[2] = ""
+}
+
+# look ma, no hands!
+{
+    if (RT == "")
+        printf "%s", $0
+    else
+        print
+}
+</PRE>
+
+<P>
+このプログラムは
+正規表現である<CODE>RS</CODE>を扱う能力と、実際にレコードを区切ったテキストが
+<CODE>RT</CODE>であるという動作に依存している
+(セクション <A HREF="gawk_6.html#SEC34">入力をレコードへと分割をするやりかた</A>を参照)。
+
+</P>
+<P>
+アイデアの基本は、<CODE>RS</CODE>を検索するパターンにするということである。
+<CODE>gawk</CODE>は自動的にそのパターンにマッチしたものの間にある
+テキストを<CODE>$0</CODE>にセットする。これは我々がそのままにしておきたいと
+考えているテキストである。そして、<CODE>ORS</CODE>に置換後のテキストを
+セットすることによって、<CODE>print</CODE>文はそのままにしておきたい
+テキストを(変換せずにそのまま)出力し、その後ろに
+置換したテキストを出力するのである。
+
+</P>
+<P>
+この手順に対して、
+レコードが<CODE>RS</CODE>で終わっていない場合の手続きにうまい手段は
+ないものだろうか?
+<CODE>print</CODE>文を使ってしまうと、出力すべきでない置換テキストを
+出力してしまい、結果が正しいものでなくなってしまう。
+
+</P>
+<P>
+しかし、ファイルが<CODE>RS</CODE>でマッチしたテキストで終わっていない場合には、
+<CODE>RT</CODE>は空文字列になる。この場合、<CODE>$0</CODE>を
+<CODE>printf</CODE>を使って出力することが可能である。
+(セクション <A HREF="gawk_7.html#SEC60">Using <CODE>printf</CODE> Statements for Fancier Printing</A>を参照)。
+
+</P>
+<P>
+<CODE>BEGIN</CODE>ルールは、引数が適正な数かどうかのチェック、そこに問題があっ 
+た場合に<CODE>usage</CODE>を呼び出すなどのセットアップ作業を扱っている。その
+後で、<CODE>RS</CODE>と<CODE>ORS</CODE>にコマンドライン引数からの値をセットし、ファ 
+イル名として扱われないように<CODE>ARGV[1]</CODE>と<CODE>ARGV[2]</CODE>に空文字列をセ
+ットしている(セクション <A HREF="gawk_11.html#SEC111">Using <CODE>ARGC</CODE> and <CODE>ARGV</CODE></A>を参照)。
+
+</P>
+<P>
+<CODE>usage</CODE>関数はエラーメッセージを出力し、実行を終了する。
+
+</P>
+<P>
+最後に、一つのルールで上述した手順の通り、
+<CODE>RT</CODE>の値に従って適切に
+<CODE>print</CODE>か<CODE>printf</CODE>を使って出力を行う。
+
+</P>
+
+
+
+<H3><A NAME="SEC173" HREF="gawk_toc.html#SEC173">ライブラリを使う簡単な方法</A></H3>
+
+<P>
+<CODE>awk</CODE>でライブラリ関数を使うことができると非常に有益である。それはコ
+ードの再利用と汎用的な関数の作成を促進しする。プログラムはより小さくなり、
+それにより(プログラムの)見通しがよくなる。しかしながら、ライブラリ関数の
+使用は、<CODE>awk</CODE>プログラムを書くときにのみ簡単になるのであって、それを
+実行するときは複数の<SAMP>`-f'</SAMP>オプションを必要とするので面倒である。もし
+<CODE>gawk</CODE>が利用できないのなら、<CODE>AWKPATH</CODE>環境変数が使えず、
+<CODE>awk</CODE>数をライブラリディレクトリに置くという
+機能(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照).
+もないので、より面倒さが顕著になる。
+
+</P>
+<P>
+次のようにプログラムが書ければとても良いだろう。
+
+</P>
+
+<PRE>
+# ライブラリ関数
+@include getopt.awk
+@include join.awk
+...
+
+# メインプログラム
+BEGIN {
+    while ((c = getopt(ARGC, ARGV, "a:b:cde")) != -1)
+        ...
+    ...
+}
+</PRE>
+
+<P>
+以下に挙げるプログラム<TT>`igawk.sh'</TT>は今述べたサービスを提供する。
+<CODE>gawk</CODE>の<CODE>AWKPATH</CODE>環境変数を使ったファイルの検索をシミュレートし、
+<STRONG>ネスト</STRONG>したインクルード、つまり<CODE>@include</CODE>でインクルードされたフ
+ァイルがさらに<SAMP>`@include'</SAMP>を含んでいることを許す。<CODE>igawk</CODE>はファ
+イルのインクルードを一度だけ行うようになっている。それは、ネストしてイン
+クルードすることによってライブラリ関数を二度インクルードすることがないよ
+うにするためである。
+
+</P>
+<P>
+<CODE>igawk</CODE>は外面的には<CODE>gawk</CODE>と同じように振る舞うべきである。これ 
+は、複数の<SAMP>`-f'</SAMP>を使ったソースファイルの指定や、コマンドライン上のプ 
+ログラムとライブラリファイルとを混ぜてつかるということも含めて、
+<CODE>gawk</CODE>のコマンドライン引数の全てを受け付けるべきであるということである。
+
+</P>
+<P>
+このプログラムはPOSIXのシェル(<CODE>sh</CODE>)言語を使って記述された。
+プログラムの動作の方法は以下の通り。
+
+</P>
+
+<OL>
+<LI>
+
+最初から最後まで通して引数を眺め、<CODE>awk</CODE>のソースコードを表わしていな
+い引数を後で展開したプログラムを実行するときに使用するためにセーブする。
+
+<LI>
+
+<CODE>awk</CODE>テキストである引数では、それを展開するテンポラリファイルに出力
+する。ここで二つの場合がある。
+
+
+<OL>
+<LI>
+
+<SAMP>`--source'</SAMP> or <SAMP>`--source='</SAMP>で指定されたリテラルテキスト。
+このテキストはそのまま出力される。<CODE>echo</CODE>プログラムが
+自動的に行末の改行を付け加える。
+
+<LI>
+
+<SAMP>`-f'</SAMP>で指定されたファイル名。ここで巧妙なトリックを使って
+<SAMP>`@include <VAR>filename</VAR>'</SAMP> をテンポラリファイルに出力している。
+ファイル取り込みプログラムが<CODE>gawk</CODE>が行うやり方で作業するので、
+正しい箇所でファイルの内容がプログラムにインクルードされる
+</OL>
+
+<LI>
+
+<SAMP>`@include'</SAMP>文を展開するために、テンポラリファイルに対して
+(自然に)<CODE>awk</CODE>プログラムを実行する。
+展開されたプログラムは二番目のテンポラリファイルに出力される。
+
+<LI>
+
+展開したプログラムを<CODE>gawk</CODE>にユーザーが元々指定したコマンドライン引数を一緒に
+渡して実行させる。
+</OL>
+
+<P>
+プログラムの最初の部分では、最初の引数が<SAMP>`debug'</SAMP>であったときにシェル
+のトレースをオンにするということをしている。そうでない場合にはシェルの
+<CODE>trap</CODE>文を使ってプログラムが終了したり、割り込みを受けた場合にテンポ 
+ラリファイルを消去するようにする。
+
+</P>
+
+<P>
+次の部分にあるループでは、すべてのコマンドライン引数を処理する。
+いくつかの重要な事例がある。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>--</CODE>
+<DD>
+<CODE>igawk</CODE>に対する引数を終わらせる。この後の引数は評価されることなくユ
+ーザーの<CODE>awk</CODE>プログアムに渡される
+
+<DT><CODE>-W</CODE>
+<DD>
+これは次のオプションが<CODE>gawk</CODE>に特有のものであることを示す。引数の処 
+理を早めに行わせるために、<SAMP>`-W'</SAMP>は残りの引数に付け足され、ループは継 
+続される(これは<CODE>sh</CODE>プログラミングトリックである。もし<CODE>sh</CODE>に不 
+慣れであっても気にすることはない)。
+
+<DT><CODE>-v</CODE>
+<DD>
+<DT><CODE>-F</CODE>
+<DD>
+これらは保存され、<CODE>gawk</CODE>に渡される。
+
+<DT><CODE>-f</CODE>
+<DD>
+<DT><CODE>--file</CODE>
+<DD>
+<DT><CODE>--file=</CODE>
+<DD>
+<DT><CODE>-Wfile=</CODE>
+<DD>
+ファイル名はテンポラリファイル<TT>`/tmp/ig.s.$$'</TT>に
+<SAMP>`@include'</SAMP>文と共にセーブされる。
+<CODE>sed</CODE>ユーティリティが、ファイル名の前にある
+部分(例えば<SAMP>`--file='</SAMP>)を取り去るために使われる。
+
+<DT><CODE>--source</CODE>
+<DD>
+<DT><CODE>--source=</CODE>
+<DD>
+<DT><CODE>-Wsource=</CODE>
+<DD>
+ソーステキストは<TT>`/tmp/ig.s.$$'</TT>に保存される。
+
+<DT><CODE>--version</CODE>
+<DD>
+<DT><CODE>--version</CODE>
+<DD>
+<DT><CODE>-Wversion</CODE>
+<DD>
+<CODE>igawk</CODE>のバージョンを出力し、また、
+<SAMP>`gawk --version'</SAMP>を実行して使用する <CODE>gawk</CODE>の
+バージョン情報を出力して終了する。
+</DL>
+
+<P>
+<SAMP>`-f'</SAMP>, <SAMP>`--file'</SAMP>, <SAMP>`-Wfile'</SAMP>, <SAMP>`--source'</SAMP>,<SAMP>`-Wsource'</SAMP>
+のいずれもが指定されなかった場合、最初の非オプション引数が
+<CODE>awk</CODE>プログラムとなる。もしコマンドライン引数が
+残っていなければ、<CODE>igawk]はエラーメッセージを出力し、
+実行を終了する。引数がある場合には、最初の引数が
+<TT>`/tmp/ig.s.$$'</TT>に出力される。</CODE>
+
+</P>
+<P>
+どのような場合でも、引数が処理された後では
+<TT>`/tmp/ig.s.$$'</TT>の内容は完全なオリジナル<CODE>awk</CODE>プログラム
+のテキストとなる。
+
+</P>
+<P>
+<SAMP>`$$'</SAMP>は<CODE>sh</CODE>ではカレントプロセスID番号となる。これは、ユニークな
+テンポラリファイル名を生成するためにシェルプログラミングでは良く使われて
+いる。これにより<CODE>igawk</CODE>を複数のユーザーがテンポラリファイルの重複を
+気にすることなしに実行することができるようになる。
+
+</P>
+<P>
+<A NAME="IDX735"></A>
+以下がプログラムである。
+
+</P>
+<P>
+<A NAME="IDX736"></A>
+
+<PRE>
+#! /bin/sh
+
+# igawk -- gawkに似ているが、@includeを処理する
+# Arnold Robbins, arnold@gnu.org, Public Domain
+# July 1993
+
+if [ "$1" = debug ]
+then
+    set -x
+    shift
+else
+    # exit、ハングアップ、割り込み、quit、終了のときにクリーンアップをする
+    trap 'rm -f /tmp/ig.[se].$$' 0 1 2 3 15
+fi
+
+while [ $# -ne 0 ] # loop over arguments
+do
+    case $1 in
+    --)     shift; break;;
+
+    -W)     shift
+            set -- -W"$@"
+            continue;;
+
+    -[vF])  opts="$opts $1 '$2'"
+            shift;;
+
+    -[vF]*) opts="$opts '$1'" ;;
+
+    -f)     echo @include "$2" &#62;&#62; /tmp/ig.s.$$
+            shift;;
+
+    -f*)    f=`echo "$1" | sed 's/-f//'`
+            echo @include "$f" &#62;&#62; /tmp/ig.s.$$ ;;
+
+    -?file=*)    # -Wfile or --file
+            f=`echo "$1" | sed 's/-.file=//'`
+            echo @include "$f" &#62;&#62; /tmp/ig.s.$$ ;;
+
+    -?file)    # get arg, $2
+            echo @include "$2" &#62;&#62; /tmp/ig.s.$$
+            shift;;
+
+    -?source=*)    # -Wsource or --source
+            t=`echo "$1" | sed 's/-.source=//'`
+            echo "$t" &#62;&#62; /tmp/ig.s.$$ ;;
+
+    -?source)  # get arg, $2
+            echo "$2" &#62;&#62; /tmp/ig.s.$$
+            shift;;
+
+    -?version)
+            echo igawk: version 1.0 1&#62;&#38;2
+            gawk --version
+            exit 0 ;;
+
+    -[W-]*)    opts="$opts '$1'" ;;
+
+    *)      break;;
+    esac
+    shift
+done
+
+if [ ! -s /tmp/ig.s.$$ ]
+then
+    if [ -z "$1" ]
+    then
+         echo igawk: no program! 1&#62;&#38;2
+         exit 1
+    else
+        echo "$1" &#62; /tmp/ig.s.$$
+        shift
+    fi
+fi
+
+# この時点で/tmp/ig.s.$$ の内容は最終的に実行するプログラムとなる
+</PRE>
+
+<P>
+<CODE>awk</CODE>プログラムは<SAMP>`@include'</SAMP>ディレクティブを処理するために、
+<CODE>getline</CODE>を使って一行ずつプログラムを通読する
+(セクション <A HREF="gawk_6.html#SEC46"><CODE>getline</CODE>を使った入力</A>を参照)。
+入力ファイル名と<SAMP>`@include'</SAMP>文はスタックを使って管理される。
+<SAMP>`@include'</SAMP>に出会う度に、カレントファイル名が
+スタックに"プッシュ"され、<SAMP>`@include'</SAMP>ディレクティブで指定された
+ファイル名がカレントファイル名になる。
+各ファイルを処理し終える度に、スタックから"ポップ"して
+直前の入力ファイルを再びカレントファイルにする。
+このプロセスはオリジナルのファイルをスタックの最初に
+置くことから開始する。
+
+</P>
+<P>
+<CODE>pathto</CODE>関数はファイルのフルパス名を探す作業を行っている。
+これは<CODE>gawk</CODE>が<CODE>AWKPATH</CODE>環境変数を使って検索するときの
+動作のシミュレートである
+(セクション <A HREF="gawk_15.html#SEC137"><CODE>AWKPATH</CODE>環境変数</A>を参照)。
+もしファイル名に<SAMP>`/'</SAMP>が含まれていれば、検索にパスは使用されない。
+<SAMP>`/'</SAMP>がなければ、ファイル名はパスに含まれているディレクトリの
+名前と連結され、その結果作られたファイル名によってファイルのオープンが
+できるかどうかを試す。<CODE>awk</CODE>でファイルから読み込みが
+できるかどうかをテストできる手段は一つだけしかなく、それは
+<CODE>getline</CODE>でそのファイルから読み込みができるか、ということであり
+これは<CODE>pathto</CODE>が行っていることである<A NAME="FOOT26" HREF="gawk_foot.html#FOOT26">(26)</A>
+もしファイルから読み込むことができればそのファイルをクローズし、
+その時のファイル名を関数の戻り値として返す。
+
+</P>
+
+<PRE>
+gawk -- '
+# process @include directives
+# @include指令を処理する
+
+function pathto(file,    i, t, junk)
+{
+    if (index(file, "/") != 0)
+        return file
+
+    for (i = 1; i &#60;= ndirs; i++) {
+        t = (pathlist[i] "/" file)
+        if ((getline junk &#60; t) &#62; 0) {
+            # found it
+            close(t)
+            return t
+        }
+    }
+    return ""
+}
+</PRE>
+
+<P>
+メインプログラムは<CODE>BEGIN</CODE>ルール一つからなる。最初に行うことは<CODE>pathto</CODE>
+で使用する<CODE>pathlist</CODE>という配列をセットアップすることである。パスを<SAMP>`:'</SAMP>
+で分割した後で、空の要素はカレントディレクトリを表わす<CODE>"."</CODE>に置き換えられる。
+
+</P>
+
+<PRE>
+BEGIN {
+    path = ENVIRON["AWKPATH"]
+    ndirs = split(path, pathlist, ":")
+    for (i = 1; i &#60;= ndirs; i++) {
+        if (pathlist[i] == "")
+            pathlist[i] = "."
+    }
+</PRE>
+
+<P>
+スタックは<TT>`/tmp/ig.s.$$'</TT>となる<CODE>ARGV[1]</CODE>で初期化される。
+メインループがそれに続く。入力行は継続して読み続けられる。
+<SAMP>`@include'</SAMP>で始まっていない行はそのまま出力される。
+
+</P>
+<P>
+行が<SAMP>`@include'</SAMP>で始まっている場合、ファイル名は<CODE>$2</CODE>にある。
+<CODE>pathto</CODE>はフルパスを生成するために呼び出される。
+もしここで生成できなければ、エラーメッセージを出力し、
+処理を継続する。
+
+</P>
+<P>
+次に行うことは、ファイルがすでにインクルードされたものでないかどうか
+のチェックである。もしそのファイルがすでに出現したものであれば、
+警告メッセージを出力する。初めてのものであれば、
+新しいファイル名をスタックにプッシュし、処理を継続する。
+
+</P>
+<P>
+最後に、<CODE>getline</CODE>が入力ファイルの終端にぶつかったとき、
+そのファイルはクローズされ、スタックからポップされる。
+<CODE>stackptr</CODE>が0を下回ったとき、プログラムは終了する。
+
+</P>
+
+<PRE>
+    stackptr = 0
+    input[stackptr] = ARGV[1] # ARGV[1] が最初のファイル
+
+    for (; stackptr &#62;= 0; stackptr--) {
+        while ((getline &#60; input[stackptr]) &#62; 0) {
+            if (tolower($1) != "@include") {
+                print
+                continue
+            }
+            fpath = pathto($2)
+            if (fpath == "") {
+                printf("igawk:%s:%d: cannot find %s\n", \
+                    input[stackptr], FNR, $2) &#62; "/dev/stderr"
+                continue
+            }
+            if (! (fpath in processed)) {
+                processed[fpath] = input[stackptr]
+                input[++stackptr] = fpath
+            } else
+                print $2, "included in", input[stackptr], \
+                    "already included in", \
+                    processed[fpath] &#62; "/dev/stderr"
+        }
+        close(input[stackptr])
+    }
+}' /tmp/ig.s.$$ &#62; /tmp/ig.e.$$
+</PRE>
+
+<P>
+最後のステップは展開したプログラムと、ユーザーが指定した
+オリジナルのオプションと
+コマンド引数を渡して<CODE>gawk</CODE>を呼び出すことである。
+<CODE>gawk</CODE>の終了ステータスは呼び出し元の
+<CODE>igawk</CODE>に返される。
+
+</P>
+
+
+<PRE>
+eval gawk -f /tmp/ig.e.$$ $opts -- "$@"
+
+exit $?
+</PRE>
+
+<P>
+このバージョンの<CODE>igawk</CODE>はこのプログラムに対する私の三つめの試みを表
+わしている。プログラムをより良く作業させる三つの重要な単純化がそこにある。
+
+</P>
+
+<OL>
+<LI>
+
+<SAMP>`-f'</SAMP>で指定されたファイルに対しても<SAMP>`@include'</SAMP>を使うことによって
+<CODE>awk</CODE>プログラムの組み立てが単純になる。
+すべての<SAMP>`@include'</SAMP>の処理は一度だけ実行できる。
+
+<LI>
+
+<CODE>pathto</CODE>関数はファイルにアクセスできるかどうかをテストするために
+<CODE>getline</CODE>を使って読んだ行をセーブしようとしない。
+この行をメインプログラムで使うためにセーブしようとすると、
+かなり複雑なものになってしまう。
+
+<LI>
+
+<CODE>getline</CODE>のループを<CODE>BEGIN</CODE>ルールの中で使うことによって、
+全てを一ヶ所で行う。これはネストした<SAMP>`include'</SAMP>文の処理の
+ために別のループを呼び出す必要がないということである。
+</OL>
+
+<P>
+同様に、このプログラムは<CODE>sh</CODE>と<CODE>awk</CODE>を組み合わせてプログラミン 
+グすることはしばしば価値があることだということを示すものである。あなたは
+通常、CやC++の低レベルなプログラミングに頼らずに多くのことを達成すること
+ができるし、ある種の文字列や引数の取り扱いは<CODE>awk</CODE>よりもシェルを使う
+ことによってしばしば簡単になる。
+
+</P>
+<P>
+また、<CODE>igawk</CODE>はプログラムに新しい機能を付け加えることが常に必要なわ
+けではないということを証明している。<CODE>igawk</CODE>があるので、
+<SAMP>`@include'</SAMP>を処理する能力を<CODE>gawk</CODE>自身に追加すべき大きな理由はない。
+
+</P>
+<P>
+この追加の例として、検索パスに含まれるディレクトリに
+二つのファイルを置いておくことを考えてみよう。
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`default.awk'</TT>
+<DD>
+このファイルは<CODE>getopt</CODE>や<CODE>assert</CODE>のような
+デフォルトのライブラリ関数の集合からなる。
+
+<DT><TT>`site.awk'</TT>
+<DD>
+このファイルはサイトやインストールに特有な
+ライブラリ関数から構成される。
+つまり、それぞれの場所で開発された関数である。
+別のファイルにすることによって、
+新しい<CODE>gawk</CODE>がリリースされたときに
+<TT>`default.awk'</TT>を
+システム管理者がいちいちローカル関数を付け加なくとも
+更新できるようになる。
+</DL>
+
+<P>
+あるユーザー
+が、<CODE>gawk</CODE>をその起動時に自動的にこれらのファイルを読み込む様に
+修正して欲しいという要望を寄せてきた。そうする代わりに、
+<CODE>igawk</CODE>をそのような動作をするように変更することは
+とても簡単だった。<CODE>igawk</CODE>はネストした<CODE>@include</CODE>ディレクティブを
+扱うことができるので、<TT>`default.awk'</TT>は必要なライブラリ関数を指示する
+<SAMP>`@include'</SAMP>文を含むことができた。
+
+</P>
+
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_16.html">前</A>, <A HREF="gawk_18.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

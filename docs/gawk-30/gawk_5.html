@@ -1,0 +1,1163 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - 正規表現</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_4.html">前</A>, <A HREF="gawk_6.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC25" HREF="gawk_toc.html#SEC25">正規表現</A></H1>
+<P>
+<A NAME="IDX93"></A>
+<A NAME="IDX94"></A>
+<A NAME="IDX95"></A>
+
+</P>
+<P>
+<STRONG>正規表現</STRONG>とは、文字列の集合を表現する方法である。
+正規表現は<CODE>awk</CODE>プログラミングにおいて非常に基本的な
+部分であるので、その書式と使い方は章を分けて説明するに値する。
+
+</P>
+<P>
+スラッシュ(<SAMP>`/'</SAMP>)に囲まれた正規表現は、その正規表現が示す集合に
+属するテキストが含まれる全ての入力レコードにマッチする<CODE>awk</CODE>の
+パターンである。
+
+</P>
+<P>
+もっとも単純な正規表現は、文字や数字、もしくはその両方の並びである。
+このような正規表現はそのような並びを含む任意の文字列にマッチする。
+したがって、<SAMP>`foo'</SAMP>という正規表現は<SAMP>`foo'</SAMP>を含む任意の文字列
+にマッチすることになる。
+それにより、<CODE>/foo/</CODE>というパターンはレコードの<STRONG>どこであっても</STRONG>
+<SAMP>`foo'</SAMP>という三文字を含む入力レコードにマッチすることになる
+のである。他の種類の正規表現は、あなたがより複雑な文字列の集合を指定でき
+るようにするものである。
+
+</P>
+<P>
+Initially, the examples will be simple. As we explain more about how
+regular expressions work, we will present more complicated examples.
+
+</P>
+
+
+
+<H2><A NAME="SEC26" HREF="gawk_toc.html#SEC26">正規表現の使い方</A></H2>
+
+<P>
+正規表現はスラッシュで囲まれたパターンとして使うことができる。そのような正
+規表現は各レコードのテキスト全体に対してのテストが行われる。(通常は、成功 
+かどうかを決めるにはテキストの一部分だけ見れば良い)以下に挙げる例は<SAMP>`foo'</SAMP>
+を含むレコードの第二フィールドを出力する。
+
+</P>
+
+<PRE>
+$ awk '/foo/ { print $2 }' BBS-list
+-| 555-1234
+-| 555-6699
+-| 555-6480
+-| 555-2127
+</PRE>
+
+<P>
+<A NAME="IDX96"></A>
+<A NAME="IDX97"></A>
+<A NAME="IDX98"></A>
+<A NAME="IDX99"></A>
+<A NAME="IDX100"></A>
+<A NAME="IDX101"></A>
+正規表現はまた、マッチング式として使うことができる。これらの式は
+マッチングを試みる文字列を特定することを許し、カレント入力レコード
+全体とマッチングすることをしないで済むようにできる。
+<SAMP>`~'</SAMP>と <SAMP>`!~'</SAMP>という二つの演算子は正規表現の比較をおこなう。
+これらの演算子を使った式はパターンとしてや使ったり、<CODE>if</CODE>、
+<CODE>while</CODE>、<CODE>for</CODE>、<CODE>do</CODE>文中で使うこととができる。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE><VAR>exp</VAR> ~ /<VAR>regexp</VAR>/</CODE>
+<DD>
+これは<VAR>exp</VAR>(文字として扱われる)という式が<VAR>regexp</VAR>とマッチする
+ときに真となる。以下に挙げる例は、第一フィールドに大文字の<SAMP>`J'</SAMP>
+を含んでいる入力レコードをすべて選択するものである。
+
+
+<PRE>
+$ awk '$1 ~ /J/' inventory-shipped
+-| Jan  13  25  15 115
+-| Jun  31  42  75 492
+-| Jul  24  34  67 436
+-| Jan  21  36  64 620
+</PRE>
+
+こう書いても良い。
+
+
+<PRE>
+awk '{ if ($1 ~ /J/) print }' inventory-shipped
+</PRE>
+
+<DT><CODE><VAR>exp</VAR> !~ /<VAR>regexp</VAR>/</CODE>
+<DD>
+これは<VAR>exp</VAR>(文字列として扱われる)という式が<VAR>regexp</VAR>に
+<STRONG>マッチしない</STRONG>ときに真となる。次に挙げる例では、最初のフィールドに
+大文字の<SAMP>`J'</SAMP>を<STRONG>含まない</STRONG>入力レコードすべてを選択する。
+
+
+<PRE>
+$ awk '$1 !~ /J/' inventory-shipped
+-| Feb  15  32  24 226
+-| Mar  15  24  34 228
+-| Apr  31  52  63 420
+-| May  16  34  29 208
+...
+</PRE>
+
+</DL>
+
+<P>
+<A NAME="IDX102"></A>
+正規表現が<CODE>/foo/</CODE>のようにスラッシュで囲まれて記述されたとき、
+これを<STRONG>正規表現定数</STRONG>と呼ぶ。これは<CODE>5.27</CODE>のような数値定数や
+<CODE>"foo"</CODE>のような文字列定数のようなものである。
+
+</P>
+
+
+<H2><A NAME="SEC27" HREF="gawk_toc.html#SEC27">エスケープシーケンス</A></H2>
+
+<P>
+<A NAME="IDX103"></A>
+一部のキャラクタは(<CODE>"foo"</CODE>)のような文字列定数やregexp constants (   
+code{/foo/})のような正規表現定数にそのままの形で含める事ができない。このよ
+うなキャラクタは、キャラクタそのものではなくバックスラッシュ(<SAMP>`\'</SAMP>で始 
+まる<STRONG>エスケープシーケンス</STRONG>)を代わりに使うことで文字列などに含めること 
+ができる。
+
+</P>
+<P>
+エスケープシーケンスの一つの用途は文字列定数に二重引用符を含めるためである。
+生の二重引用符は文字列の終端になってしまうため、それが二重引用符のキャラク
+タそのものであることを明示するために<SAMP>`\"'</SAMP>を使わなければならない。例を 
+挙げよう。
+
+</P>
+
+<PRE>
+$ awk 'BEGIN { print "He said \"hi!\" to her." }'
+-| He said "hi!" to her.
+</PRE>
+
+<P>
+バックスラッシュキャラクタそれ自身は、そのまま含むことのできないキャラク
+タである。文字列や正規表現中にバックスラッシュを一つ含めるには、<SAMP>`\\'</SAMP>
+と記述する。したがって、<SAMP>`"'</SAMP> と <SAMP>`\'</SAMP>という二つのキャラクタからな
+る文字列は<CODE>"\"\\"</CODE>と記述しなければならない。
+
+</P>
+<P>
+もう一つのバックスラッシュの用途は、タブとか改行のような非印字キャラクタ
+(unprintable characters)を表すためのものである。非印字キャラクタをそのま
+ま文字列定数や正規表現定数に含めてしまうと多分見づらくなってしまう。
+
+</P>
+<P>
+以下に<CODE>awk</CODE>で使われる全てのエスケープシーケンスを挙げる。
+特に断りがない限り、これらのエスケープシーケンス全ては文字列定数と
+正規表現定数の両方に適用される。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>\\</CODE>
+<DD>
+A literal backslash, <SAMP>`\'</SAMP>.
+<SAMP>`\'</SAMP>そのもの。
+
+<A NAME="IDX104"></A>
+<DT><CODE>\a</CODE>
+<DD>
+"警告"キャラクタ。<KBD>Control-g</KBD>であり、ASCIIコードの7(BEL)。
+
+<DT><CODE>\b</CODE>
+<DD>
+後退。<KBD>Control-h</KBD>であり、ASCIIコードの8(BS)。
+
+<DT><CODE>\f</CODE>
+<DD>
+改ページ。<KBD>Control-l</KBD>, ASCIIコードの12 (FF)。
+
+<DT><CODE>\n</CODE>
+<DD>
+改行。<KBD>Control-j</KBD>, ASCIIコードの10 (LF)。
+
+<DT><CODE>\r</CODE>
+<DD>
+復帰。<KBD>Control-m</KBD>, ASCIIコードの13 (CR)。
+
+<DT><CODE>\t</CODE>
+<DD>
+水平タブ。 <KBD>Control-i</KBD>, ASCIIコードの 9 (HT)。
+
+<A NAME="IDX105"></A>
+<DT><CODE>\v</CODE>
+<DD>
+Vertical tab, <KBD>Control-k</KBD>, ASCII code 11 (VT).
+垂直タブ。 <KBD>Control-k</KBD>, ASCIIコードの11 (VT)。
+
+<DT><CODE>\<VAR>nnn</VAR></CODE>
+<DD>
+八進数値<VAR>nnn</VAR>の値。<VAR>nnn</VAR>は<SAMP>`0'</SAMP>から<SAMP>`7'</SAMP>までの数字の
+一つから三つの並び。ASCIIのESC(エスケープ)キャラクタのコードは
+<SAMP>`\033'</SAMP>である。
+
+<A NAME="IDX106"></A>
+<A NAME="IDX107"></A>
+<A NAME="IDX108"></A>
+<DT><CODE>\x<VAR>hh</VAR>...</CODE>
+<DD>
+十六進数値<VAR>hh</VAR>の値。<VAR>hh</VAR>は十六進文字(<SAMP>`0'</SAMP>から<SAMP>`9'</SAMP>        
+までと、<SAMP>`A'</SAMP>から<SAMP>`F'</SAMP>もしくは<SAMP>`a'</SAMP>から<SAMP>`f'</SAMP>)。ANSI Cと同様に、
+最初の非十六進文字が見つかるまでエスケープシーケンスは連続しているものとみ
+なされる。しかしながら、二文字を越える十六進文字列はどのような結果になるか
+は未定義である(<SAMP>`\x'</SAMP>エスケープシーケンスはPOSIXの<CODE>awk</CODE>では許され 
+ていない)。
+
+<DT><CODE>\/</CODE>
+<DD>
+文字としてのスラッシュ(正規表現定数に対してのみ必要)。これはスラッシュを正
+規表現定数に含めたいときに使用する。正規表現がスラッシュで終端するので、
+<CODE>awk</CODE>に残りの正規表現を処理し続けるのを指示するのにエスケープしてスラ 
+ッシュをパターンの一部にする必要がある。
+
+<DT><CODE>\"</CODE>
+<DD>
+二重引用符そのもの(文字列定数に対してのみ必要)。これは二重引用符を文字列
+定数に含めたいときに使用する。文字列が二重引用符で終端するので、文字列の残
+りを<CODE>awk</CODE>に処理し続けるのを指示するのにエスケープしてスラッシュを文字
+列の一部にする必要がある。
+
+</DL>
+
+<P>
+<CODE>gawk</CODE>では、正規表現中で特別な意味を持つバックスラッシュで始まる二文字の
+エスケープシーケンスが幾つか追加されている。
+セクション <A HREF="gawk_5.html#SEC29"><CODE>gawk</CODE>でのみ使える正規表現演算子</A>を参照.
+
+</P>
+<P>
+文字列定数中で、上の一覧にないキャラクタの前にバックスラッシュを
+置いた場合にはなにがおこるのだろうか?
+POSIXでは故意にそれが定義されていない。ここでは二つの選択肢がある。
+
+</P>
+
+<UL>
+<LI>
+
+バックスラッシュを取り除く。これはUnixの<CODE>awk</CODE>と<CODE>gawk</CODE>の
+両方が行っている。たとえば、<CODE>"a\qc"</CODE> は <CODE>"aqc"</CODE>と等しい。
+
+<LI>
+
+バックスラッシュをそのままにしておく。一部の<CODE>awk</CODE>処理系では
+これを行っている。このような処理系では、<CODE>"a\qc"</CODE> は
+<CODE>"a\\qc"</CODE>としたときと同じである。
+</UL>
+
+<P>
+正規表現中に上の一覧にないキャラクタや、
+セクション <A HREF="gawk_5.html#SEC29"><CODE>gawk</CODE>でのみ使える正規表現演算子</A>を参照
+にリストアップされていないキャラクタの前にバックスラッシュがある場合、
+それが通常は正規表現演算子として扱われるものであったとしても、
+そのキャラクタをその文字そのものとみなす。
+一例を挙げると、<CODE>/a\+b/</CODE> は<SAMP>`a+b'</SAMP>という三文字にマッチする。
+
+</P>
+<P>
+<A NAME="IDX109"></A>
+移植性を完全なものとするには、先に挙げたキャラクタ以外のキャラクタの
+前にバックスラッシュを置かないようにすること。
+
+</P>
+<P>
+もう一つ、興味深い疑問がある。八進や十六進のエスケープを使用して
+正規表現のメタキャラクタを表すシーケンスを記述したとき、
+(セクション <A HREF="gawk_5.html#SEC28">正規表現演算子</A>を参照).
+<CODE>awk</CODE>はそのようなキャラクタを文字として見るのだろうか?
+それとも正規表現の演算子と見るのだろうか?
+
+</P>
+<P>
+<A NAME="IDX110"></A>
+このようなキャラクタは伝統的にその文字そのものとして扱われる(d.c.)。
+しかし、POSIX標準ではこれはメタキャラクタであるかのように扱うよう指示さ 
+れており、<CODE>gawk</CODE>の振る舞いもそうなっている。ただし互換モード
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)では、<CODE>gawk</CODE>は正規表現定数中で八進
+や十六進のエスケープシーケンスによって表現されたキャラクタは文字そのもの
+として扱われる。したがって、<CODE>/a\52b/</CODE>は<CODE>/a\*b/</CODE>と等価である。
+
+</P>
+<P>
+まとめ
+
+</P>
+
+<OL>
+<LI>
+
+前述の一覧にあるエスケープシーケンスは、文字列定数でも、正規表現定数で
+も常に最初に処理される。これは非常に早い段階、<CODE>awk</CODE>がプログラムを
+読み込んだときに行われる。
+
+<LI>
+
+<CODE>gawk</CODE>は正規表現定数、動的正規表現
+(セクション <A HREF="gawk_5.html#SEC32">動的正規表現を使う</A>を参照)の両方で、
+セクション <A HREF="gawk_5.html#SEC29"><CODE>gawk</CODE>でのみ使える正規表現演算子</A>を参照.
+で述べられているような特殊な演算子を処理する。
+
+<LI>
+
+バックスラッシュを任意のキャラクタの前に置くことは、そのキャラクタを文
+字そのものとして扱うことを意味している。
+</OL>
+
+
+
+<H2><A NAME="SEC28" HREF="gawk_toc.html#SEC28">正規表現演算子</A></H2>
+<P>
+<A NAME="IDX111"></A>
+<A NAME="IDX112"></A>
+<A NAME="IDX113"></A>
+
+</P>
+<P>
+以下に挙げるような<STRONG>正規表現演算子</STRONG>とか<STRONG>メタキャラクタ</STRONG>と呼ばれる
+正規表現の記述力を増加させるようなキャラクタを使って、
+正規表現式を組み合わせることができる。
+
+</P>
+<P>
+先にセクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照で述べたエスケープシーケンスは
+正規表現の中でも使うことができて、それらは先頭に<SAMP>`\'</SAMP>が置かれている。
+正規表現の処理に先立って、
+このようなエスケープシーケンスは解析されて、そのシーケンスの表す
+キャラクタに置きかえられる。
+
+</P>
+<P>
+以下はメタキャラクタの一覧である。
+エスケープシーケンスではなくこの一覧にないキャラクタはすべて、
+それ自身を表すキャラクタである。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>\</CODE>
+<DD>
+これはマッチングのときに
+あるキャラクタの特殊な意味を抑制するために使用する。
+例えば、
+
+
+<PRE>
+\$
+</PRE>
+
+は<SAMP>`$'</SAMP>というキャラクタにマッチする。
+
+<A NAME="IDX114"></A>
+ @cindex regexp, anchors
+<A NAME="IDX115"></A>
+<DT><CODE>^</CODE>
+<DD>
+これは文字列の先頭にマッチする。
+例えば、
+
+
+<PRE>
+^@chapter
+</PRE>
+
+は文字列の先頭にある<SAMP>`@chapter'</SAMP>にマッチする。これは
+Texinfoファイルで章の先頭を見つけるのに使用できる。
+<SAMP>`^'</SAMP>は文字列の先頭部分にのみマッチさせるのに使う
+目印であるので、<STRONG>アンカー</STRONG>(anchor)として知られる。
+
+<SAMP>`^'</SAMP>は 文字列中にある行(line embedded in a string)の
+先頭にはマッチしないことに注意。次の例の条件式は真にはならない。
+
+
+<PRE>
+if ("line1\nLINE 2" ~ /^L/) ...
+</PRE>
+
+<DT><CODE>$</CODE>
+<DD>
+これは<SAMP>`^'</SAMP>に似ているが、文字列の最後にマッチする。
+例えば、
+
+
+<PRE>
+p$
+</PRE>
+
+これは<SAMP>`p'</SAMP>で終わるレコードにマッチする。<SAMP>`$'</SAMP>もアンカーであり、
+文字列中の行末にはマッチしない。例えば、
+
+
+<PRE>
+if ("line1\nLINE 2" ~ /1$/) ...
+</PRE>
+
+この条件は真にはならない。
+
+<DT><CODE>.</CODE>
+<DD>
+ピリオド、あるいはドットは<STRONG>改行を含む</STRONG>、任意のキャラクタにマッチ
+する。例えば、
+
+
+<PRE>
+.P
+</PRE>
+
+これは<SAMP>`P'</SAMP>が後に続く任意の一文字にマッチする。連接を使うことによっ
+て、<SAMP>`U.A'</SAMP>のような<SAMP>`U'</SAMP>で始まり<SAMP>`A'</SAMP>で終わる任意の三文字の並
+びにマッチするような正規表現を作ることができる。
+
+<A NAME="IDX116"></A>
+<A NAME="IDX117"></A>
+厳密なPOSIXモード(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)では、
+<SAMP>`.'</SAMP>はすべてのビットが0であるキャラクタ、NULにはマッチしない。
+しかしながら、NULは単にもう一つのキャラクタである。
+他のバージョンの<CODE>awk</CODE>では、NULキャラクタには
+マッチさせることができない。
+
+<A NAME="IDX118"></A>
+<DT><CODE>[...]</CODE>
+<DD>
+これは<STRONG>キャラクタリスト</STRONG>(character list)と呼ばれるものである。
+これはブラケットに囲まれているキャラクタのいずれか<STRONG>一つ</STRONG>と
+マッチする。例えば、
+
+
+<PRE>
+[MVX]
+</PRE>
+
+これは文字列中にある<SAMP>`M'</SAMP>, <SAMP>`V'</SAMP>, <SAMP>`X'</SAMP>のいずれかの
+キャラクタとマッチする。 
+
+キャラクタの範囲を、範囲の始点と終点の間にハイフンを置き、
+全体をブラケットに囲まれた中に置くことで
+指示することができる。
+
+
+<PRE>
+[0-9]
+</PRE>
+
+これは任意の数字にマッチする。
+"すべてのアルファベットと数字"を表す常識的な考えである
+<CODE>[A-Za-z0-9]</CODE> のように複数の範囲を使うこともできる。
+
+<SAMP>`\'</SAMP>, <SAMP>`]'</SAMP>, <SAMP>`-'</SAMP>, <SAMP>`^'</SAMP> といったキャラクタを
+キャラクタリストの中に含めるには、そのキャラクタの前に<SAMP>`\'</SAMP>を
+つける。例えば、
+
+
+<PRE>
+[d\]]
+</PRE>
+
+これは<SAMP>`d'</SAMP>か<SAMP>`]'</SAMP>にマッチする。
+
+<A NAME="IDX119"></A>
+このキャラクタリスト中の<SAMP>`\'</SAMP>の扱いは、他の<CODE>awk</CODE>処理系と共通であ
+り、これはPOSIXの定めるところでもある。<CODE>awk</CODE>における正規表現はPOSIX
+で規定されている拡張正規表現(Extended Regular Expressions, EREs)のスーパ
+ーセットである。POSIXの拡張正規表現は伝統的な<CODE>egrep</CODE>ユーティリティ 
+が受け付ける正規表現に基づいている。
+
+<A NAME="IDX120"></A>
+<A NAME="IDX121"></A>
+<A NAME="IDX122"></A>
+<STRONG>キャラクタクラス</STRONG>はPOSIX標準により導入された新しい機能である。
+キャラクタクラスは(特定の属性を持つ)
+キャラクタのリストを表す特殊な記述であるが、表現されるキャラクタ
+自身が国ごと、あるいはキャラクタセットごとに異なるものとなる可能性がある。
+例を挙げると、USAでいうところのアルファベットとフランスのアルファベット
+では異なるものとなるということである。
+
+キャラクタクラスは、キャラクタリストを囲むブラケットの<STRONG>内側</STRONG>
+でのみ有効である。キャラクタクラスは<SAMP>`[:'</SAMP>、クラスを区別するキーワード、
+<SAMP>`:]'</SAMP>から構成される。以下はPOSIX標準で定義されているキャラクタクラス
+の一覧である。
+
+<DL COMPACT>
+
+<DT><CODE>[:alnum:]</CODE>
+<DD>
+アルファベットと数字。
+
+<DT><CODE>[:alpha:]</CODE>
+<DD>
+アルファベット。
+
+<DT><CODE>[:blank:]</CODE>
+<DD>
+スペースとタブ。
+
+<DT><CODE>[:cntrl:]</CODE>
+<DD>
+コントロールコード。
+
+<DT><CODE>[:digit:]</CODE>
+<DD>
+十進数字。
+
+<DT><CODE>[:graph:]</CODE>
+<DD>
+印字可能かつ表示可能な文字
+(スペースは印字可能だが表示不可。<SAMP>`a'</SAMP>は両方とも可)。
+
+<DT><CODE>[:lower:]</CODE>
+<DD>
+アルファベットの小文字。
+
+<DT><CODE>[:print:]</CODE>
+<DD>
+印字可能なキャラクタ(コントロールコードでないキャラクタ)
+
+<DT><CODE>[:punct:]</CODE>
+<DD>
+句読点(通常の文字や数字、制御文字、スペースキャラクタのいずれでも
+ないもの)。
+
+<DT><CODE>[:space:]</CODE>
+<DD>
+スペースキャラクタ(スぺース、タブ、改ページ)
+
+<DT><CODE>[:upper:]</CODE>
+<DD>
+アルファベットの大文字。
+
+<DT><CODE>[:xdigit:]</CODE>
+<DD>
+十六進の数字。
+</DL>
+
+POSIXの標準以前では、アルファベットか数字にマッチさせるには
+<CODE>/[A-Za-z0-9]/</CODE>と書かなければならなかった。もし、使用する環境のキャ
+ラクタセット が、元のものとは違うものであった場合、これはマッチしなくなっ
+てしまうだろう。POSIXのキャラクタセットを使うことで<CODE>/[[:alnum:]]/</CODE>の
+ように記述 ができ、かつこれは<STRONG>すべての</STRONG>キャラクタセットにおいて、アル
+ファベッ トか数字にマッチするのである。
+
+<A NAME="IDX123"></A>
+キャラクタリスト中に更に二つの特殊なシーケンスを置くことができる。
+これらは、一文字以上の長さを持つ一つのシンボルを持つことのできるような
+非ASCIIキャラクタセットに適用して、通常のキャラクタと同じように
+<STRONG>照合</STRONG>やソートなどを行うようにするためのものである(例えばフランス語
+では"e"はアクサングラーブの付いた"`e" と等価である)。
+
+<DL COMPACT>
+
+<DT>Collating Symbols
+<DD>
+<A NAME="IDX124"></A>
+ 
+<STRONG>照合シンボル</STRONG>(collating symbol)は、<SAMP>`[.'</SAMP> と <SAMP>`.]'</SAMP>の間に置かれた
+マルチキャラクタの照合要素である。例えば、<SAMP>`ch'</SAMP>が照合要素
+だったすると、<CODE>[[.ch.]]</CODE>はこの照合要素にマッチする正規表現であるが、
+<CODE>[ch]</CODE>は<SAMP>`c'</SAMP>か<SAMP>`h'</SAMP>にマッチする正規表現である。
+
+<A NAME="IDX125"></A>
+<DT>Equivalence Classes
+<DD>
+<STRONG>等価クラス</STRONG>(equivalence class)は
+<SAMP>`[='</SAMP> と <SAMP>`=]'</SAMP>の間にある等価なロカール固有のキャラクタのリストである。
+したがって、<CODE>[[=e=]]</CODE> は
+<SAMP>`e'</SAMP> か <SAMP>`'e'</SAMP> か <SAMP>``e'</SAMP>にマッチする正規表現である。
+</DL>
+
+これらの機能は、非英語圏のロカールにおいて非常に有効である。
+
+<STRONG>警告:</STRONG> 現在<CODE>gawk</CODE>が使っている正規表現マッチングライブラリ
+の関数は、POSIXキャラクタクラスのみを認識し、照合シンボルや等価クラス
+を認識しない。
+
+<A NAME="IDX126"></A>
+<DT><CODE>[^ ...]</CODE>
+<DD>
+これは<STRONG>キャラクタリストの補集合</STRONG>である。<SAMP>`['</SAMP>の直後のキャラクタは
+<SAMP>`^'</SAMP>で<STRONG>なければならない</STRONG>。これはブラケットの中にあるキャラクタ
+<STRONG>以外の</STRONG>任意のキャラクタにマッチする。例えば、
+
+
+<PRE>
+[^0-9]
+</PRE>
+
+これは数字でない任意のキャラクタにマッチする。
+
+<DT><CODE>|</CODE>
+<DD>
+これは<STRONG>選択演算子</STRONG>であり、選択を行うのに使用する。
+たとえば、
+
+
+<PRE>
+^P|[0-9]
+</PRE>
+
+この例は<SAMP>`^P'</SAMP>か<SAMP>`[0-9]'</SAMP>で始まる文字列にマッチする。
+これは<SAMP>`P'</SAMP>か数値で始まる文字列にマッチするということである。
+
+選択は演算子の左右のそれぞれで、可能な限り大きな正規表現に適用される。
+言い換えるなら、<SAMP>`|'</SAMP>は正規表現演算子の中で最低の優先順位である
+ということである。
+
+<DT><CODE>(...)</CODE>
+<DD>
+括弧は正規表現を(算術式のときと同じ様にグループとする為に使用される。これ
+は選択演算子<SAMP>`|'</SAMP>を含んだ正規表現を連結する為に使う事ができる。
+たとえば、<SAMP>`@(samp|code)\{[^}]+\}'</SAMP>は
+<SAMP>`@code{foo}'</SAMP>にも<SAMP>`@samp{bar}'</SAMP>にもマッチする
+(これはTexinfoのフォーマット制御シーケンスである)。
+
+<DT><CODE>*</CODE>
+<DD>
+このシンボルはその前に置かれている正規表現の必要な限りのくり返しにマッチ
+する。例えば
+
+
+<PRE>
+ph*
+</PRE>
+
+ここで<SAMP>`*'</SAMP>はその前にある<SAMP>`h'</SAMP>に適用され、一文字の<SAMP>`p'</SAMP>に続いて任意
+の数の<SAMP>`h'</SAMP>がある文字列にマッチする。これは<SAMP>`p'</SAMP>だけで<SAMP>`h'</SAMP>が一個も
+ないようなパターンにもマッチする。
+
+<SAMP>`*'</SAMP>のくり返しは、可能なかぎり最も小さな式が採用される。 (もしより大きな
+式を繰り返したいのならば括弧を使えばよい) そしてその式は可能な限り大きなくり
+返しを見つけだす。例えば、
+
+
+<PRE>
+awk '/\(c[ad][ad]*r x\)/ { print }' sample
+</PRE>
+
+<TT>`sample'</TT>中のレコードのうち、<SAMP>`(car x)'</SAMP>, <SAMP>`(cdr x)'</SAMP>, 
+<SAMP>`(cadr x)'</SAMP>のような文字列を含むものを全て出力する。カッコの前にバッ
+クスラッシュをつけてエスケープしていることに注意。
+
+<DT><CODE>+</CODE>
+<DD>
+このシンボルは<SAMP>`*'</SAMP>と似ているが、先行する部分正規表現が少なくとも一
+回マッチしなければならない。つまり、
+
+
+<PRE>
+wh+y
+</PRE>
+
+この例でいうと、<SAMP>`wh*y'</SAMP>ではすべてマッチしていた<SAMP>`why'</SAMP> や 
+<SAMP>`whhy'</SAMP>、<SAMP>`wy'</SAMP>のうち、前者二者にはマッチするが、最後のものにはマ
+ッチしないということである。次の例は、<SAMP>`*'</SAMP>で最後に挙げた例を書き直し
+たものである。
+
+
+<PRE>
+awk '/\(c[ad]+r x\)/ { print }' sample
+</PRE>
+
+<DT><CODE>?</CODE>
+<DD>
+このシンボルは<SAMP>`*'</SAMP>と似ているが、先行する部分正規表現が
+ないか、一回だけのときにマッチする。例を挙げると
+
+
+<PRE>
+fe?d
+</PRE>
+
+これは<SAMP>`fed'</SAMP>や<SAMP>`fd'</SAMP>にマッチするが、それ以外にはマッチしない。
+
+<A NAME="IDX127"></A>
+<A NAME="IDX128"></A>
+<A NAME="IDX129"></A>
+<DT><CODE>{<VAR>n</VAR>}</CODE>
+<DD>
+<DT><CODE>{<VAR>n</VAR>,}</CODE>
+<DD>
+<DT><CODE>{<VAR>n</VAR>,<VAR>m</VAR>}</CODE>
+<DD>
+<STRONG>interval expresion</STRONG>の
+ブレースの内側には、一つか二つの数値がある。もしブレースの中に数値が一つ
+だけならば、直前の正規表現が<VAR>n</VAR>回繰り返される。もしカンマに区切られ 
+て数値が二つあれば、直前の正規表現が<VAR>n</VAR>回から<VAR>m</VAR>回繰り返される。
+カンマの後ろに数値が一つだけならば、直前の正規表現が少なくとも<VAR>n</VAR>回 
+繰り返される。
+
+<DL COMPACT>
+
+<DT><CODE>wh{3}y</CODE>
+<DD>
+これは<SAMP>`whhhy'</SAMP> にマッチするが、 <SAMP>`why'</SAMP> や <SAMP>`whhhhy'</SAMP>には
+マッチしない。
+
+<DT><CODE>wh{3,5}y</CODE>
+<DD>
+これは <SAMP>`whhhy'</SAMP> か <SAMP>`whhhhy'</SAMP> か <SAMP>`whhhhhy'</SAMP>の
+いずれかのみにマッチする。
+
+<DT><CODE>wh{2,}y</CODE>
+<DD>
+<SAMP>`whhy'</SAMP> や <SAMP>`whhhy'</SAMP>などにマッチする。
+</DL>
+
+Interval expressionsは伝統的な<CODE>awk</CODE>では使えなかった。
+POSIX標準の一部として、
+<CODE>awk</CODE>と<CODE>egrep</CODE>とほかのユーティリティとの
+一貫性のため、これが追加された。
+
+しかしながら、古いプログラムでは<SAMP>`{'</SAMP>や<SAMP>`}'</SAMP>を正規表現定数の中で
+使っているかもしれないので、<CODE>gawk</CODE>はデフォルトでは正規表現中の
+interval expressionsは<STRONG>マッチしない</STRONG>。<SAMP>`--posix'</SAMP>オプションか 
+<SAMP>`--re-interval'</SAMP>オプション(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)
+が指定されると、interval expressionsを正規表現として使うことができるよう
+になる。
+</DL>
+
+<P>
+<A NAME="IDX130"></A>
+<A NAME="IDX131"></A>
+正規表現では、<SAMP>`*'</SAMP>, <SAMP>`+'</SAMP>, <SAMP>`?'</SAMP>といった演算子は<SAMP>`{'</SAMP> や 
+<SAMP>`}'</SAMP>と同じ優先順位を持ち、その上に連接があり、下には<SAMP>`|'</SAMP>がある。
+算術式と同じように、カッコはそれで括った演算子の優先順位を変更することが
+できる。
+
+</P>
+<P>
+<CODE>gawk</CODE>が互換モード(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)で
+動作している場合、キャラクタクラスとinterval expressionは
+正規表現中で使うことができない。
+
+</P>
+<P>
+The next
+次の
+section
+セクションでは
+GNU特有の正規表現演算子について述べる。
+さらに、<CODE>gawk</CODE>が正規表現キャラクタを解釈する
+方法に影響するコマンドラインオプションについて
+詳しく説明する。
+
+</P>
+
+
+<H2><A NAME="SEC29" HREF="gawk_toc.html#SEC29"><CODE>gawk</CODE>でのみ使える正規表現演算子</A></H2>
+
+<P>
+<A NAME="IDX132"></A>
+GNUのソフトウェアは、幾つかの正規表現演算子を追加した正規表現を提供して
+いる。このセクションで説明されるこれらの演算子は<CODE>gawk</CODE>特有の
+ものであり、他の<CODE>awk</CODE>の処理系では使用できないものである。
+
+</P>
+<P>
+<A NAME="IDX133"></A>
+追加されている演算子のほとんどは、単語のマッチングに関係したものである。
+ここで、<STRONG>単語</STRONG>とは一文字以上の、文字、数字、アンダースコア(<SAMP>`_'</SAMP>)
+の並びである。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>\w</CODE>
+<DD>
+<A NAME="IDX134"></A>
+ 
+これは単語を構成する任意のキャラクタ、つまり
+文字、数字、それとアンダースコアにマッチする演算子である。
+これは
+<CODE>[[:alnum:]_]</CODE>
+の簡潔な表現とみなして良い。
+
+<A NAME="IDX135"></A>
+<DT><CODE>\W</CODE>
+<DD>
+これは単語を構成する要素にならない任意のキャラクタにマッチする
+演算子である。これは
+<CODE>[^[:alnum:]_]</CODE>
+の簡潔な表現とみなして良い。
+
+<A NAME="IDX136"></A>
+<DT><CODE>\&#60;</CODE>
+<DD>
+これは単語の先頭にある空文字列にマッチする演算子である。
+例えば、<CODE>/\&#60;away/</CODE>は<SAMP>`away'</SAMP>にマッチするが、
+<SAMP>`stowaway'</SAMP>にはマッチしない。
+
+<A NAME="IDX137"></A>
+<DT><CODE>\&#62;</CODE>
+<DD>
+これは単語の末尾にある空文字列にマッチする演算子である。
+例えば、<CODE>/stow\&#62;/</CODE>は<SAMP>`stow'</SAMP>にマッチするが、
+<SAMP>`stowaway'</SAMP>にはマッチしない。
+
+<A NAME="IDX138"></A>
+<A NAME="IDX139"></A>
+<DT><CODE>\y</CODE>
+<DD>
+これは単語の先頭、あるいは末尾の空文字列とマッチする演算子である
+(つまり語の区切りとマッチするということである)。
+例えば、<SAMP>`\yballs?\y'</SAMP>は独立した単語として
+<SAMP>`ball'</SAMP> にも <SAMP>`balls'</SAMP>にもマッチする。
+
+<A NAME="IDX140"></A>
+<DT><CODE>\B</CODE>
+<DD>
+この演算子は単語中の空文字列にマッチする。言い換えると、<SAMP>`\B'</SAMP>は二つ 
+の単語の構成要素文字の間にある空文字列にマッチするということである。例え
+ば、<CODE>/\Brat\B/</CODE> は<SAMP>`crate'</SAMP>にマッチする。しかし、<SAMP>`dirty rat'</SAMP>
+にはマッチしない。<SAMP>`B'</SAMP>は簡単にいうと<SAMP>`\y'</SAMP>の反対語である。
+</DL>
+
+<P>
+さらに二つのバッファ上で動作する演算子がある。Emacsでは、<STRONG>バッファ</STRONG>
+はEmacsのバッファのことである。他のプログラムでは、<CODE>gawk</CODE>が使用し
+ている正規表現ライブラリは文字列全体をバッファにあたるものとしている。
+
+</P>
+<P>
+<CODE>awk</CODE>においては、<SAMP>`^'</SAMP>や<SAMP>`$'</SAMP>は常に文字列の先頭や末尾に働く
+ので、これらの演算子は新しい機能をもたらすものではない。これらは他の
+GNUソフトウェアとの互換性のために提供されている。
+
+</P>
+<P>
+<A NAME="IDX141"></A>
+<DL COMPACT>
+
+<DT><CODE>\`</CODE>
+<DD>
+<A NAME="IDX142"></A>
+ 
+この演算子はバッファの先頭にある空文字列にマッチする。
+
+<A NAME="IDX143"></A>
+<DT><CODE>\'</CODE>
+<DD>
+この演算子はバッファの末尾にある空文字列にマッチする。
+</DL>
+
+<P>
+他のGNUソフトウェアでは、語の区切り演算子は<SAMP>`\b'</SAMP>である。
+しかしながら、これは<CODE>awk</CODE>言語では
+バックスペースがすでに<SAMP>`\b'</SAMP>と定義されているので衝突してしまう。
+そこで、<CODE>gawk</CODE>では違う演算子を使っているのである。
+
+</P>
+<P>
+ある別のやり方でGNU特有の演算子では二つのバックスラッシュを
+要求するというものがあったが、これは混乱を招くと考えられたので
+現在の方法の、<SAMP>`\y'</SAMP>をGNUの<SAMP>`\b'</SAMP>として扱うほうが
+ちょっとばかしましである。
+
+</P>
+<P>
+<A NAME="IDX144"></A>
+<CODE>gawk</CODE>が正規表現中のキャラクタをどのように解釈するかを
+制御するためのコマンドラインオプション(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)
+が幾つかある。
+
+</P>
+<DL COMPACT>
+
+<DT>No options
+<DD>
+デフォルトでは、<CODE>gawk</CODE>は
+above.
+前述した
+POSIXの正規表現と、GNUの正規表現演算子のすべての機能を
+提供する。ただし、interval expressionはサポートしない。
+
+<DT><CODE>--posix</CODE>
+<DD>
+POSIXの正規表現のみをサポートする。GNUの演算子は特殊なものではなく(例え
+ば<SAMP>`\w'</SAMP>は <SAMP>`w'</SAMP>という文字そのものにマッチする)、interval 
+expressionを使うことができる。
+
+<DT><CODE>--traditional</CODE>
+<DD>
+伝統的なUNIX<CODE>awk</CODE>の正規表現がマッチする。GNUの演算子は特別でなく、 
+interval expressionとPOSIXのキャラクタクラス(<CODE>[[:alnum:]]</CODE>など)も使
+用不可である。八進や十六進のエスケープシーケンスで表わされたキャラクタは、
+それが正規表現のメタキャラクタであってもキャラクタそのものとして扱われる。
+
+<DT><CODE>--re-interval</CODE>
+<DD>
+正規表現中でinterval expressionを使うことを許可する。
+これは<SAMP>`--traditional'</SAMP>が指定されているときも有効である。
+</DL>
+
+
+
+<H2><A NAME="SEC30" HREF="gawk_toc.html#SEC30">大小文字を区別するマッチング</A></H2>
+
+<P>
+<A NAME="IDX145"></A>
+<A NAME="IDX146"></A>
+大小文字は通常正規表現の中では通常のキャラクタマッチのとき(メタキャラクタを除
+く)でも、キャラクタセットの内側のときでも区別される。したがって、正規表現中
+の<SAMP>`w'</SAMP>は小文字の<SAMP>`w'</SAMP>とだけマッチして大文字の<SAMP>`W'</SAMP>とはマッチしない。
+
+</P>
+<P>
+大小文字を無視してマッチを行う最も単純な方法はキャラクタセットを使って
+<SAMP>`[Ww]'</SAMP>の様にすることである。しかし、これは正規表現を読みにくいものとし
+てしまう。他に取るべき手段としては二つある。
+
+</P>
+<P>
+プログラム中の任意の点で大小文字に関係なくマッチングを行うための手段の一つは、
+データを<CODE>tolower</CODE> か <CODE>toupper</CODE>という組み込みの文字列処理関数(まだ
+これらの関数の説明はされていない)を使用して、大文字、小文字どちらかに揃えて
+しまうというものである。(<CODE>tolower</CODE> 及び<CODE>toupper</CODE>の詳しい説明は、
+セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照).
+たとえば
+        
+
+<PRE>
+tolower($1) ~ /foo/  { ... }
+</PRE>
+
+<P>
+この例ではマッチングを行なう前に、最初のフィールドを小文字に変換している。
+
+</P>
+<P>
+<A NAME="IDX147"></A>
+<A NAME="IDX148"></A>
+<A NAME="IDX149"></A>
+<A NAME="IDX150"></A>
+もう一つの、<CODE>gawk</CODE>に特有な方法は、変数
+<CODE>IGNORECASE</CODE>(セクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照)
+に非0の値をセットすることであり、これによって<STRONG>すべての</STRONG>
+正規表現演算、文字列演算で大小文字が無視される。
+<CODE>IGNROECSE</CODE>は他の大部分の変数と同様に
+ゼロで初期化されているので、デフォルトでは大小文字は
+区別される。
+
+</P>
+
+<PRE>
+x = "aB"
+if (x ~ /ab/) ...   # このテストは失敗する
+
+IGNORECASE = 1
+if (x ~ /ab/) ...   # 今度は成功する
+</PRE>
+
+<P>
+一般的には<CODE>IGNORECASE</CODE>を特定のルールをcase-insensitive(大小文字を区
+別しない)にしたり、case-sensitive(大小文字を区別する)ようにするために使 
+うことはできない。それは、特定のルールのパターンのために<CODE>IGNORECASE</CODE>
+をセットする方法がないからである。
+これを行うには、キャラクタクラスを使うか、<CODE>tolower</CODE>を使うか
+しなければならない。しかし、<CODE>IGNORECASE</CODE>を
+すべてのルールに対して、動的にオンにしたりオフにしたりすることは
+できる。
+
+</P>
+<P>
+<CODE>IGNORECASE</CODE>はコマンドラインででも、<CODE>BEGIN</CODE>ルール中で
+でもセットすることができる
+(セクション <A HREF="gawk_15.html#SEC136">Other Command Line Arguments</A>を参照と
+セクション <A HREF="gawk_9.html#SEC94">Startup and Cleanup Actions</A>を参照)。
+コマンドラインで<CODE>IGNORECASE</CODE>の設定をすることによって、
+プログラムを編集することなしに
+大小文字を区別しないものにすることができる。
+
+</P>
+<P>
+バージョン3.0以前の<CODE>gawk</CODE>では、<CODE>IGNORECASE</CODE>の
+値は正規表現演算にのみ影響していて、<SAMP>`=='</SAMP>や<SAMP>`!='</SAMP>などを
+使った文字列比較などには影響しなかった。
+バージョン3.0からは、<CODE>IGNORECASE</CODE>の値は
+正規表現演算と文字列比較の両方に影響するようになった。
+
+</P>
+<P>
+<A NAME="IDX151"></A>
+<A NAME="IDX152"></A>
+<CODE>gawk</CODE>のバージョン3.0から、大小文字の間の等価性(equivalence)は
+ISO-8859-1(ISO Latin-1)キャラクタセットに基づくものとなった。
+このキャラクタセットは伝統的な128 ASCIIキャラクタセットのスーパーセット
+であり、ヨーロッパ諸国の言語で使用するのに適当なキャラクをいくつか
+提供するものである。
+
+</P>
+<P>
+<CODE>IGNORECASE</CODE>の値は<CODE>gawk</CODE>が互換モード
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)のときには何の効果も持たない。
+互換モードでは大小文字の区別は常に行われる。
+
+</P>
+
+
+<H2><A NAME="SEC31" HREF="gawk_toc.html#SEC31">How Much Text Matches?</A></H2>
+
+<P>
+<A NAME="IDX153"></A>
+<A NAME="IDX154"></A>
+以下の例について考えてみよう。
+
+</P>
+
+<PRE>
+echo aaaabcd | awk '{ sub(/a+/, "&#60;A&#62;"); print }'
+</PRE>
+
+<P>
+これは<CODE>sub</CODE>関数(まだこれは説明していない。
+セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)
+を使って入力レコードを変更する例である。ここで、<CODE>/a+/</CODE>という
+正規表現は"一つ以上の<SAMP>`a'</SAMP>"を表しており、それにマッチする
+テキストを<SAMP>`&#60;A&#62;'</SAMP>に置き換えるというものである。
+
+</P>
+<P>
+入力には四つの<SAMP>`a'</SAMP>がある。出力はどうなるだろうか?言い換えれば、"一 
+つ以上"とは幾つなのか、<CODE>awk</CODE>は<SAMP>`a'</SAMP>二つにマッチさせるのか、それ
+とも三つなのか、あるいは四つ全てにマッチさせるのかということである。
+
+</P>
+<P>
+答えを言うと、<CODE>awk</CODE>(とPOSIX)の正規表現は、常にマッチするもののうち 
+最も左にあり、<STRONG>最も長い</STRONG>キャラクタの並びにマッチする
+(最左最長一致)。したがって、 
+この例では四つの連続した<SAMP>`a'</SAMP>が(一つの)<SAMP>`&#60;A&#62;'</SAMP>に置き換えられる。
+
+</P>
+
+<PRE>
+$ echo aaaabcd | awk '{ sub(/a+/, "&#60;A&#62;"); print }'
+-| &#60;A&#62;bcd
+</PRE>
+
+<P>
+単純にマッチする/しないをテストするときには今述べた事は
+さして重要ではない。しかし、正規表現に基づいたフィールドやレコードの
+分割、そして<CODE>match</CODE>, <CODE>sub</CODE>, <CODE>gsub</CODE>,<CODE>gensub</CODE>
+といった関数を使用してテキストのマッチングや置き換えをする場合には
+非常に重要である。
+この原則を理解する事は正規表現に基づいたレコード/フィールドの
+分割のためにも重要である(セクション <A HREF="gawk_6.html#SEC34">入力をレコードへと分割をするやりかた</A>を参照,
+と セクション <A HREF="gawk_6.html#SEC38">フィールドの分割方法の指定</A>を参照)。
+
+</P>
+
+
+<H2><A NAME="SEC32" HREF="gawk_toc.html#SEC32">動的正規表現を使う</A></H2>
+
+<P>
+<A NAME="IDX155"></A>
+<A NAME="IDX156"></A>
+<A NAME="IDX157"></A>
+<A NAME="IDX158"></A>
+<A NAME="IDX159"></A>
+<SAMP>`~'</SAMP>演算子や<SAMP>`!~'</SAMP>演算子の右辺に置くものは正規表現定数(スラッシュの間に置
+かれた文字列)である必要はなく、任意の式を置くことができる。そのような式 
+は評価され、必要があれば文字列に変換される。評価され変換が行なわれた
+結果は正規表現として扱われる。
+このように演算が行われる正規表現は<STRONG>動的正規表現</STRONG>(dynamic
+regular expression)と呼ばれる。例を挙げよう。
+
+</P>
+
+<PRE>
+BEGIN { identifier_regexp = "[A-Za-z_][A-Za-z_0-9]+" }
+$0 ~ identifier_regexp    { print }
+</PRE>
+
+<P>
+これは<CODE>identifier_regexp</CODE>に<CODE>awk</CODE>での変数名を表す正規表現をセ
+ットし、入力レコード中にこの正規表現にマッチするものがあるかをテストす
+るものである。
+
+</P>
+<P>
+<STRONG>警告:</STRONG><SAMP>`~'</SAMP>演算子や<SAMP>`!~'</SAMP>演算子を使った場合、スラッシュで 
+囲まれた正規表現定数と二重引用符で囲まれた文字列定数とでは違いがある。文
+字列定数を使おうとする場合、文字列が<STRONG>二度</STRONG>走査されることを理解する 
+必要がある。一度目は<CODE>awk</CODE>がプログラムを読み込んだとき、二度目は演算
+子の左側に置かれた文字列と右側のパターンとのマッチングを行うときである。
+これは式として評価される(先の例で言う <CODE>identifier_regexp</CODE>のように)
+任意の文字列において真であり、文字列定数そのものにはあてはまらない。
+
+</P>
+<P>
+<A NAME="IDX160"></A>
+文字列が二度走査されることによる違いとはなんだろうか?
+その答えは、エスケープシーケンス、特にバックスラシュの振る舞いにある。
+正規表現を通して文字列中にあるバックスラッシュを得るには、
+二つのバックスラッシュを置かなければならない。
+
+</P>
+<P>
+例えば、<CODE>/\*/</CODE>は<CODE>*</CODE>という文字にマッチする正規表現定数であり、
+これはバックスラッシュ一つを必要とする。同じものを文字列を使って行う
+には、<CODE>"\\*"</CODE>としなければならないだろう。最初のバックスラッシュは
+二個めのバックスラッシュをエスケープするものであり、これによってこの文
+字列は<SAMP>`\'</SAMP>と<SAMP>`*'</SAMP>という二つのキャラクタからなる文字列となる。
+
+</P>
+<P>
+<A NAME="IDX161"></A>
+正規表現を記述するのに正規表現定数と文字列定数の両方が使えるとき、どち
+らを使ったほうが良いのだろうか? その答えは"正規表現定数"である。以下
+にその理由を挙げる。
+
+</P>
+
+<OL>
+<LI>
+
+文字列定数のほうが記述するのに面倒であり、また読みにくい。正規表現定数を
+使うことはエラーを招きにくくする。これら二種類の定数の違いを理解しないこ
+とはエラーの発生源である。
+
+<LI>
+
+正規表現定数を使ったほうが効率が良い。そうすることで<CODE>awk</CODE>はあなたが
+記述した正規表現に注意することができ、そしてそれをより効果的にパターンマ
+ッチングするための内部的な表現で格納する事ができるようになる。文字列定数
+を使った場合、<CODE>awk</CODE>はまず初めに文字列を内部表現に変換しなければなら
+ず、その後でパターンマッチングを行う。
+
+<LI>
+
+正規表現定数を使ったほうが良いスタイルであり、そのほうが正規表現のマッチ
+で何をさせようとしているかが明確になる。
+</OL>
+
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_4.html">前</A>, <A HREF="gawk_6.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

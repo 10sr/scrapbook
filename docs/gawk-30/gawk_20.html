@@ -1,0 +1,1300 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - gawkをインストールする</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_19.html">前</A>, <A HREF="gawk_21.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC202" HREF="gawk_toc.html#SEC202"><CODE>gawk</CODE>をインストールする</A></H1>
+
+<P>
+この付録では、サポートされている様々なプラットフォームに<CODE>gawk</CODE>をイ 
+ンストールするやり方を説明する。本来の開発者はUNIX(といつかは、GNU)をサ 
+ポートし、他のプラットフォームに対する移植は寄付(contribute)によって行わ
+れている。<CODE>gawk</CODE>の配布キット中にある<TT>`ACKNOWLEDGMENT'</TT>というファ
+イルには各プラットフォームへの移植者とその電子メイルアドレスがリストアッ
+プされている、彼らの名前はセクション <A HREF="gawk_20.html#SEC220">問題やバグの報告</A>を参照.
+にもある。
+
+</P>
+
+
+
+<H2><A NAME="SEC203" HREF="gawk_toc.html#SEC203"><CODE>gawk</CODE> の配布パッケージ</A></H2>
+
+<P>
+このセクションではまず<CODE>gawk</CODE>の配布パッケージの入手と展開の方法。
+そしてサブディレクトリ中のファイルについて説明する。
+
+</P>
+
+
+
+<H3><A NAME="SEC204" HREF="gawk_toc.html#SEC204">Getting the <CODE>gawk</CODE> Distribution</A></H3>
+<P>
+<A NAME="IDX741"></A>
+<A NAME="IDX742"></A>
+<A NAME="IDX743"></A>
+GNUソフトウェアを入手するには三つの方法がある。
+
+</P>
+
+<OL>
+<LI>
+
+既に持っている誰かのものをコピーする。
+
+<A NAME="IDX744"></A>
+<LI>
+
+Free Software Foundationに直接<CODE>gawk</CODE>を注文することもできる。
+ソフトウェアの配布はUNIX、MS-DOS、VMSに対するものを
+テープかCD-ROMで受けることができる。
+注文先の住所は
+
+
+<BLOCKQUOTE>
+<P>
+Free Software Foundation <BR>
+59 Temple Place--Suite 330 <BR>
+Boston, MA  02111-1307 USA <BR>
+Phone: +1-617-542-5942 <BR>
+Fax (including Japan): +1-617-542-2652 <BR>
+E-mail: <CODE>gnu@gnu.org</CODE> <BR>
+</BLOCKQUOTE>
+
+直接 FSF に注文することは、FSFに対する援助となり、
+また、より多くのフリーソフトウェアの生産の一因になる。
+
+<LI>
+
+<CODE>gnudist.gnu.org</CODE>というホストの<TT>`/gnu/gawk'</TT>というディレクトリ
+から匿名ftpを使って<CODE>gawk</CODE>を入手することができる。
+
+以下にGNUソフトウェアを入手できる<CODE>ftp</CODE>サイトの一覧を載せる。
+"<VAR>site</VAR><CODE>:</CODE><VAR>directory</VAR>"のような形の場合、
+<VAR>directory</VAR>はGNUソフトウェアが置かれているディレクトリを
+表わしている。
+あなたがいる場所に地理的に近いサイトを使うのが良いだろう。
+
+<DL COMPACT>
+
+<DT>アジア:
+<DD>
+<DL COMPACT>
+
+<DT><CODE>cair-archive.kaist.ac.kr:/pub/gnu</CODE>
+<DD>
+<DT><CODE>ftp.cs.titech.ac.jp</CODE>
+<DD>
+<DT><CODE>ftp.nectec.or.th:/pub/mirrors/gnu</CODE>
+<DD>
+<DT><CODE>utsun.s.u-tokyo.ac.jp:/ftpsync/prep</CODE>
+<DD>
+</DL>
+
+<DT>オーストラリア:
+<DD>
+<DL COMPACT>
+
+<DT><CODE>archie.au:/gnu</CODE>
+<DD>
+(<CODE>archie.oz</CODE> or <CODE>archie.oz.au</CODE> for ACSnet)
+</DL>
+
+<DT>アフリカ:
+<DD>
+<DL COMPACT>
+
+<DT><CODE>ftp.sun.ac.za:/pub/gnu</CODE>
+<DD>
+</DL>
+
+<DT>中東:
+<DD>
+<DL COMPACT>
+
+<DT><CODE>ftp.technion.ac.il:/pub/unsupported/gnu</CODE>
+<DD>
+</DL>
+
+<DT>ヨーロッパ:
+<DD>
+<DL COMPACT>
+
+<DT><CODE>archive.eu.net</CODE>
+<DD>
+<DT><CODE>ftp.denet.dk</CODE>
+<DD>
+<DT><CODE>ftp.eunet.ch</CODE>
+<DD>
+<DT><CODE>ftp.funet.fi:/pub/gnu</CODE>
+<DD>
+<DT><CODE>ftp.ieunet.ie:pub/gnu</CODE>
+<DD>
+<DT><CODE>ftp.informatik.rwth-aachen.de:/pub/gnu</CODE>
+<DD>
+<DT><CODE>ftp.informatik.tu-muenchen.de</CODE>
+<DD>
+<DT><CODE>ftp.luth.se:/pub/unix/gnu</CODE>
+<DD>
+<DT><CODE>ftp.mcc.ac.uk</CODE>
+<DD>
+<DT><CODE>ftp.stacken.kth.se</CODE>
+<DD>
+<DT><CODE>ftp.sunet.se:/pub/gnu</CODE>
+<DD>
+<DT><CODE>ftp.univ-lyon1.fr:pub/gnu</CODE>
+<DD>
+<DT><CODE>ftp.win.tue.nl:/pub/gnu</CODE>
+<DD>
+<DT><CODE>irisa.irisa.fr:/pub/gnu</CODE>
+<DD>
+<DT><CODE>isy.liu.se</CODE>
+<DD>
+<DT><CODE>nic.switch.ch:/mirror/gnu</CODE>
+<DD>
+<DT><CODE>src.doc.ic.ac.uk:/gnu</CODE>
+<DD>
+<DT><CODE>unix.hensa.ac.uk:/pub/uunet/systems/gnu</CODE>
+<DD>
+</DL>
+
+<DT>南アメリカ:
+<DD>
+<DL COMPACT>
+
+<DT><CODE>ftp.inf.utfsm.cl:/pub/gnu</CODE>
+<DD>
+<DT><CODE>ftp.unicamp.br:/pub/gnu</CODE>
+<DD>
+</DL>
+
+<DT>西カナダ:
+<DD>
+<DL COMPACT>
+
+<DT><CODE>ftp.cs.ubc.ca:/mirror2/gnu</CODE>
+<DD>
+</DL>
+
+<DT>アメリカ:
+<DD>
+<DL COMPACT>
+
+<DT><CODE>col.hp.com:/mirrors/gnu</CODE>
+<DD>
+<DT><CODE>f.ms.uky.edu:/pub3/gnu</CODE>
+<DD>
+<DT><CODE>ftp.cc.gatech.edu:/pub/gnu</CODE>
+<DD>
+<DT><CODE>ftp.cs.columbia.edu:/archives/gnu/prep</CODE>
+<DD>
+<DT><CODE>ftp.digex.net:/pub/gnu</CODE>
+<DD>
+<DT><CODE>ftp.hawaii.edu:/mirrors/gnu</CODE>
+<DD>
+<DT><CODE>ftp.kpc.com:/pub/mirror/gnu</CODE>
+<DD>
+</DL>
+
+<DT>アメリカ (続き):
+<DD>
+<DL COMPACT>
+
+<DT><CODE>ftp.uu.net:/systems/gnu</CODE>
+<DD>
+<DT><CODE>gatekeeper.dec.com:/pub/GNU</CODE>
+<DD>
+<DT><CODE>jaguar.utah.edu:/gnustuff</CODE>
+<DD>
+<DT><CODE>labrea.stanford.edu</CODE>
+<DD>
+<DT><CODE>mrcnext.cso.uiuc.edu:/pub/gnu</CODE>
+<DD>
+<DT><CODE>vixen.cso.uiuc.edu:/gnu</CODE>
+<DD>
+<DT><CODE>wuarchive.wustl.edu:/systems/gnu</CODE>
+<DD>
+</DL>
+</DL>
+</OL>
+
+
+
+<H3><A NAME="SEC205" HREF="gawk_toc.html#SEC205">Extracting the Distribution</A></H3>
+<P>
+<CODE>gawk</CODE>は
+GNU Zipプログラム、<CODE>gzip</CODE>で圧縮した<CODE>tar</CODE>ファイルとして
+配布されている。
+
+</P>
+<P>
+配布キットを受け取ったら(たとえば<TT>`gawk-3.0.4.tar.gz'</TT>)、
+最初に<CODE>gzip</CODE>を使ってファイルを伸長し、さらに<CODE>tar</CODE>を使って
+展開する。これを以下のようなパイプラインに<CODE>gawk</CODE>の配布キットを
+通すことでできる。
+
+</P>
+
+<PRE>
+# System Vでは、tarのフラグに'o'を追加する
+gzip -d -c gawk-3.0.4.tar.gz | tar -xvpf -
+</PRE>
+
+<P>
+これにより、<TT>`gawk-3.0.4'</TT>という名前のディレクトリが
+カレントディレクトリに作成される
+
+</P>
+<P>
+配布キットのファイル名は<TT>`gawk-<VAR>V</VAR>.<VAR>R</VAR>.<VAR>n</VAR>.tar.gz'</TT>.のよ 
+うな形式であり、<VAR>V</VAR>は<CODE>gawk</CODE>のメジャーバージョンを<VAR>R</VAR>は<VAR>V</VAR>
+でのリリース番号を、そして<VAR>n</VAR>は小規模なバグ修正などが行われた
+<STRONG>パッチレベル</STRONG>を表わしている。現在のパッチレベルは4
+であるが、配布キット を入手するときにはもっとも高いバージョン、リリース
+番号、パッチレベルの
+ものを入手すべきである(リリース番号が90以上のものは"ベータ"レベルであり、
+non-production softwareであることを表わている。実験することを考えていな 
+いかぎり、このようなバージョンを入手すべきではない)。
+
+</P>
+<P>
+もしUNIXシステムを使っていないのなら、そのシステム向けに
+アレンジされたものを入手して展開する必要があるだろう。
+あなたのそばにいるエキスパートに相談するのが良いだろう。
+
+</P>
+
+
+<H3><A NAME="SEC206" HREF="gawk_toc.html#SEC206">Contents of the <CODE>gawk</CODE> Distribution</A></H3>
+
+<P>
+<CODE>gawk</CODE>の配布キットには、幾つかのCソースファイル、
+ドキュメントファイル、
+コンフィギュレーションに関連したファイルとサブディレクトリ
+(セクション <A HREF="gawk_20.html#SEC207">UNIX上での <CODE>gawk</CODE>のコンパイルとインストール</A>を参照)、
+UNIX以外のオペレーティングシステム用のサブディレクトリと
+ファイルがある。
+
+</P>
+<DL COMPACT>
+
+<DT><SAMP>`.c'</SAMP>, <SAMP>`.y'</SAMP>, <SAMP>`.h'</SAMP> という拡張子のついたファイル
+<DD>
+これらのファイルは<CODE>gawk</CODE>の実際のソースコードである。
+</DL>
+
+<DL COMPACT>
+
+<DT><TT>`README'</TT>
+<DD>
+<DT><TT>`README_d/README.*'</TT>
+<DD>
+説明ファイル。<TT>`README'</TT>はUNIX上の<CODE>gawk</CODE>のため、
+その他のファイルは様々なハードウェア、ソフトウェアの
+ためのものである。
+
+<DT><TT>`INSTALL'</TT>
+<DD>
+コンフィグレーションとインストールの手順のまとめたファイル。
+
+<DT><TT>`PORTS'</TT>
+<DD>
+<CODE>gawk</CODE>が既に移植され、test suiteの実行も成功して
+いるシステムのリスト。
+
+<DT><TT>`ACKNOWLEDGMENT'</TT>
+<DD>
+主な移植のコードや、ドキュメントを寄付してくれた人々のリスト。
+
+<DT><TT>`ChangeLog'</TT>
+<DD>
+バグを修正したり、改良を行ったときのソースコードの変更のリスト。
+
+<DT><TT>`NEWS'</TT>
+<DD>
+以前のリリースやパッチからの<CODE>gawk</CODE>の変更点のリスト。
+
+<DT><TT>`COPYING'</TT>
+<DD>
+GNU 一般公有許諾書(GNU General Public License)。
+
+<DT><TT>`FUTURES'</TT>
+<DD>
+将来のリリースで予定されている変更点や追加される機能の簡単なリスト。
+一部の機能については、その難易度に応じてその機能を追加する
+タイムフレーム(time frame)がついている。
+
+<DT><TT>`LIMITATIONS'</TT>
+<DD>
+<CODE>gawk</CODE>の性能上の限界となる項目のリスト。
+これらのほとんどのものはハードウェアやオペレーティングシステム
+ソフトウェアによるもので、<CODE>gawk</CODE>それ自身の限界ではない。
+
+<DT><TT>`POSIX.STD'</TT>
+<DD>
+POSIX標準での<CODE>awk</CODE>の仕様で正しくないところと、
+<CODE>gawk</CODE>がその問題をどのように厚かっているかの説明
+
+<DT><TT>`PROBLEMS'</TT>
+<DD>
+カレントリリースにおける現時点でわかっている問題点の説明が
+あるファイル。
+
+<A NAME="IDX745"></A>
+<A NAME="IDX746"></A>
+<DT><TT>`doc/awkforai.txt'</TT>
+<DD>
+<CODE>gawk</CODE>がAI(Artificial Intelligence, 人工知能)プログラミングに
+向いた言語であることを示す短い発言。
+
+<DT><TT>`doc/README.card'</TT>
+<DD>
+<DT><TT>`doc/ad.block'</TT>
+<DD>
+<DT><TT>`doc/awkcard.in'</TT>
+<DD>
+<DT><TT>`doc/cardfonts'</TT>
+<DD>
+<DT><TT>`doc/colors'</TT>
+<DD>
+<DT><TT>`doc/macros'</TT>
+<DD>
+<DT><TT>`doc/no.colors'</TT>
+<DD>
+<DT><TT>`doc/setter.outline'</TT>
+<DD>
+五色の<CODE>awk</CODE>リファレンスのための、<CODE>troff</CODE>ソース。
+GNU troff (<CODE>groff</CODE>)のような新しいバージョンの<CODE>troff</CODE>は
+カラーバージョンを生成することが要とされる。あなたの使っているのが
+古い<CODE>troff</CODE>であった場合の操作説明は<TT>`README.card'</TT>という
+ファイルを参照のこと。
+
+<DT><TT>`doc/gawk.1'</TT>
+<DD>
+<CODE>gawk</CODE>を説明するマニュアルページの<CODE>troff</CODE>のソース。
+これはUNIXユーザーの便宜のため配布されている。
+
+<DT><TT>`doc/gawk.texi'</TT>
+<DD>
+このマニュアルのTexinfoソース。
+印刷マニュアルを作成するにはTeXで、
+Infoファイルを作成するには<CODE>makeinfo</CODE>を使用する。
+
+<DT><TT>`doc/gawk.info'</TT>
+<DD>
+このマニュアルから生成されたInfoファイル。
+
+<DT><TT>`doc/igawk.1'</TT>
+<DD>
+セクション <A HREF="gawk_17.html#SEC173">ライブラリを使う簡単な方法</A>を参照.
+で提供されている<CODE>igawk</CODE>プログラムに関して説明している
+マニュアルページの<CODE>troff</CODE>ソース。
+
+<DT><TT>`doc/Makefile.in'</TT>
+<DD>
+コンフィグレーションの段階で実際の<TT>`Makefile'</TT>
+を生成するための入力ファイル。
+
+<DT><TT>`Makefile.in'</TT>
+<DD>
+<DT><TT>`acconfig.h'</TT>
+<DD>
+<DT><TT>`aclocal.m4'</TT>
+<DD>
+<DT><TT>`configh.in'</TT>
+<DD>
+<DT><TT>`configure.in'</TT>
+<DD>
+<DT><TT>`configure'</TT>
+<DD>
+<DT><TT>`custom.h'</TT>
+<DD>
+<DT><TT>`missing/*'</TT>
+<DD>
+これらのファイル、サブディレクトリは<CODE>gawk</CODE>を様々な
+UNIXシステム用にコンフィグレーションするときに使用するものである。
+詳しい説明は
+セクション <A HREF="gawk_20.html#SEC207">UNIX上での <CODE>gawk</CODE>のコンパイルとインストール</A>を参照.
+
+<DT><TT>`awklib/extract.awk'</TT>
+<DD>
+<DT><TT>`awklib/Makefile.in'</TT>
+<DD>
+<TT>`awklib'</TT>ディレクトリには、このマニュアルのTexinfoソースファイ
+ルからサンプルプログラムを抜き出す<TT>`extract.awk'</TT>
+(セクション <A HREF="gawk_17.html#SEC171">Texinfoのソースファイルからプログラムを取り出す</A>を参照)
+のコピーと、<CODE>configure</CODE>が<TT>`Makefile'</TT>を生成するのに使用する
+<TT>`Makefile.in'</TT>が含まれる。<CODE>gawk</CODE>の作成手順の一部として、
+セクション <A HREF="gawk_16.html#SEC141"><CODE>awk</CODE>の関数ライブラリ</A>を参照,
+からライブラリ関数が、
+セクション <A HREF="gawk_17.html#SEC173">ライブラリを使う簡単な方法</A>を参照,
+から<CODE>igawk</CODE>プログラムが、そ
+れらを使用するためにファイルの展開が行われる。
+
+<DT><TT>`atari/*'</TT>
+<DD>
+Atari ST上で<CODE>gawk</CODE>を作成するときに必要なファイル。
+詳しくは
+セクション <A HREF="gawk_20.html#SEC216">Atari STでの <CODE>gawk</CODE> のインストール</A>を参照.
+
+<DT><TT>`pc/*'</TT>
+<DD>
+MS/DOSやOS/2上で<CODE>gawk</CODE>を作成するときに必要なファイル。
+詳しくは
+セクション <A HREF="gawk_20.html#SEC215">MS-DOS および OS/2 でのインストールとコンパイル</A>を参照.
+
+<DT><TT>`vms/*'</TT>
+<DD>
+VMS上で<CODE>gawk</CODE>を作成するときに必要なファイル。
+詳しくは
+セクション <A HREF="gawk_20.html#SEC210">VMS上での<CODE>gawk</CODE>のコンパイルとインストール</A>を参照.
+
+<DT><TT>`test/*'</TT>
+<DD>
+<CODE>gawk</CODE>のテスト用スクリプトのセット。
+作成した<CODE>gawk</CODE>に対してテストを実行するには、<CODE>gawk</CODE>の
+トップディレクトリから<SAMP>`make check'</SAMP>とタイプすれば良い。
+<CODE>gawk</CODE>が<SAMP>`make chekck'</SAMP>で行ったテストに合格すれば、
+移植(またはインストール)が成功したと考えてよい。
+</DL>
+
+
+
+<H2><A NAME="SEC207" HREF="gawk_toc.html#SEC207">UNIX上での <CODE>gawk</CODE>のコンパイルとインストール</A></H2>
+
+<P>
+通常は、<CODE>gawk</CODE>をコンパイルとインストールを行うには
+たった二つのコマンドをタイプするだけでできる。しかし、
+あなたの使っているのが一般的なシステムでない場合、
+あなた自信で<CODE>gawk</CODE>をconfigureする必要があるかもしれない。
+
+</P>
+
+
+
+<H3><A NAME="SEC208" HREF="gawk_toc.html#SEC208">Compiling <CODE>gawk</CODE> for Unix</A></H3>
+
+<P>
+<A NAME="IDX747"></A>
+<CODE>gawk</CODE>の配布キットを展開した後で、<TT>`gawk-3.0.4'</TT>へ
+<CODE>cd</CODE>する。<CODE>gawk</CODE>は<CODE>configure</CODE>プログラムを実行することに
+より、使用しているUNIXシステム用に自動的にコンフィグレーションを行う。
+<CODE>configure</CODE>はBourne シェルのスクリプトであり、GNU の
+<CODE>autoconf</CODE>を使用して自動的に生成されたものである
+(<CODE>autoconf</CODE>ソフトウェアは、Free Software Foundationから入手できる
+<CITE>Autoconf--Generating Automatic Configuration Scripts</CITE>,
+で詳しく説明されている)
+
+</P>
+<P>
+<CODE>gawk</CODE>のコンフィグレーションは、単に<CODE>configure</CODE>を実行するだけである。
+
+</P>
+
+<PRE>
+sh ./configure
+</PRE>
+
+<P>
+これにより使用しているシステム用に調整された<TT>`Makefile'</TT> と 
+<TT>`config.h'</TT>が作成される。<TT>`config.h'</TT>というファイルは使用してい
+るシステム に関する様々な項目を記述している。あなたは<TT>`Makefile'</TT>中
+にあるコンパイラに渡すコマンドラインオプション(最適化のレベルとかデバ
+ッグ用にコンパ イルするとか)を制御する<CODE>CFLAG</CODE>変数を変更したくなる
+ことがあるかもしれない。
+
+</P>
+<P>
+その代わりに、<CODE>CC</CODE> や <CODE>CFLAGS</CODE>のような<CODE>make</CODE>の変数の
+大部分に対しては、<CODE>configure</CODE>の実行するときにコマンドラインで
+指定することで、(オプションなどの)追加を行うことができる。
+
+</P>
+
+<PRE>
+CC=cc CFLAGS=-g sh ./configure
+</PRE>
+
+<P>
+詳しくは<CODE>gawk</CODE>の配布キットの<TT>`INSTALL'</TT>というファイルを
+参照のこと。
+
+</P>
+<P>
+<CODE>configure</CODE>を実行した後で、編集された<TT>`Makefile'</TT>を
+
+</P>
+
+<PRE>
+make
+</PRE>
+
+<P>
+のようにして使用して
+少し待てば、<CODE>gawk</CODE>の実行ファイルができあがる。
+それですべては終わり!
+(もしこの手順がうまくいかなければ、バグレポートを送って欲しい。
+セクション <A HREF="gawk_20.html#SEC220">問題やバグの報告</A>を参照.)
+
+</P>
+
+
+<H3><A NAME="SEC209" HREF="gawk_toc.html#SEC209">The Configuration Process</A></H3>
+
+<P>
+<A NAME="IDX748"></A>
+(This section is of interest only if you know something about using the
+C language and the Unix operating system.)
+
+</P>
+<P>
+<CODE>gawk</CODE>のソースコードは、通常可能な限り標準に従おうとする。これは、
+<CODE>gawk</CODE>はANSI 標準Cライブラリや、POSIX 標準オペレーティングシステムイ
+ンターフェースで規定されているライブラリ関数を使用するということである。
+ANSI Cコンパイラを使っているときには、関数プロトタイプはコンパイル時のチ
+ェックをより厳密にするために使われる。
+
+</P>
+<P>
+多くのUNIXシステムでは、ANSIとPOSIXを両方ともサポートしているということ 
+はない。<CODE>gawk</CODE>配布キットの<TT>`missing'</TT>というサブディレクトリには、
+そういった欠けていることが多いサブルーチンを置き換えるものが入っている。
+
+</P>
+<P>
+<CODE>configure</CODE>によって作成される<TT>`config.h'</TT>というファイルは、<CODE>gawk</CODE>
+をコンパイルしようとしている特定のオペレーティングシステムの機能を説
+明する定義から構成されている。このファイルによって記述されることは三つあ
+り、それは正しくインクルードできるように使用できるヘッダーファイル、使用
+しているCライブラリで実際に使える標準関数、その他のそして使用しているUNI
+Xの種々雑多な事実、という三つである。たとえば、構造体<CODE>stat</CODE>に@code 
+{st_blksize}という要素がなかったとすると、<SAMP>`HAVE_ST_BLKSIZE'</SAMP>が
+undefineされる。
+
+</P>
+<P>
+<A NAME="IDX749"></A>
+<TT>`config.h'</TT>.
+Cコンパイラが<CODE>configure</CODE>を失敗させるようなことがありうるが、それは 
+おそらくライブラリ関数が使用できなくてエラーになるようなことがなかったと
+きだろう。これに対処するために、、<TT>`custom.h'</TT>というファイルを編集す 
+ることができる。あなたの使うシステムに適切な<CODE>#ifdef</CODE>を使い、
+<CODE>configure</CODE>が定義すべきだがそうなっていない定数を<CODE>#define</CODE>し、
+あるい は<CODE>configure</CODE>定義すべきでないのに定義されているような定数を
+<CODE>#undef</CODE>にする。<TT>`custom.h'</TT>は<TT>`config.h'</TT>により自動的にインク
+ルード される。
+
+</P>
+<P>
+なにかの理由であなたのシステムでは<CODE>autoconf</CODE>が作成した<CODE>configure</CODE>
+プログラムがうまく働かない可能性がある。このような問題に直面した場合 
+には、<TT>`configure.in'</TT>というファイルを<CODE>autoconf</CODE>の入力にする。あ
+なたはこのファイルを変更することもできるし、あなたのシステムできちんと動
+作する新しい<CODE>configure</CODE>を生成するこもできる。<CODE>gawk</CODE>のコンフィ 
+グレーションで起きた問題のレポートの方法は、
+セクション <A HREF="gawk_20.html#SEC220">問題やバグの報告</A>を参照.。
+同じ方法が、<TT>`configure.in'</TT>や<TT>`custom.h'</TT>の更新についても使用できる。
+
+</P>
+
+
+<H2><A NAME="SEC210" HREF="gawk_toc.html#SEC210">VMS上での<CODE>gawk</CODE>のコンパイルとインストール</A></H2>
+
+<P>
+<A NAME="IDX750"></A>
+このセクションでは、VMSの元での<CODE>gawk</CODE>のコンパイルと
+インストールの方法を説明する。
+
+</P>
+
+
+
+<H3><A NAME="SEC211" HREF="gawk_toc.html#SEC211">Compiling <CODE>gawk</CODE> on VMS</A></H3>
+
+<P>
+VMSの元で<CODE>gawk</CODE>をコンパイルするために、必要なすべての<CODE>CC</CODE>コマ 
+ンドと<CODE>LINK</CODE>コマンドを発行する<CODE>DCL</CODE>コマンドプロシージャ、
+<CODE>MMS</CODE>ユーティリティで使うための<TT>`Makefile'</TT>がある。ソースディレ
+クトリから
+
+</P>
+
+<PRE>
+$ @[.VMS]VMSBUILD.COM
+</PRE>
+
+<P>
+もしくは
+
+</P>
+
+<PRE>
+$ MMS/DESCRIPTION=[.VMS]DESCRIP.MMS GAWK
+</PRE>
+
+<P>
+のどちらかを使用する。
+使用するCコンパイラに応じて、以下のテーブルにある手順の
+何れか一つを使用する。
+
+</P>
+<DL COMPACT>
+
+<DT>VAX C V3.x
+<DD>
+<TT>`vmsbuild.com'</TT> か <TT>`descrip.mms'</TT>のいずれかを
+そのまま使用する。これらはVersion 3.0に欠くことのできない
+<CODE>CC/OPTIMIZE=NOLINE</CODE>を使用する。
+
+<DT>VAX C V2.x
+<DD>
+Version 2.3か2.4である必要があり、それ以前のバージョンでは動作しない。
+<TT>`vmsbuild.com'</TT> か<TT>`descrip.mms'</TT> のいずれかをそれらのファイルにあ 
+るコメントに従って編集する。<TT>`vmsbuild.com'</TT>では、二つの<SAMP>`!'</SAMP>デリ 
+ミッタを取り除くことを必要とする。同様に、<TT>`config.h'</TT>
+(<TT>`[.config]vms-conf.h'</TT>というファイルのコピー)を編集し、
+<SAMP>`#define __STDC__ 0'</SAMP>  と<SAMP>`#define VAXC_BUILTINS'</SAMP> の二行を削除する
+かコメントアウトする。
+
+<DT>GNU C
+<DD>
+<TT>`vmsbuild.com'</TT> もしくは <TT>`descrip.mms'</TT>を編集する。
+変更点はVAX C2.xとは異なるが、同じように簡単である。
+<TT>`config.h'</TT>を変更する必要はない。
+
+<DT>DEC C
+<DD>
+Edit <TT>`vmsbuild.com'</TT> もしくは <TT>`descrip.mms'</TT> 
+をそのコメントに従って編集する。
+<TT>`config.h'</TT>の変更の必要はない。
+</DL>
+
+<P>
+<CODE>gawk</CODE>はVAX C V3.2、GNU C 1.40、GNU C 2.3
+を使ったVAX/VMS 5.5-1 の元でテストされた。
+VMS V4.6以上のものでは変更なしで動作するはずである。
+
+</P>
+
+
+<H3><A NAME="SEC212" HREF="gawk_toc.html#SEC212">Installing <CODE>gawk</CODE> on VMS</A></H3>
+
+<P>
+<CODE>gawk</CODE>をインストールするために、ドル記号で始まるシンボルを持った
+<CODE>DCL</CODE>の"foreign" コマンドを必要とする。
+
+</P>
+
+<PRE>
+$ GAWK :== $disk1:[gnubin]GAWK
+</PRE>
+
+<P>
+(<SAMP>`$disk1:[gnubin]'</SAMP>を実際に<CODE>gawk.exe</CODE>が置かれている場所に置き換
+える。)このシンボルは<CODE>gawk</CODE>を実行したいと考えるすべてのユーザーの
+<TT>`login.com'</TT>に置かれるようにする。それによって、ユーザーがログインした
+ときはいつでもこれが定義される。あるいは、このシンボルをすべてのユーザー
+が<CODE>gawk</CODE>を実行できるようにシステムワイドな<TT>`sylogin.com'</TT>に置く 
+こともできる。
+
+</P>
+<P>
+Optionally, the help entry can be loaded into a VMS help library:
+
+</P>
+
+<PRE>
+$ LIBRARY/HELP SYS$HELP:HELPLIB [.VMS]GAWK.HLP
+</PRE>
+
+<P>
+(You may want to substitute a site-specific help library rather than
+the standard VMS library <SAMP>`HELPLIB'</SAMP>.)  After loading the help text,
+
+</P>
+
+<PRE>
+$ HELP GAWK
+</PRE>
+
+<P>
+will provide information about both the <CODE>gawk</CODE> implementation and the
+<CODE>awk</CODE> programming language.
+
+</P>
+<P>
+論理名<SAMP>`AWK_LIBRARU'</SAMP>は<CODE>awk</CODE>プログラムのデフォルトの
+置き場所を指定することができる。
+<SAMP>`-f'</SAMP>オプションで、デバイスやディレクトリパスの情報が
+ない形でファイル名が指定されていた場合、<CODE>gawk</CODE>は
+最初にカレントディレクトリを検索し、そこでファイルが見つからなければ
+次いで<SAMP>`AWK_LIBRARY'</SAMP>で指定されるディレクトリを検索する。
+これらの両方の検索を行った後でもなおファイルが見つからなかった場合には
+<CODE>gawk</CODE>はファイル名に<SAMP>`.awk'</SAMP>という拡張子を付加して
+ファイルの検索を再度試みる。<SAMP>`AWK_LIBRARY'</SAMP>が定義されていなければ、
+ファイルの検索は再検索が行われることなく失敗する。
+
+</P>
+
+
+<H3><A NAME="SEC213" HREF="gawk_toc.html#SEC213">Running <CODE>gawk</CODE> on VMS</A></H3>
+
+<P>
+コマンドラインの解釈とクォーティング(quoting)の規則は、
+VMSのものと重大な違いがある。そのため、このマニュアルや
+他のソースから持ってきたサンプルプログラムは、しばしば
+ちょっとした変更が必要となる。この違いは小さなもの(minor)であり、
+<CODE>awk</CODE>プログラムは正しく実行されるだろう。
+
+</P>
+<P>
+以下に幾つかのちょっとしたテストを挙げる。
+
+</P>
+
+<PRE>
+$ gawk -- "BEGIN {print ""Hello, World!""}"
+$ gawk -"W" version
+! could also be -"W version" or "-W version"
+</PRE>
+
+<P>
+大文字の場合と、大小文字が混ざっている場合には
+クォートしなければならないことに注意。
+
+</P>
+<P>
+VMSへの<CODE>gawk</CODE>の移植には、オリジナルのシェルスタイルインターフェース
+(詳しくはヘルプエントリを参照)に加えて、<CODE>DCL</CODE>スタイルのインターフェ
+ースが含まれている。二つのコマンドライン解析の副作用の一つは、パラメータ
+(先のプログラムの様にクォートされた文字列のような)が一つだけしかなかった
+ときコマンドは曖昧になる。これに対処するために、通常<CODE>DCL</CODE>スタイルの
+解析ではなくUNIXスタイルの解析を強制的に行わせる<SAMP>`--'</SAMP>オプションフラ 
+グが通常は必要となる。もしその他のダッシュタイプのオプション(もしくは処 
+理対象のファイルのような、複数のパラメータ)があったとすると、それは曖昧 
+ではなく、<SAMP>`--'</SAMP>も省略することができる。
+
+</P>
+<P>
+<SAMP>`-f'</SAMP>オプションによって指定された<CODE>awk</CODE>のプログラムファイルを検 
+索するときのデフォルトの検索パスは、<CODE>"SYS$DISK:[],AWK_LIBRARY:"</CODE>で 
+ある。論理名<SAMP>`AWKPATH'</SAMP>はこのデフォルトをオーバーライドできる。
+<SAMP>`AWKPATH'</SAMP>の書式はカンマで区切られたディレクトリ指定のリストである。
+これが定義されているとき、その値は単一の解釈(translation)であって複数の
+<CODE>RMS</CODE>検索リストではないように、クォートした方が良い。
+
+</P>
+
+
+<H3><A NAME="SEC214" HREF="gawk_toc.html#SEC214">Building and Using <CODE>gawk</CODE> on VMS POSIX</A></H3>
+
+<P>
+上にあるような手順を無視したとしても、<TT>`vms/gawk.hlp'</TT>は
+ヘルプライブラリで使うことができる。
+必要ならば<SAMP>`chmod +x'</SAMP>を使用して
+<CODE>configure</CODE>スクリプトを実行可能にしておくこと。
+実行は次のようなコマンドで行う。
+
+</P>
+
+<PRE>
+$ POSIX
+psx&#62; CC=vms/posix-cc.sh configure
+psx&#62; make CC=c89 make gawk
+</PRE>
+
+<P>
+最初のコマンドは、<CODE>configure</CODE>の期待するCコンパイラを作るためのスクリプ
+トを使ってテンプレートから<TT>`config.h'</TT>と<TT>`Makefile'</TT>を生成する。
+二番目のコマンドはCコンパイラを直接使って<CODE>gawk</CODE>のコンパイルと
+リンクを行う。このとき、<CODE>make</CODE>の出す<CODE>CC</CODE>を再定義できない
+とい警告は無視する。<CODE>configure</CODE>は実行に際して非常に長い時間が
+かかるけれども、少なくともそれが実行されているということを示す
+フィードバックがある。
+
+</P>
+<P>
+これはVAX/VMS V6.2, VMS POSIX V2.0 及び DEC C V5.2.でテストされた。
+
+</P>
+<P>
+一度ビルドすれば、<CODE>gawk</CODE>は他のシェルユーティリティと同じように動作 
+する。normal VMSへの<CODE>gawk</CODE>の移植とは異なり、VMS POSIX環境では特別な
+コマンドライン操作は必要ではない。
+
+</P>
+
+
+<H2><A NAME="SEC215" HREF="gawk_toc.html#SEC215">MS-DOS および OS/2 でのインストールとコンパイル</A></H2>
+
+<P>
+<A NAME="IDX751"></A>
+もしDOS担当保守者達によるバイナリ配布キットを入手したならば、<CODE>gawk</CODE>
+と必要なサポートファイルは<TT>`gnu'</TT>というディレクトリの下に展開される。
+実行ファイルは<TT>`gnu/bin'</TT>に、ライブラリは<TT>`gnu/lib/awk'</TT>に、マニュ
+アルページは<TT>`gnu/man'</TT>に置かれる。これはユーザーのドライブの<TT>`/gnu'</TT>
+ディレクトリに単純にインストールするようにデザインされているが、
+<CODE>AWKPATH</CODE>がセットされている場所であればどこにでもファイルを置くことがで 
+きる。インストールするディレクトリに関係なく、(<TT>`gnu/bin'</TT>にある)
+<TT>`igawk.cmd'</TT>や<TT>`igawk.bat'</TT>の最初の一行を編集する必要があるかもしれ
+ない。
+
+</P>
+<P>
+バイナリ配布キットは内容を説明する別々のファイルを含んでいるだろう。特に、
+二つ以上の<CODE>gawk</CODE>の実行ファイルが入っているかもしれない。OS/2のバイ 
+ナリ配布キットは異なったアレンジが加えられているかもしれないが、インスト
+ールは同様である。
+
+</P>
+<P>
+OS/2用、MS-DOS用の<CODE>gawk</CODE>は
+セクション <A HREF="gawk_15.html#SEC137"><CODE>AWKPATH</CODE>環境変数</A>を参照.
+で説明されているようにプログラムを検索する。
+しかしながら、<CODE>AWKPATH</CODE>変数中の区切りには
+(コロンではなく)セミコロンが使用される。
+もし<CODE>AWKPATH</CODE>がセットされていないか、内容が空であれば
+デフォルトの検索パス<CODE>".;c:/lib/awk;c:/gnu/lib/awk"</CODE>が
+使用される。
+
+</P>
+<P>
+(MS-DOSの<CODE>command.com</CODE>やOS/2の<CODE>cmd.exe</CODE>に対立するものとしての)
+<CODE>sh</CODE>に似たシェルが<CODE>awk</CODE>プログラミングには便利だろう。Ian 
+StewartsonはMS-DOS、OS/2のために素晴らしいシェルを作成した。また、OS/2のた 
+めに<CODE>ksh</CODE>クローンを作成し、GNU BashをOS/2で使えるようにした。
+<CODE>gawk</CODE>の配布キットにある<TT>`README_d/README.pc'</TT>というファイルにはこれ 
+らのシェルに関する情報がある。StewartonのシェルをDOSで使う人は、コマンド
+ラインの取り扱いのドキュメントの記述を確かめたほうが良いだろう。特にこの
+ようなシェルの元で使う<CODE>gawk</CODE>の設定は変更する必要があるだろうし、
+<CODE>ignoretype</CODE>オプションは特に重要なものであるだろう。
+
+</P>
+<P>
+<CODE>gawk</CODE>はMS-DOSやOS/2用に、DJ Delorieや
+(DJGPP、MS-DOSのみ)、Eberhard Mattesによる(EMX、MS-DOSおよびOS/2)
+GNU開発ツールを使ってコンパイルすることができる。
+Microsoft CはMS-DOSおよびOS/2用の16bitバージョンを作成するために
+使用することができる。<CODE>gawk</CODE>の配布キット中にある
+<TT>`README_d/README.pc'</TT> というファイルにはコンパイル時のオプションに関する
+重要な注意書がある。
+
+</P>
+<P>
+<CODE>gawk</CODE>をビルドするために、<TT>`pc'</TT>というディレクトリにある
+ファイル(<TT>`ChangeLog'</TT>は除く) 
+を<CODE>gawk</CODE>の他のソースがあるディレクトリにコピーする。
+<TT>`Makefile'</TT>にはコメントがついたコンフィグレーションセクションが
+あり、正しく動作させるために使用する<CODE>make</CODE>ユーティリティに応じて
+編集する必要があるかもしれない。
+
+</P>
+<P>
+<TT>`Makefile'</TT>にはさまざまなMS-DOS、OS/2バージョンをビルドするためのタ 
+ーゲットが多数ある。ターゲットのリストは<CODE>make</CODE>ユーティリティをター 
+ゲットを指定せずに起動すると出力される。例えば、DJGPPを使って<CODE>gawk</CODE>
+をビルドするには<SAMP>`make djgpp'</SAMP>と入力する。
+
+</P>
+<P>
+<CODE>make</CODE>を使って標準テストの実行と<CODE>gawk</CODE>をインストールするには、
+更に別の<CODE>sh</CODE>、<CODE>sed</CODE>、<CODE>cp</CODE>といったUNIXライクツールが必要と
+なる。テストを実行するために、<TT>`test/*.ok'</TT>というファイル群をDOSスタ 
+イルの行末に変換する必要があるかもしれない。テストのほとんどはStewartson
+のシェルとcompanion ユーティリティや適切な GNUユーティリティを一緒に使っ
+たときに正しく動作する。しかし、多少の<TT>`test/Makefile'</TT>の編集が必要
+である。<TT>`pc/Makefile.tst'</TT>を、<TT>`README_d/README.pc'</TT>というファイ
+ルを置き換える形でコピーするのをお勧めする。
+
+</P>
+
+
+<H2><A NAME="SEC216" HREF="gawk_toc.html#SEC216">Atari STでの <CODE>gawk</CODE> のインストール</A></H2>
+
+<P>
+<A NAME="IDX752"></A>
+<A NAME="IDX753"></A>
+様々なAtariのモデルがあるが、どのモデルであっても<CODE>gawk</CODE>のインストー
+ルにほとんど差はない。コンパイルされた実行形式の<CODE>gawk</CODE>はほとんどの
+<CODE>awk</CODE>プログラムでは大きなメモリーを必要とはしないし、モトローラのプ 
+ロセッサを搭載したすべてのモデルで実行できる(それが正確ではないとしても
+STと呼ぶ)
+
+</P>
+<P>
+<CODE>gawk</CODE>を使うためには、テキスト形式にしろグラフィックス形式であるに 
+しろ、コマンドライン上のすべてのキャラクタを大文字にマッピングしたりしな
+いシェルが必要となる。オプションフラグの大小文字を保存することは、非常に
+重要である(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)。今日ではこれはデフォ
+ルトであり、一部の非常に古いマシンでのみこの問題が生じることになるだろう。
+もし、あなたのシステムがオプションフラグの大小文字を保存しないのであれば、
+あなたの使っているツールをアップグレードする必要がある。入出力リダイレク
+トのサポートは、他の環境から<CODE>awk</CODE>プログラムを持ってくることを簡単に
+するために必要である。パイプはあればいいが、必需というほどでもない。
+
+</P>
+
+
+
+<H3><A NAME="SEC217" HREF="gawk_toc.html#SEC217">Compiling <CODE>gawk</CODE> on the Atari ST</A></H3>
+
+<P>
+<CODE>sizeof(int)</CODE>と <CODE>sizeof(void *)</CODE>とが異なる場合の
+適切な<CODE>gawk</CODE>ソースのコンパイルには、ANSI Cコンパイラが
+必要となる。最初に<CODE>gcc</CODE>が移植が行われた。
+<CODE>int</CODE>は4バイトの大きさがあるように実行したいかもしれないが、
+他の様々な作業はきちんと動作する。
+
+</P>
+<P>
+<CODE>gawk</CODE>のソースのコンパイルをするときに、一部の大きなソースファイル 
+(特に<TT>`regex.c'</TT>)では多くのメモリが必要になるかもしれない。もしこれら
+のファイルをコンパイルしているときにメモリ不足になってしまったならば、こ
+れらのファイルに対する最適化オプションのレベルを下げることを試みると良い
+かもしれない。
+
+</P>
+<P>
+<A NAME="IDX754"></A>
+its results with the sample versions and possibly make adjustments.
+LinuxやMiNT、あるいは同様なオペレーティングシステム上で
+妥当なシェル(Bashもそうだ)を実行している場合には、
+<CODE>configure</CODE>ユーティリティがうまく行くというチャンスがある。
+そういった環境ではない場合には、サブディレクトリ<TT>`atari'</TT>にある
+<TT>`config.h'</TT>と<TT>`Makefile.st'</TT>というサンプルバージョンを
+編集し、メインソースディレクトリにコピーする。
+<CODE>configure</CODE>が何かを生成したとしても、それは
+その結果とサンプルバージョンとの比較に使える程のものである。
+
+</P>
+<P>
+一部の<CODE>gawk</CODE>ソースコードは
+<SAMP>`atarist'</SAMP>というプリプロセッサ定義に依存している。
+これは基本的にはTOS環境で<CODE>gcc</CODE>を使っていることを仮定している。
+もしあなたの環境でこれが正しくなければ、これらのセクションを
+適切なものに修正する。同様に、
+セクション <A HREF="gawk_20.html#SEC218">Running <CODE>gawk</CODE> on the Atari ST</A>を参照.
+にある<CODE>AWKPATH</CODE>と<CODE>envsep</CODE>に関する注意を参照すること。
+
+</P>
+<P>
+リリースされているように、サンプルの<TT>`config.h'</TT>では<CODE>system</CODE>関数
+がライブラリにはないとしている。これは真ではないし、<TT>`atari/system.c'</TT>
+にはこの関数が提供されている。あなたの使用しているシェルとオペレーティ
+ングシステムの特定の組み合わせによって、あなたは<CODE>system</CODE>が使用可能 
+であるように、ファイルを変更したいと思うかもしれない。
+
+</P>
+
+
+<H3><A NAME="SEC218" HREF="gawk_toc.html#SEC218">Running <CODE>gawk</CODE> on the Atari ST</A></H3>
+
+<P>
+実行形式の<CODE>gawk</CODE>を置くべき場所は、通常は
+使用しているシェルがそれを見つけることのできる
+<CODE>PATH</CODE>にあるディレクトリのいずれかである。
+
+</P>
+<P>
+実行している間、<CODE>gawk</CODE>は幾つかの一時ファイルを作成する。TOS用の
+<CODE>gcc</CODE>ライブラリを使用しているときには、<CODE>gawk</CODE>は<CODE>TEMP</CODE>か
+@code {TMPDIR}という環境変数をこの順番で参照する。もしどちらかが見つかれ
+ば、その環境変数の値が一時ファイルを作成するディレクトリとして仮定される。
+このディレクトリは実際に存在していなければならない。またメモリを節約する
+ことができるのならば、このディレクトリをRAMディスクに置くことは良い考えで
+ある。<CODE>TEMP</CODE>も<CODE>TMPDIR</CODE>も見つからなければ、<CODE>gawk</CODE>はカレント 
+ディレクトリに一時ファイルを作成する。
+
+</P>
+<P>
+STバージョンの<CODE>gawk</CODE>は、それに対するプログラムファイルを
+セクション <A HREF="gawk_15.html#SEC137"><CODE>AWKPATH</CODE>環境変数</A>を参照.
+にある様に検索する。変数<CODE>AWKPATH</CODE>のデフォルトの値は
+<TT>`Makefile'</TT>中で定義されている<CODE>DEPPATH</CODE>が採用される。
+配布キットにあるST用の、<CODE>gcc</CODE>/TOS の<TT>`Makefile'</TT>
+では、<CODE>DEPPATH</CODE>に<CODE>".,c:\lib\awk,c:\gnu\lib\awk"</CODE>
+をセットしている。この検索パスは<CODE>AWKPATH</CODE>に望みの値を
+セットすることによって、陽に変更を行うことができる。
+STでは、変数<CODE>AWKPATH</CODE>の要素を区切るのにコロンを使えない
+ことに注意すること。コロンは別の意味に予約されているからである。
+その代わりに、個々のパスを区切るのにカンマを使用する。
+リコンパイルするときに<TT>`atari/gawkmisc.atr'</TT>にある<CODE>envsep</CODE>
+という変数の値を別の値で初期化することによって、この分割キャラクタを
+変更することができる。
+
+</P>
+<P>
+<CODE>gawk</CODE>がプログラム中で入出力のリダイレクトを行うことを許しているに 
+もかかわらず、STがTOSの元で動作しているときには使用に際しては注意すべき 
+である。一部のファイルハンドルのプールを処理するOSルーチンの環境では特定
+のイベントの記録を失ってしまう。これはコンピュータをクラッシュさせ、リブ
+ートしなければならなくなる。しばしばウォームリブートするのに十分である。
+幸いにも、これは頻繁に発生するものではなく、むしろ esoteric situation(難
+解な状況?)で発生する。特に、<CODE>awk</CODE>プログラムを呼び出しているシェルで
+標準出力をファイルにリダイレクトしていて、その<CODE>awk</CODE>プログラム中で他
+の<CODE>print</CODE>文がデフォルトの標準出力を使っていて一部の<CODE>print</CODE>文で
+<CODE>"/dev/stdout"</CODE>にリダイレクトしているような状況を避ける。
+
+</P>
+<P>
+<CODE>gawk</CODE>がST用の<CODE>gcc</CODE>と(gccの)通常ライブラリを使ってコンパイルさ
+れているとき、<SAMP>`/'</SAMP>と<SAMP>`\'</SAMP>の両方をパスの区切りとして使用できる。こ
+れは便利であるが、この内<SAMP>`/'</SAMP>というキャラクタはあなたのファイル名から
+取り除いた方が良く、これが関数<CODE>system</CODE>を通じて呼び出された外部プロ 
+グラムに問題を生じさせる可能性があることに注意すること。<CODE>gawk</CODE>が作 
+成したファイルが他のプログラムから使われる可能性があるときにはいつでも、
+バックスラッシュのみを使用する。同様に<CODE>awk</CODE>では、文字列中のバックス
+ラッシュはそれがバックスラッシュという文字そのものとして扱われるためには
+二つ並べなければならないことに注意すること(セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照)。
+
+</P>
+
+
+<H2><A NAME="SEC219" HREF="gawk_toc.html#SEC219">Amigaでの<CODE>gawk</CODE> のインストール</A></H2>
+
+<P>
+<A NAME="IDX755"></A>
+<A NAME="IDX756"></A>
+<CODE>gawk</CODE>を<CODE>wuarchive.wustl.edu</CODE>の<TT>`pub/aminet/dev/gcc'</TT>という
+ディレクトリから匿名(anonymous)FTPを通じて入手できる
+Amigaシステム上のUNIXエミュレーション環境に
+インストールすることができる。
+これには<CODE>pdksh</CODE>に基づいたシェルが含まれている。
+この環境の基本的なコンポーネントはUNIXエミュレーションライブラリ、
+<TT>`ixemul.lib'</TT>である。
+<CODE>ftp.ninemoons.com</CODE> の<TT>`pub/ade/current'</TT>という
+ディレクトリから入手できるunixエミュレーション環境を使っている
+Amiga に<CODE>gawk</CODE>をインストールすることができる。
+これは<CODE>pdksh</CODE>に基づいたシェルも含まれている。この環境の基本的な
+構成要素は、<TT>`ixemul.lib'</TT>というunixエミュレーションのライブラリである。
+
+</P>
+<P>
+より完璧なAmiga用の配布キットは
+以下の住所から入手できる
+Geek Gadgets CD-ROMにある。
+
+</P>
+
+<BLOCKQUOTE>
+<P>
+CRONUS <BR>
+1840 E. Warner Road #105-265 <BR>
+Tempe, AZ 85284  USA <BR>
+US Toll Free: (800) 804-0833 <BR>
+Phone: +1-602-491-0442 <BR>
+FAX: +1-602-491-0048 <BR>
+Email:  <CODE>info@ninemoons.com</CODE> <BR>
+WWW: <CODE>http://www.ninemoons.com</CODE> <BR>
+Anonymous <CODE>ftp</CODE> site: <CODE>ftp.ninemoons.com</CODE> <BR>
+</BLOCKQUOTE>
+
+<P>
+一度配布キットを受け取れば、単純に<CODE>configure</CODE>を実行することにより
+<CODE>gawk</CODE>のコンフィグレーションができる。
+
+</P>
+
+<PRE>
+configure -v m68k-amigaos
+</PRE>
+
+<P>
+この後<CODE>makef</CODE>を実行すれば、すべて設定されているはずだ!
+(もしこういった手順がうまく行かなければ、それをバグレポートにして
+送って欲しい。セクション <A HREF="gawk_20.html#SEC220">問題やバグの報告</A>を参照.)
+
+</P>
+
+
+<H2><A NAME="SEC220" HREF="gawk_toc.html#SEC220">問題やバグの報告</A></H2>
+
+<PRE>
+<I>There is nothing more dangerous than a bored archeologist.</I>
+The Hitchhiker's Guide to the Galaxy
+</PRE>
+
+<P>
+
+<P>
+もしあなたが<CODE>gawk</CODE>を使っていて問題にあったり、バグを見つけたなら、
+それを開発者達にレポートして欲しい。私達はレポート全てに対応できる
+とは約束できないが、できる限りの修正を行うだろう。
+
+</P>
+<P>
+バグを報告する前に、本当にそれがバグであるかどうかを確かめて欲しい。ドキュメ
+ントを注意深く読みかえし、あなたがやろうとしたことができるかどうかを確認する。
+もし、それで何かはっきりしないことがあれば、それもまた報告して欲しい。なぜな
+ら、それはドキュメントのバグであるからだ。
+
+</P>
+<P>
+バグを報告したり、自分で修正しようとする前に、発見した問題を再現する最小限の
+プログラムと入力データを作ろうとしてみて欲しい。そしてそのプログラムと入力デー
+タ、あなたが使っているUnixシステムの種類と <CODE>gawk</CODE>の実行結果を送って欲し
+い。そしてあなたが動作するだろうと考えたことも。これは本当にドキュメンテーショ
+ンの問題かどうかを決定するのに役立つ。
+
+</P>
+<P>
+問題点が明確になったら、それは以下の二ヶ所のアドレスのいずれかに
+送ることができる。
+
+</P>
+<DL COMPACT>
+
+<DT>インターネット:
+<DD>
+<SAMP>`bug-gnu-utils@gnu.org'</SAMP>
+
+<DT>UUCP:
+<DD>
+<SAMP>`uunet!gnu.org!bug-gnu-utils'</SAMP>
+</DL>
+
+<P>
+メイルにはあなたの使っている<CODE>gawk</CODE>のバージョン番号も忘れないように
+お願いする。バージョンは、<SAMP>`gawk -- version'</SAMP>とすれば得ることができる。
+そして、そのメイルのカーボンコピーを Arnold Robbinsにも送って欲しい。
+彼のメイルアドレスは<SAMP>`arnold@gnu.org'</SAMP>である。
+
+</P>
+<P>
+<A NAME="IDX757"></A>
+<STRONG>重要!</STRONG> <CODE>gawk</CODE>に関するバグリポートを
+インターネットのニューズグループ<CODE>comp.lang.awk</CODE>で
+<EM>行わないように</EM>。<CODE>gawk</CODE>の開発者達は時折このニューズグループを
+見てはいるが、その投稿を私達が見るだろうという保証はない。
+先程説明した手順が正式なバグレポートの手順である。
+
+</P>
+<P>
+バグレポート以外に、提案もいつでも受け付ける。あなたがドキュメントのなかで不明瞭で
+あると考える疑問や、曖昧であると思う機能があれば、Arnold Robbinsに尋ねて欲
+しい。彼はあなたの疑問を解決しようとするだろう。彼に対する電子メイルは、先
+に挙げたインターネットのアドレスで出すことができる。
+
+</P>
+<P>
+UNIX以外のシステムに移植された<CODE>gawk</CODE>でバグを発見した場合、移植を行なっ
+た人物に電子メイルを送って欲しい。そのような人々を以下に挙げるし、そのリス
+トは配布キットの中の <TT>`README'</TT>というファイルにもある。この
+マニュアルの内容と<TT>`README'</TT>中の情報が矛盾していたりしたら、 
+<CODE>README</CODE>の方を信用するように。
+
+</P>
+<P>
+UNIX以外のシステムに移植された<CODE>gawk</CODE>を保守しているのは以下の人達である。
+
+</P>
+<P>
+<A NAME="IDX758"></A>
+<A NAME="IDX759"></A>
+<A NAME="IDX760"></A>
+<A NAME="IDX761"></A>
+<A NAME="IDX762"></A>
+<A NAME="IDX763"></A>
+<DL COMPACT>
+
+<DT>MS-DOS
+<DD>
+Scott Deifik, <SAMP>`scottd@amgen.com'</SAMP>, and
+Darrel Hankerson, <SAMP>`hankedr@mail.auburn.edu'</SAMP>.
+
+<DT>OS/2
+<DD>
+Kai Uwe Rommel, <SAMP>`rommel@ars.de'</SAMP>.
+
+<DT>VMS
+<DD>
+Pat Rankin, <SAMP>`rankin@eql.caltech.edu'</SAMP>.
+
+<DT>Atari ST
+<DD>
+Michal Jaegermann, <SAMP>`michal@gortel.phys.ualberta.ca'</SAMP>.
+
+<DT>Amiga
+<DD>
+Fred Fish, <SAMP>`fnf@ninemoons.com'</SAMP>.
+</DL>
+
+<P>
+もしあなたが見つけたバグがUNIX環境下のgawkでも発生するものならば、
+バグレポートのコピーを通常のGNUのバグリストと、Arnold Robbinsにも
+送って欲しい。そのためのアドレスは先に説明した通りである。
+
+</P>
+
+
+<H2><A NAME="SEC221" HREF="gawk_toc.html#SEC221">自由に入手可能な他の<CODE>awk</CODE>処理系</A></H2>
+<P>
+<A NAME="IDX764"></A>
+
+<PRE>
+<I>It's kind of fun to put comments like this in your awk code.</I>
+      <CODE>// Do C++ comments work? answer: yes! of course</CODE>
+Michael Brennan
+</PRE>
+
+<P>
+
+<P>
+自由に入手することのできる<CODE>awk</CODE>処理系が二つある。
+このセクションでは簡単にそれらを入手できる場所を説明する。
+
+</P>
+<DL COMPACT>
+
+<DT>Unix <CODE>awk</CODE>
+<DD>
+<A NAME="IDX765"></A>
+ <A NAME="IDX766"></A>
+ 
+Brian Kernighanは彼のインプリメントした<CODE>awk</CODE>を自由に配布できるよう 
+にしている。これは、匿名ftpを使って<CODE>netlib.bell-labs.com</CODE>というホスト
+にアクセスし、<TT>`/netlib/research'</TT>というディレクトリに移動すれば入手 
+する事ができる。このとき、"バイナリモード"か"イメージモード"を使用し、
+<TT>`awk.bundle.gzip'</TT>を検索する。
+
+これはGNU <CODE>gzip</CODE>ユーティリティで圧縮されたシェルアーカイブである。
+GNU <CODE>gunzip</CODE>ユーティリティを使用することで
+伸長することができる。
+
+このバージョンは、World Wide WebのBrian Kernighanのホームページ
+<CODE>{http://cm.bell-labs.com/who/bwk</CODE>
+から入手することもできる。
+
+このバージョンはANSI Cのコンパイラを必要とする。GCC(GNU C コンパイラ)は
+問題なく使える。
+
+<A NAME="IDX767"></A>
+<A NAME="IDX768"></A>
+<DT><CODE>mawk</CODE>
+<DD>
+Michael Brennanは<CODE>amwk</CODE>と呼ばれる<CODE>awk</CODE>を独自に作成した。
+これは<CODE>gawk</CODE>と同じように、GPL
+(セクション <A HREF="gawk_23.html#SEC230">GNU GENERAL PUBLIC LICENSE</A>を参照)に従い入手することができる。
+
+<CODE>ftp.whidbey.net</CODE>というホストから匿名ftpによって、mawkが
+入手可能である。接続した後、ディレクトリを<TT>`/pub/brennan'</TT>に変更し、
+"binary"モードか"image"モードにしてから、<TT>`mawk1.3.3.tar.gz'</TT>
+(もしくはそれ以後の最新バージョン)というファイルを指定する。
+
+このファイルを展開するには<CODE>gunzip</CODE>を使用する。
+このインストールは<CODE>gawk</CODE>をインストールするときと同様である。
+(セクション <A HREF="gawk_20.html#SEC207">UNIX上での <CODE>gawk</CODE>のコンパイルとインストール</A>を参照).
+</DL>
+
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_19.html">前</A>, <A HREF="gawk_21.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

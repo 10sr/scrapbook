@@ -1,0 +1,521 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - 組み込み変数</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_10.html">前</A>, <A HREF="gawk_12.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC108" HREF="gawk_toc.html#SEC108">組み込み変数</A></H1>
+<P>
+<A NAME="IDX454"></A>
+
+</P>
+<P>
+大部分の<CODE>awk</CODE>の変数はユーザが好きに使うことができる。そういった変数は自
+分で代入をしない限り値が変わるようなことはないし、プログラムに対して何か影響
+を与えるということもない。
+しかし、<CODE>awk</CODE>の一部の変数は特別な組込みの意味を持っている。
+その変数の一部は<CODE>awk</CODE>が自動的にその値を評価する。そのような変数を操
+作することによって、 <CODE>awk</CODE>プログラムの動作を操作することが可能である。
+他の変数は<CODE>awk</CODE>がその値を自動的にセットする。それを参照すること
+によってプログラム中で<CODE>awk</CODE>がどのように働いているのかについて情報を得る
+ことができる。
+
+</P>
+<P>
+この章では<CODE>gawk</CODE>の組み込み変数について説明する。組み込み変数の多くは、
+それが実際に使われている章でも説明されている。
+
+</P>
+
+
+
+<H2><A NAME="SEC109" HREF="gawk_toc.html#SEC109">Built-in Variables that Control <CODE>awk</CODE></A></H2>
+<P>
+<A NAME="IDX455"></A>
+
+</P>
+<P>
+以下のリストは、変更することにより<CODE>awk</CODE>の挙動を変更することのできる
+変数のリストである。アスタリスク <SAMP>`*'</SAMP>がついている変数は
+<CODE>gawk</CODE>に特有のものである。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>CONVFMT</CODE>
+<DD>
+<A NAME="IDX456"></A>
+ <A NAME="IDX457"></A>
+ <A NAME="IDX458"></A>
+ 
+この変数に格納されている文字列は数値から文字列に変換
+(セクション <A HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>を参照).
+する際に<CODE>awk</CODE>が使用する
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)。
+この変数は参照されたときに、<CODE>sprintf</CODE>の第一引数であるような効果を持つ。
+デフォルトでは<CODE>"%.6g"</CODE>という値になっている。
+<CODE>CONVFMT</CODE>は POSIX の標準によって導入された。
+
+<A NAME="IDX459"></A>
+<DT><CODE>FIELDWIDTHS *</CODE>
+<DD>
+これは <CODE>gawk</CODE>に対して、固定したカラム境界で入力を扱うように指示するカラ
+ムのリストで、リストの個々の要素はスペースで区切られている。また、これは
+実験的な機能である。 <CODE>FIELDWIDTHS</CODE>に対する代入はフィール
+ド分割の為の<CODE>FS</CODE>の使用をオーバーライドする。より詳しくは、
+セクション <A HREF="gawk_6.html#SEC44">固定長データの読み込み</A>を参照。
+
+互換モードで<CODE>gawk</CODE>が起動された場合
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照),、<CODE>FIELDWIDTHS</CODE>は
+特別な意味を持たず、フィールド分割の処理は<CODE>FS</CODE>の値によってのみ
+行われる。
+
+<A NAME="IDX460"></A>
+<DT><CODE>FS</CODE>
+<DD>
+<CODE>FS</CODE>は入力フィールドセパレータである
+(セクション <A HREF="gawk_6.html#SEC38">フィールドの分割方法の指定</A>を参照)。
+その値は一文字の文字列、もしくは複数の文字で構成される正規表現
+で、入力レコードをフィールドに分割するときの分割部分にマッチする。
+<CODE>FS</CODE>に空文字列(<CODE>""</CODE>)をセットすると、
+レコード中のキャラクタ一文字をフィールド一つとして分割を行う。
+
+デフォルトの値は<CODE>" "</CODE>で、一つのスペースからなる文字列である。例外と
+して、この値は連続しているスペース、タブ、改行を一つのセパレータとして<A NAME="FOOT9" HREF="gawk_foot.html#FOOT9">(9)</A>
+認識させ、行の先頭や終端にあるスペース、タブの連続を無視させる。
+
+<SAMP>`-F'</SAMP>オプションを使うことにより、コマンドライン上で <CODE>FS</CODE>の値を変更
+することが出来る。
+
+
+<PRE>
+awk -F, '<VAR>program</VAR>' <VAR>input-files</VAR>
+</PRE>
+
+<CODE>gawk</CODE>がフィールド分割を<CODE>FIELDWIDTHS</CODE>を使用して行っているときに
+<CODE>FS</CODE>に値を代入すると、<CODE>gawk</CODE>は通常の正規表現によるフィールド分割を
+行う状態に戻る。これはただ単純に<SAMP>`FS = FS'</SAMP>としても同じ結果となる。
+
+<A NAME="IDX461"></A>
+<DT><CODE>IGNORECASE *</CODE>
+<DD>
+<CODE>IGNORECASE</CODE>が非0であるとき、
+全ての文字列比較は大小文字を無視して行われる。 このため、
+<SAMP>`~'</SAMP> や <SAMP>`!~'</SAMP>を使った正規表現のマッチング、
+<CODE>gensub</CODE>,
+<CODE>gsub</CODE>,<CODE>index</CODE>,<CODE>match</CODE>, <CODE>split</CODE> ,<CODE>sub</CODE>といっ
+た関数の正規表現マッチング、<CODE>RS</CODE>によるレコードの区切り、<CODE>FS</CODE>を
+使ったフィールド分割は全て大小文字を無視して行われる。
+<CODE>IGNORECASE</CODE> の値は配列の添え字付けには何の影響も<STRONG>及ぼさない</STRONG>。
+セクション <A HREF="gawk_5.html#SEC30">大小文字を区別するマッチング</A>を参照。
+
+<CODE>gawk</CODE>が互換モード
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)
+で動作しているときは、
+<CODE>IGNORECASE</CODE> は特別な意味を持たず、正規表現は常に大小文字を区別して
+マッチングが行われる。
+<A NAME="IDX462"></A>
+<DT><CODE>OFMT</CODE>
+<DD>
+この文字列は<CODE>awk</CODE>が <CODE>print</CODE>文で出力を行うときに、数値を文字列に変
+換するときの動作を制御するのに使用される
+(セクション <A HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>を参照)
+ 。この変数は参照されたときに、<CODE>sprintf</CODE>
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)
+の第一引数であるような効果を持つ。デフォルトでは<CODE>"%.6g"</CODE>という値に
+なっている。初期の
+<CODE>awk</CODE>では<CODE>OFMT</CODE>を、数値から文字列に変更するような全ての式で書式を
+特定するために使っていたが、その役割は現在では<CODE>CONVFMT</CODE>が果たしている。
+
+<A NAME="IDX463"></A>
+<DT><CODE>OFS</CODE>
+<DD>
+出力フィールドのセパレータ
+(セクション <A HREF="gawk_7.html#SEC58">Output Separators</A>を参照)、
+<CODE>print</CODE>文を使ったときにフィールドとフィールドの間に出力される。
+デフォルトは<CODE>" "</CODE>(一つのスペースからなる文字列)である。
+
+<A NAME="IDX464"></A>
+<DT><CODE>ORS</CODE>
+<DD>
+出力レコードのセパレータ。 <CODE>print</CODE>文で出力したときに最後に（付加されて）
+出力される。デフォルトは改行コード一つからなる文字列である(<CODE>"\n"</CODE>とい
+う文字列)。
+(セクション <A HREF="gawk_7.html#SEC58">Output Separators</A>を参照.)
+
+<A NAME="IDX465"></A>
+<DT><CODE>RS</CODE>
+<DD>
+これは<CODE>awk</CODE>に対する入力のレコードセパレータである。デフォルト値は改行キャ
+ラクタである。つまり、デフォルトでは入力レコードはテキスト中の一行である
+これは空文字列や正規表現であってもよく、空文字列場合は、レコードは空行の
+連続によって区切られ、正規表現の場合にはその正規表現にマッチした
+入力テキストによって区切られる。
+(セクション <A HREF="gawk_6.html#SEC34">入力をレコードへと分割をするやりかた</A>を参照.)。
+
+<A NAME="IDX466"></A>
+<DT><CODE>SUBSEP</CODE>
+<DD>
+<CODE>SUBSEP</CODE>は添字を区切るものであり、そのデフォルトの値は<CODE>"\034"</CODE>であ
+る。この値は多次元配列の名前を分割するために使われる。したがって
+<CODE>foo["A","B"]</CODE>と記述すると、実際は<CODE>foo["A\034B"]</CODE> にアクセスする
+(セクション <A HREF="gawk_12.html#SEC121">Multi-dimensional Arrays</A>を参照)。
+</DL>
+
+
+
+<H2><A NAME="SEC110" HREF="gawk_toc.html#SEC110">情報を伝達する組込み変数</A></H2>
+<P>
+<A NAME="IDX467"></A>
+
+</P>
+<P>
+以下のリストは<CODE>awk</CODE>によって自動的に値がセットされ、プログラム中で情報を得る
+ことのできる変数のリストである。<CODE>gawk</CODE>に特有の変数には
+アスタリスク <SAMP>`*'</SAMP>が目印についている。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>ARGC</CODE>
+<DD>
+<A NAME="IDX468"></A>
+ <A NAME="IDX469"></A>
+ 
+<DT><CODE>ARGV</CODE>
+<DD>
+<CODE>awk</CODE>プログラムに対するコマンドライン引数は、<CODE>ARGV</CODE>と呼ばれる
+配列に格納される。<CODE>ARGC</CODE>にはコマンドライン引数の数が格納される。
+セクション <A HREF="gawk_15.html#SEC136">Other Command Line Arguments</A>を参照.
+大部分の<CODE>awk</CODE>の変数とは異なり、<CODE>ARGV</CODE>の添え字付けは
+0から<CODE>ARGC</CODE> - 1である。たとえば、
+
+
+<PRE>
+$ awk 'BEGIN {
+&#62;        for (i = 0; i &#60; ARGC; i++) 
+&#62;            print ARGV[i] 
+&#62;      }' inventory-shipped BBS-list
+-| awk
+-| inventory-shipped
+-| BBS-list
+</PRE>
+
+この例では、<CODE>ARGV[0]</CODE>には<CODE>"awk"</CODE>が、<CODE>ARGV[1]</CODE>には
+<CODE>"inventory-shipped"</CODE>が、<CODE>ARGV[2]</CODE>には<CODE>"BBS-list"</CODE>が
+入っている。<CODE>ARGV</CODE>の値は3であり、それは<CODE>ARGV</CODE>の最大のインデック
+スよりも一つ大きい。それは、インデックスを0から数えるからである。
+
+<CODE>ARGC</CODE>と<CODE>ARGV</CODE>の名前と、その添え字付けがゼロから<CODE>ARGC</CODE> @minus 1
+であるということはC言語で使われているコマンドライン引数の取り扱い方法から
+きている。<CODE>awk</CODE>がこれらの変数をどのように使うかは
+セクション <A HREF="gawk_11.html#SEC111">Using <CODE>ARGC</CODE> and <CODE>ARGV</CODE></A>を参照。
+
+<A NAME="IDX470"></A>
+<DT><CODE>ARGIND *</CODE>
+<DD>
+現在処理を行っているファイルの<CODE>AEGV</CODE>におけるインデックス。
+<CODE>gawk</CODE>は新しいファイルをオープンする度に、
+<CODE>AERGIND</CODE>に処理するファイル名のある<CODE>ARGV</CODE>の
+インデックスをセットする。
+<CODE>awk</CODE>がファイルを処理している間は、
+<SAMP>`FILENAME == ARGV[ARGIND]'</SAMP>は常に真である。
+
+この変数はファイル処理に便利である。データファイルのリスト中でリスト中のどこ
+のファイルであるかを知ることができるし、コマンドライン上で同じ名前で指定され
+ている複数のインスタンスを区別することができる。
+
+<CODE>awk</CODE>プログラム中で<CODE>ARGIND</CODE>の値を変更することができ、それにより
+<CODE>gawk</CODE>は自動的に次のファイルをオープンするときに新しい値をセットする。
+
+この変数は<CODE>gawk</CODE>の拡張である。ほかの<CODE>awk</CODE>や、<CODE>gawk</CODE>が互換モード
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)で動作している場合は特殊変数ではない。
+
+<A NAME="IDX471"></A>
+<DT><CODE>ENVIRON</CODE>
+<DD>
+環境変数の値で構成される連想配列である。配列は環境変数の名前で添字付けされ
+る。要素の値は各環境変数の値である。例えば、 <CODE>ENVIRON["HOME"]</CODE>の値は
+<TT>`/home/arnold/'</TT>である。この配列の要素を変更しても <CODE>awk</CODE>がリダイレ
+クションや<CODE>system</CODE>関数で起動する他のプログラムに渡される環境変数その 
+ものには影響しない (これは将来の<CODE>gawk</CODE>でもこのように動作するだろう)。
+
+一部のオペレーティングシステムでは環境変数を備えていないものがある。
+このようなシステムの場合、配列<CODE>ENVIRON</CODE>は空である
+(<CODE>ENVIRON["AWKPATH"]</CODE>を除く)。
+
+<A NAME="IDX472"></A>
+<DT><CODE>ERRNO *</CODE>
+<DD>
+<CODE>getline</CODE>のリダイレクト、<CODE>getline</CODE>での読み込み、 <CODE>close</CODE>でシ
+ステムエラーが発生したときに<CODE>ERRNO</CODE>にはエラーを表わす文字列がセットされ
+る。
+
+この変数は<CODE>gawk</CODE>の拡張である。ほかの<CODE>awk</CODE>や、
+<CODE>gawk</CODE>が互換モード(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)
+であるときは特殊変数ではない。
+
+<A NAME="IDX473"></A>
+<A NAME="IDX474"></A>
+<DT><CODE>FILENAME</CODE>
+<DD>
+この変数には<CODE>awk</CODE>が現在読み込んでいるファイルのファイル名がセットされて
+いる。 <CODE>awk</CODE>が標準入力から（言い替えればコマンドラインでファイル名が与
+えられていなければ）入力を行っている場合には <CODE>FILENAME</CODE> は <CODE>"-"</CODE>が
+セットされる。 <CODE>FILENAME</CODE> は新しくファイルが読み込まれる度に変更される
+(セクション <A HREF="gawk_6.html#SEC33">入力ファイルの読み込み</A>を参照).
+<CODE>BEGIN</CODE>ルールの中では入力ファイルがまだ処理されていないので、
+<CODE>FILENAME</CODE>の値は<CODE>""</CODE>である。<A NAME="FOOT10" HREF="gawk_foot.html#FOOT10">(10)</A>(d.c.)
+
+<A NAME="IDX475"></A>
+<DT><CODE>FNR</CODE>
+<DD>
+<CODE>FNR</CODE>には、現在処理しているファイルでの、カレントレコードの番号が
+セットされている。<CODE>FNR</CODE>はレコードの入力の度に更新される
+(セクション <A HREF="gawk_6.html#SEC46"><CODE>getline</CODE>を使った入力</A>を参照)。
+入力ファイルが新しくなる度に0に初期化される。
+
+<A NAME="IDX476"></A>
+<DT><CODE>NF</CODE>
+<DD>
+<CODE>NF</CODE>にはカレントレコード中のフィールドの数が格納されている。 <CODE>NF</CODE>
+はレコードの入力が行われて新しいフィールドが作られたとき、もしくは<CODE>$0</CODE>
+が変更される度に更新される (セクション <A HREF="gawk_6.html#SEC35">フィールドの検査</A>を参照)。
+
+<A NAME="IDX477"></A>
+<DT><CODE>NR</CODE>
+<DD>
+<CODE>NR</CODE> is set each time a new record is read.
+この変数にはプログラムが実行開始してからそれまでに入力されたレコードの数が格
+納されている(セクション <A HREF="gawk_6.html#SEC34">入力をレコードへと分割をするやりかた</A>を参照)。
+<CODE>NR</CODE> は新しいレコードが入力される度に更新される。
+
+<A NAME="IDX478"></A>
+<DT><CODE>RLENGTH</CODE>
+<DD>
+<CODE>RLENGTH</CODE>には<CODE>match</CODE>関数でマッチした部分文字列の長さが格納されてい
+る(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)。
+<CODE>RSTART</CODE>は<CODE>match</CODE>関数を起動するとセットされ、マッチする部分文字列
+があればその部分文字列の長さが、ない場合には-1が格納される。
+
+<A NAME="IDX479"></A>
+<DT><CODE>RSTART</CODE>
+<DD>
+<CODE>RSTART</CODE> は<CODE>match</CODE>  関数でマッチした部分文字列の最初のキャラクタの
+インデックスが入る 
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)。
+<CODE>RSTART</CODE>は<CODE>match</CODE>関数を起動するとセットされ、マッチする部分文字列
+があればその開始位置が、ない場合には0が格納される。
+
+<A NAME="IDX480"></A>
+<DT><CODE>RT *</CODE>
+<DD>
+<CODE>RT</CODE>はレコードが読み込まれるたびにセットされる。この変数は、
+<CODE>RS</CODE>で指定されるテキストにマッチした
+レコードセパレータである入力テキストを保持している。
+
+この変数は<CODE>gawk</CODE>の拡張であり、他の<CODE>awk</CODE>処理系や、<CODE>gawk</CODE>
+が互換モード(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)で動作しているときには
+特殊変数ではない。
+</DL>
+
+<P>
+<A NAME="IDX481"></A>
+<CODE>NR</CODE>と<CODE>FNR</CODE>に関するちょっとしたメモ。
+
+</P>
+<P>
+<CODE>awk</CODE>はレコードを読み込む度に、読み込んだレコードの数そのものをこれ
+らの変数にセットするのではなく、これらの変数を単純にインクリメントする。
+これは、あなたがプログラム中でこれらの変数の値を書き換えることができると
+いうことであり、それ以後はレコードを読み込む度にその値をインクリメントし
+ていくのである(d.c.)。例を挙げると
+
+</P>
+
+<PRE>
+$ echo '1
+&#62; 2
+&#62; 3
+&#62; 4' | awk 'NR == 2 { NR = 17 }
+&#62; { print NR }'
+-| 1
+-| 17
+-| 18
+-| 19
+</PRE>
+
+<P>
+のようになるのである。
+
+</P>
+<P>
+<CODE>FNR</CODE>が<CODE>awk</CODE>言語に追加される以前
+(セクション <A HREF="gawk_18.html#SEC175">Major Changes between V7 and SVR3.1</A>を参照)には、
+多くの<CODE>awk</CODE>プログラムでファイルごとのレコード数を記憶するのに、
+<CODE>FILENAME</CODE>が代わる度に<CODE>NR</CODE>を0にリセットする
+ということでこの仕様を利用していた。
+
+</P>
+
+
+
+<H2><A NAME="SEC111" HREF="gawk_toc.html#SEC111">Using <CODE>ARGC</CODE> and <CODE>ARGV</CODE></A></H2>
+
+<P>
+セクション <A HREF="gawk_11.html#SEC110">情報を伝達する組込み変数</A>を参照では、
+<CODE>ARGC</CODE>や<CODE>ARGV</CODE>に格納されている情報に関する説明を行っている。
+
+</P>
+
+<PRE>
+$ awk 'BEGIN {
+&#62;        for (i = 0; i &#60; ARGC; i++) 
+&#62;            print ARGV[i] 
+&#62;      }' inventory-shipped BBS-list
+-| awk
+-| inventory-shipped
+-| BBS-list
+</PRE>
+
+<P>
+この例では、<CODE>ARGV[0]</CODE>には<CODE>"awk"</CODE>が、<CODE>ARGV[1]</CODE>には
+<CODE>"inventory-shipped"</CODE>が、そして<CODE>ARGV[2]</CODE>には
+<CODE>"BBS-list"</CODE>がセットされている。
+
+</P>
+<P>
+<CODE>awk</CODE>プログラムは<CODE>ARGV</CODE>には含まれていない。
+その他の引数を伴った特殊なコマンドラインオプションも含まれていない。
+しかし、コマンドライン上での変数代入は引数として<STRONG>扱われる</STRONG>
+。これには<SAMP>`-v'</SAMP>オプションによって
+代入された変数も含まれる(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)。
+コマンドライン上にある通常の変数代入は引数として扱われ、
+こういったものは<CODE>ARGV</CODE>配列に含まれている
+
+</P>
+
+<PRE>
+$ cat showargs.awk
+-| BEGIN {
+-|     printf "A=%d, B=%d\n", A, B
+-|     for (i = 0; i &#60; ARGC; i++)
+-|         printf "\tARGV[%d] = %s\n", i, ARGV[i]
+-| }
+-| END   { printf "A=%d, B=%d\n", A, B }
+$ awk -v A=1 -f showargs.awk B=2 /dev/null
+-| A=1, B=0
+-| 	ARGV[0] = awk
+-| 	ARGV[1] = B=2
+-| 	ARGV[2] = /dev/null
+-| A=1, B=2
+</PRE>
+
+<P>
+プログラム中で<CODE>ARGC</CODE>や<CODE>ARGV</CODE>を変更することができる。
+<CODE>awk</CODE>は入力ファイルの終端に達する度に、<CODE>ARGV</CODE>の次の要素を
+次の入力ファイルのファイル名として扱う。
+そこに異なる文字列を格納することによって、読み込むファイルを変更する
+ことができる。このとき、標準入力は<CODE>"-"</CODE>で表わすことができる。
+新しい要素を追加し、<CODE>ARGC</CODE>をインクリメントすることによって、
+読み込むファイルを増やすことができる。
+
+</P>
+<P>
+<CODE>ARGC</CODE>の値をデクリメントすると、リストの最後にある
+入力ファイルがリストから削除される。<CODE>ARGC</CODE>の古い値を
+他の場所で使うことにより、リストから削除された引数を
+ファイル名以外のものとして使うことができるようになる。
+
+</P>
+<P>
+リストの中程にあるファイルをリストから削除するには、
+空文字列(<CODE>""</CODE>)を対象となるファイルの名前が格納されている
+<CODE>ARGV</CODE>の要素に代入してしまえば良い。
+特殊な仕様として、<CODE>awk</CODE>は
+空文字列に置き換えられたファイル名を無視する。
+同様に、<CODE>ARGV</CODE>からある要素を削除するために<CODE>delete</CODE>
+文を使うこともできる(セクション <A HREF="gawk_12.html#SEC118">The <CODE>delete</CODE> Statement</A>を参照)。
+
+</P>
+<P>
+これらのアクションは、典型的には入力に対して何等かの処理が行われる前、
+<CODE>BEGIN</CODE>ルール中で行われる。
+セクション <A HREF="gawk_17.html#SEC160">大きなファイルを分割する</A>を参照。
+また、<CODE>ARGV</CODE>から要素を削除するやり方は
+セクション <A HREF="gawk_17.html#SEC161">出力を複数のファイルに複製する</A>を参照。
+
+</P>
+
+<P>
+以下のコード片は<CODE>ARGV</CODE>を順番に確認し、そこからコマンドラインオプションを
+削除する処理をしている。
+
+</P>
+
+<PRE>
+BEGIN {
+    for (i = 1; i &#60; ARGC; i++) {
+        if (ARGV[i] == "-v")
+            verbose = 1
+        else if (ARGV[i] == "-d")
+            debug = 1
+        else if (ARGV[i] ~ /^-?/) {
+            e = sprintf("%s: unrecognized option -- %c",
+                    ARGV[0], substr(ARGV[i], 1, ,1))
+            print e &#62; "/dev/stderr"
+        } else
+            break
+        delete ARGV[i]
+    }
+}
+</PRE>
+
+<P>
+<CODE>awk</CODE>プログラムにオプションを渡すために、<CODE>awk</CODE>に対する
+オプションの末尾に<SAMP>`--'</SAMP>を与えて、その後に<CODE>awk</CODE>プログラム
+に対するオプションを、以下に示す例のようにして置かなければ
+ならない。
+
+</P>
+
+<PRE>
+awk -f myprog -- -v -d file1 file2 ...
+</PRE>
+
+<P>
+<A NAME="IDX482"></A>
+これは<CODE>gawk</CODE>では不要である。<SAMP>`--posix'</SAMP>オプションが指定され
+ないかぎり、<CODE>gawk</CODE>は認識できないあらゆるオプションに対して
+なんのメッセージも出さずにそのまま<CODE>ARGV</CODE>へと格納し、
+<CODE>awk</CODE>プログラムはそういったオプションを取り扱えるのである。
+
+</P>
+<P>
+As soon as it
+知らないオプションを発見すると、<CODE>gawk</CODE>は即座にオプション解析を
+やめて、その後に認識できるオプションがあってもそれを<CODE>gawk</CODE>に
+対するオプションとして解析することはない。
+
+</P>
+
+<PRE>
+gawk -f myprog -d -v file1 file2 ...
+</PRE>
+
+<P>
+上記の例に対して<CODE>gawk</CODE>は、<SAMP>`-d'</SAMP>が正当なオプションでないので
+<SAMP>`-v'</SAMP>を<CODE>awk</CODE>プログラムにそのまま渡すのである。
+
+</P>
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_10.html">前</A>, <A HREF="gawk_12.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

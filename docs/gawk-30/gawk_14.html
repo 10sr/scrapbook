@@ -1,0 +1,538 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - ユーザー定義関数</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_13.html">前</A>, <A HREF="gawk_15.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC129" HREF="gawk_toc.html#SEC129">ユーザー定義関数</A></H1>
+
+<P>
+<A NAME="IDX583"></A>
+<A NAME="IDX584"></A>
+複雑な<CODE>awk</CODE>プログラムは、しばしばユーザー定義関数を使うことで
+単純にすることが可能である。ユーザー定義関数は組込みの関数
+(セクション <A HREF="gawk_8.html#SEC85">Function Calls</A>を参照)と同じように使うことができるが、
+(ユーザー定義関数は)<CODE>awk</CODE>に対して関数が行なうことを
+教えるために、ユーザーが定義しなければならない。
+
+</P>
+
+
+
+<H2><A NAME="SEC130" HREF="gawk_toc.html#SEC130">Function Definition Syntax</A></H2>
+<P>
+<A NAME="IDX585"></A>
+
+</P>
+<P>
+関数定義は<CODE>awk</CODE>プログラムのルールの中ならどこにでも記述できる。だから、
+<CODE>awk</CODE>プログラムの一般的な形というのは、ルールとユーザー定義の並びと言え
+る。<CODE>awk</CODE>では、関数は使用する前に定義する必要はない
+これは、<CODE>awk</CODE>がプログラム全体を、実行に移る前に全て
+読み込むからである。
+
+</P>
+<P>
+<VAR>name</VAR>と言う名前の関数を定義するには次のようにする。
+
+</P>
+
+<PRE>
+function <VAR>name</VAR>(<VAR>parameter-list</VAR>)
+{
+     <VAR>body-of-function</VAR>
+}
+</PRE>
+
+<P>
+<A NAME="IDX586"></A>
+<VAR>name</VAR>は定義する関数の名前である。関数名として許されるのは変数名と同じで
+ある。文字、数字またはアンダースコアの並びで、ただし先頭に数字が来てはいけな
+い。一つの<CODE>awk</CODE>プログラム中では、ある名前は
+関数名、は配列名、変数名のどれか一つでのみ使用できる。
+
+</P>
+<P>
+<VAR>parameter-list</VAR>は、カンマで区切られた関数の引数と (関数内の)ローカル変
+数の名前のリストである。関数が呼ばれるときに引数の名前は、対応する呼びだし側
+の変数の値を得る為に使われる。ローカル変数は空文字列に初期化される。
+関数は同じ名前を持った二つのパラメータを持つことはできない
+
+</P>
+<P>
+<VAR>body-of-function</VAR>は<CODE>awk</CODE>の文で構成されている。ここは関数定義で一番
+重要な部分である。なぜなら、関数がどのように動作するかということを記述する部
+分であるからである。引数名は関数本体で（その関数に対する）引数を扱うためにあ
+る。ローカル変数は関数本体で一時的な値を扱うための場所を確保する。
+
+</P>
+<P>
+仮引数名は文法的にはローカル変数名となんら変わる所はない。その代り、実引数の
+値が三つ与えられたとすると、<VAR>parameter-list</VAR>の最初の三つが仮引数となり、
+後の残りはローカル変数となる。
+
+</P>
+<P>
+(関数定義部での)引数の数は、その関数が呼ばれるときの引数とは必ずしも同じ数で
+はなく、（そういった関数では）<VAR>parameter-list</VAR>の名前は本当の引数と、ロー
+カル変数がリスト中にある、あるいは省略された引数はデフォルトの値(空文字列)
+がセットされている状態で関数呼び出しが行われていると考えられる。
+
+</P>
+<P>
+普通、関数を記述しようとするときには、引数としていくつ。ローカル変数としてい
+くつ名前を使うか分かっている。 引数とローカル変数の間には余計にスペースを入れ
+るという取り決めになっている。そうすることによって自分以外の人が、記述
+された関数をどのように使うのか理解できる。
+
+</P>
+<P>
+<A NAME="IDX587"></A>
+関数本体を実行している間、引数とローカル変数は（プログラム中に存在していれば）
+同じ名前の変数を関数本体から見えないようにする。見えなくなった変数は関数の中
+でアクセスすることはできない。なぜならローカル変数によって、名前によってその
+(隠された)変数にアクセスすることができなくなっているからである。
+<CODE>awk</CODE>プログラム中の他の(隠されていない)変数は、関数の中でも通常通りに参
+照したり変更したりすることができる
+
+</P>
+<P>
+引数とローカル変数は関数の本体を実行している間だけ存在している。関数本体から
+抜けると、隠されていた変数に再びアクセスできるようになる。
+
+</P>
+<P>
+<A NAME="IDX588"></A>
+関数本体には関数を呼び出す式を含めることができる。
+そこでは直接、あるいは他の関数を通して自分自身を
+呼び出すことができる。このような場合、関数が<STRONG>再帰</STRONG>的であるという。
+
+</P>
+<P>
+<A NAME="IDX589"></A>
+<A NAME="IDX590"></A>
+多くの<CODE>awk</CODE>処理系では<CODE>function</CODE>というキーワード
+を <CODE>func</CODE>と省略して使うことができる。しかし、POSIX では <CODE>function</CODE>
+の使用しか規定していない。これはある程度実用的な implications である。
+<CODE>gawk</CODE>は POSIX 互換モードで動作しているときには
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)、
+次のような文で関数定義を行うことが<EM>できない</EM>。
+
+</P>
+
+<PRE>
+func foo() { a = sqrt($1) ; print a }
+</PRE>
+
+<P>
+ルールとして定義され、個々のレコードで関数<SAMP>`foo'</SAMP>の戻り値と共に変数func（の
+内容）を連接し、その結果を基として対応するアクションを実行する。このことはお
+そらく望んだところではない。 (<CODE>awk</CODE>はこの入力を文法的に正しいものとして
+受け入れる。したがって、関数は<CODE>awk</CODE>プログラムの中で定義される前に使われ
+ることになるだろう)
+
+</P>
+<P>
+<A NAME="IDX591"></A>
+作成した<CODE>awk</CODE>プログラムの移植性を保証するためには、
+関数を定義するときには常に<CODE>function</CODE>キーワードを使用する。
+
+</P>
+
+
+<H2><A NAME="SEC131" HREF="gawk_toc.html#SEC131">Function Definition Examples</A></H2>
+
+<P>
+次にユーザー定義関数の例を挙げる。数値を引数に取りそれを特定の書式で出力す
+る<CODE>myprint</CODE>という関数を呼びだす。
+
+</P>
+
+<PRE>
+function myprint(num)
+{
+     printf "%6.3g\n", num
+}
+</PRE>
+
+<P>
+<CODE>myprint</CODE>を使ったルールの例を挙げよう。
+
+</P>
+
+<PRE>
+$3 &#62; 0     { myprint($3) }
+</PRE>
+
+<P>
+このプログラムは、先ほど定義した書式にしたがって、入力されたレコードの三番目
+のフィールドが正の数であるときに(そのフィールドを) 出力する。というものであ
+る。だから入力として次のデータを与えると、
+
+</P>
+
+<PRE>
+ 1.2   3.4    5.6   7.8
+ 9.10 11.12 -13.14 15.16
+17.18 19.20  21.22 23.24
+</PRE>
+
+<P>
+プログラムの出力はこうなる。
+
+</P>
+
+<PRE>
+   5.6
+  21.2
+</PRE>
+
+<P>
+次の関数はある配列のすべての要素を削除する。
+
+</P>
+
+<PRE>
+function delarray(a,    i)
+{
+    for (i in a)
+       delete a[i]
+}
+</PRE>
+
+<P>
+配列を使っているときには、ある配列のすべての要素を削除して
+新しいリストの要素で上書きする必要がしばしばある
+(セクション <A HREF="gawk_12.html#SEC118">The <CODE>delete</CODE> Statement</A>を参照)。
+それを行うループを、操作を行う場所全てで記述する代わりに、
+配列をクリアする必要があるところで<CODE>delarray</CODE>を呼び出せば良い。
+
+</P>
+
+<P>
+次の例は、再帰関数のサンプルである。これは入力として文字列を受け取り、そ
+の文字列を逆順にならべた文字列を返す。
+
+</P>
+
+<PRE>
+function rev(str, start)
+{
+    if (start == 0)
+        return ""
+
+    return (substr(str, start, 1) rev(str, start - 1))
+}
+</PRE>
+
+<P>
+この関数が<TT>`rev.awk'</TT>という名前のファイルにあったとすると、
+このようにテストすることができる。
+
+</P>
+
+<PRE>
+$ echo "Don't Panic!" |
+&#62; gawk --source '{ print rev($0, length($0)) }' -f rev.awk
+-| !cinaP t'noD
+</PRE>
+
+<P>
+次に挙げるのは組込み関数の<CODE>strftime</CODE>を使った例である
+(<CODE>strftime</CODE>の詳細については
+セクション <A HREF="gawk_13.html#SEC128">Functions for Dealing with Time Stamps</A>を参照.)。
+Cライブラリの<CODE>ctime</CODE>関数はタイムスタンプを引数にとり、
+それを良く知られている書式の文字列にして返す。
+<CODE>awk</CODE>によるバージョンは次のようになる。
+
+</P>
+
+<PRE>
+# ctime.awk
+#
+# awk による ctime(3) 関数
+
+function ctime(ts,    format)
+{
+    format = "%a %b %d %H:%M:%S %Z %Y"
+    if (ts == 0)
+        ts = systime()       # デフォルトとして現在時刻を使用
+    return strftime(format, ts)
+}
+</PRE>
+
+
+
+<H2><A NAME="SEC132" HREF="gawk_toc.html#SEC132">Calling User-defined Functions</A></H2>
+
+<P>
+<A NAME="IDX592"></A>
+<A NAME="IDX593"></A>
+<A NAME="IDX594"></A>
+<STRONG>関数呼び出し</STRONG>は関数の実行を引き起こす。関数呼び出しは一つの式で
+あり、式としての値は関数が返す値である。
+
+</P>
+<P>
+関数呼び出しは関数名とそれに続く(括弧に囲まれた)引数である。引数として、式を
+書くこともできる。そのような式は呼び出しが実行されたときに評価が行われてその
+値が実引数として扱われる。例えば、次の<CODE>foo</CODE>という関数の呼び出しでは引数
+が三つある (最初の一つは文字列連接)。
+
+</P>
+
+<PRE>
+foo(x y, "lose", 4 * z)
+</PRE>
+
+<P>
+<STRONG>警告:</STRONG> 空白(スペースまたはタブ)を関数名と引数リストを囲んでいる左括弧
+との間に入れてはいけない。もし間違って空白を入れてしまった場合、<CODE>awk</CODE>は
+変数と、(括弧に囲まれた) 式との連接であると認識する。しかし、書かれている名
+前は変数名ではなく関数名であるから、エラーが報告される結果となる。
+
+</P>
+<P>
+<A NAME="IDX595"></A>
+関数が呼ばれるときに、関数に対してその実引数の値のコピーが渡される。これを
+<STRONG>値呼び出し(call by value)</STRONG>と言う。呼びだし側は実引数に式として変数を
+使うこともできる。しかし、呼び出される関数はそれを関知せず、単に引数の値があ
+るとだけ認識する。例えば次のようなコードでは、
+
+</P>
+
+<PRE>
+foo = "bar"
+z = myfunc(foo)
+</PRE>
+
+<P>
+<CODE>myfunc</CODE>の引数として"変数 <CODE>foo</CODE>"を渡すのではなく、(<CODE>foo</CODE>の
+値である)文字列<CODE>"bar"</CODE>を渡していると考えた方が良い。
+
+</P>
+<P>
+関数<CODE>myfunc</CODE> が関数内のローカル変数の値を変更したとしてもそれは(対応し
+ている引数も含めて)他の変数には一切影響しない。 <CODE>myfunc</CODE> が次のような
+ものであったとしよう、
+
+</P>
+
+<PRE>
+function myfunc(str)
+{
+  print str
+  str = "zzz"
+  print str
+}
+</PRE>
+
+<P>
+最初の引数の<CODE>win</CODE>を変更しても、呼びだし側にある<CODE>foo</CODE>には <EM>影
+響しない</EM>。<CODE>myfunc</CODE>を呼び出すときの<CODE>foo</CODE>の役割はその値である
+<CODE>"bar"</CODE>を計算したときに終わっている。 <CODE>win</CODE>が<CODE>myfunc</CODE>の外にも
+あったとしても、関数の外にある <CODE>win</CODE>の値を関数の中で変更することはでき
+ない。これは、<CODE>myfunc</CODE>を実行している間は外にある<CODE>win</CODE>は隠されてい
+るので見ることも変更することもできないからである。
+
+</P>
+<P>
+<A NAME="IDX596"></A>
+しかし、関数の引数として配列を渡すときは、(配列は)<EM>コピーされない</EM>。配
+列の場合、関数内で直接操作できるように配列そのものが渡される。このような呼び
+出し形式は、通常<STRONG>参照呼び出し(call by reference)</STRONG>と呼ばれる。関数内部で(
+引数として渡された)配列を変更すると、それは関数の外にも <EM>影響する</EM>。
+<EM>これは、自分が何をしているか、ということがきちんと解っていなければ
+とても危ないといえるだろう。</EM>  たとえば、
+
+</P>
+
+<PRE>
+function changeit(array, ind, nvalue)
+{
+     array[ind] = nvalue
+}
+
+BEGIN {
+    a[1] = 1; a[2] = 2; a[3] = 3
+    changeit(a, 2, "two")
+    printf "a[1] = %s, a[2] = %s, a[3] = %s\n",
+            a[1], a[2], a[3]
+}
+</PRE>
+
+<P>
+このプログラムは
+<SAMP>`a[1] = 1, a[2] = two, a[3] = 3'</SAMP>を出力する。なぜなら <CODE>changeit</CODE> の
+呼び出しで、<CODE>a</CODE>の二番目の要素に <CODE>"two"</CODE> を格納しているからである。
+
+</P>
+<P>
+<A NAME="IDX597"></A>
+<A NAME="IDX598"></A>
+一部の<CODE>awk</CODE>処理系では定義されていない関数を呼び出すことが
+許されており、そしてその問題は
+実行時に未定義の関数が呼び出されたときにだけ
+報告されるという動作をしていた。
+例えば、
+
+</P>
+
+<PRE>
+BEGIN {
+    if (0)
+        foo()
+    else
+        bar()
+}
+function bar() { ... }
+# `foo' が定義されていないことに注意
+</PRE>
+
+<P>
+<SAMP>`if'</SAMP>文が決して真にならないため、<CODE>foo</CODE>が定義されていない
+という問題は表面にでない。通常は、
+プログラムが未定義関数を呼び出すときに問題となる。
+
+</P>
+
+<P>
+<SAMP>`--lint'</SAMP>(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)が
+指定されているとき、<CODE>gawk</CODE>は未定義関数の呼び出しを
+報告する。
+
+</P>
+<P>
+一部の<CODE>awk</CODE>処理系では、<CODE>next</CODE>文
+(セクション <A HREF="gawk_10.html#SEC105">The <CODE>next</CODE> Statement</A>を参照)
+をユーザー定義関数の中で使うと実行時エラーとなる。
+<CODE>gawk</CODE>にはこのような問題はない。
+
+</P>
+
+
+<H2><A NAME="SEC133" HREF="gawk_toc.html#SEC133">The <CODE>return</CODE> Statement</A></H2>
+<P>
+<A NAME="IDX599"></A>
+
+</P>
+<P>
+関数本体中に<CODE>return</CODE>文を記述することができる。この文は関数を呼び出した
+ところへの復帰を行う。
+このとき次のようにして
+その値を伴って（呼びだし元に）復帰することも可能である。
+
+</P>
+
+<PRE>
+return [<VAR>expression</VAR>]
+</PRE>
+
+<P>
+<VAR>expression</VAR>は省略可能である。省略された場合の戻り値は定義されておらず、し
+たがって何が返るか分からない。
+
+</P>
+<P>
+全ての関数定義の終わりには戻り値が書かれていない<CODE>return</CODE>文があるとみなさ
+れる。制御が関数の終わりに達したときに、その関数は予期できない値を返す。
+<CODE>awk</CODE>はそのような関数の戻り値を使ったとしても、警告はしないだろう。単に、
+予期できない結果となるだけだろう。
+
+</P>
+<P>
+値を返すことはしないが、何事かを行なうような関数を書きたいと
+思うこともあるだろう。そのような関数はCでいうところの<CODE>void</CODE>関数
+であり、Pascalでいうところの手続き(procedure)である。
+したがって、何の値も返さないのが妥当であるかもしれない。
+そのような関数の返す値を使うのならば、それにはリスクがあるという
+ことを認識しておくのが良いだろう。
+
+</P>
+
+<P>
+次の例は、与えられた配列の要素の中で最大の数値を
+返すユーザー定義関数である。
+
+</P>
+
+<PRE>
+function maxelt(vec,   i, ret)
+{
+     for (i in vec) {
+          if (ret == "" || vec[i] &#62; ret)
+               ret = vec[i]
+     }
+     return ret
+}
+</PRE>
+
+<P>
+<CODE>maxelt</CODE>の呼び出しは、配列の名前をただ一つの引数として行う。
+ローカル変数である <CODE>i</CODE>と<CODE>ret</CODE>は引数としては扱われない。
+<CODE>maxelt</CODE>に二つ、もしくは三つの引数を渡すことを止めることは
+できないが、それをやった場合の結果は奇妙なものとなるうだろう。関
+数引数リストの<CODE>i</CODE>の前にある余計なスペースは、<CODE>i</CODE>と
+@code[ret}が引数としては扱われないということを示すものである。こ
+れはあなたが自分のユーザー定義関数を定義するときにも従ったほうが
+良い約束ごとである。
+
+</P>
+<P>
+以下に挙げた例はこの<CODE>maxelt</CODE>関数を使ったもので、配列をロー
+ドして<CODE>maxelt</CODE>を呼び出す。その後で配列にあった中で最大の数
+値を報告する。
+
+</P>
+
+<PRE>
+awk '
+function maxelt(vec,   i, ret)
+{
+     for (i in vec) {
+          if (ret == "" || vec[i] &#62; ret)
+               ret = vec[i]
+     }
+     return ret
+}
+
+# 各レコードのすべてのフィールドをnumにロードする
+{
+     for(i = 1; i &#60;= NF; i++)
+          nums[NR, i] = $i
+}
+
+END {
+     print maxelt(nums)
+}'
+</PRE>
+
+<P>
+入力として以下のデータを与える。
+
+</P>
+
+<PRE>
+ 1 5 23 8 16
+44 3 5 2 8 26
+256 291 1396 2962 100
+-6 467 998 1101
+99385 11 0 225
+</PRE>
+
+<P>
+このプログラムは、配列にある最大値として<CODE>99385</CODE> 
+を報告する。
+
+</P>
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_13.html">前</A>, <A HREF="gawk_15.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

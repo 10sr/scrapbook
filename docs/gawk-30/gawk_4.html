@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - 便利な一行野郎</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_3.html">前</A>, <A HREF="gawk_5.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC24" HREF="gawk_toc.html#SEC24">便利な一行野郎</A></H1>
+
+<P>
+<A NAME="IDX92"></A>
+多くの有用な<CODE>awk</CODE>プログラムは短く、一行か二行のものである。ここに集
+めたのはそういった、便利で短いプログラムである。これらのプログラムのうち
+の幾つかは、まだ説明していない機能を使っている。プログラムの説明は何かを
+するための良いアイデアをあなたにもたらすだろうが、どうかこの
+マニュアルの残りを読んで欲しい。あなたが<CODE>awk</CODE>のエキスパートと
+なるために!
+
+</P>
+<P>
+例の大部分は<TT>`data'</TT>という名前のデータファイルを使用している。これは 
+単なるプレースホルダー(placeholder)である。これらのプログラムを使う     
+場合、<TT>`data'</TT>を好きな名前に置き換えることができる。
+
+</P>
+
+<DL COMPACT>
+
+<DT><CODE>awk '{ if (length($0) &#62; max) max = length($0) }</CODE>
+<DD>
+<DT><CODE>END { print max }' data</CODE>
+<DD>
+このプログラムは入力行の中でもっとも長いものの長さを出力する。
+
+<DT><CODE>awk 'length($0) &#62; 80' data</CODE>
+<DD>
+このプログラムは80キャラクタを越えるの長さの行をすべて出力する。
+このただ一つのルールはパターンとしての関係式を持ち、
+アクションを持たない(したがって、デフォルトアクションである
+レコードの出力が適用される)。
+
+<DT><CODE>expand data | awk '{ if (x &#60; length()) x = length() }</CODE>
+<DD>
+<DT><CODE>END { print "maximum line length is " x }'</CODE>
+<DD>
+このプログラムは<TT>`data'</TT>中にある行の中でもっとも長いものの長さを
+出力する。入力は、正しいカラム数で比較を行うために
+<CODE>expand</CODE>プログラムによってタブをスペースに展開される。
+
+<DT><CODE>awk 'NF &#62; 0' data</CODE>
+<DD>
+このプログラムは少なくとも一つのフィールドがある行をすべて
+出力する。これはあるファイルから空行を取り除く
+(もしくは古いファイルから空行を除いた新しいファイルを作成する)。
+簡単な方法である
+
+<DT><CODE>awk 'BEGIN { for (i = 1; i &#60;= 7; i++)</CODE>
+<DD>
+<DT><CODE>print int(101 * rand()) }'</CODE>
+<DD>
+このプログラムは0から100の間にある乱数を七つ出力する。
+
+<DT><CODE>ls -lg <VAR>files</VAR> | awk '{ x += $5 } ; END { print "total bytes: " x }'</CODE>
+<DD>
+このプログラムは<VAR>files</VAR>が使用しているバイト単位の大きさの
+合計を出力する。
+
+<DT><CODE>ls -lg <VAR>files</VAR> | awk '{ x += $5 }</CODE>
+<DD>
+<DT><CODE>END { print "total K-bytes: " (x + 1023)/1024 }'</CODE>
+<DD>
+このプログラムは<VAR>files</VAR>が使っている領域の合計をキロバイト単位で出力する。
+
+<DT><CODE>awk -F: '{ print $1 }' /etc/passwd | sort</CODE>
+<DD>
+このプログラムはすべてのユーザーのログイン名リストをソートして出力する。
+
+<DT><CODE>awk 'END { print NR }' data</CODE>
+<DD>
+このプログラムはあるファイルの行数を数える。
+
+<DT><CODE>awk 'NR % 2 == 0' data</CODE>
+<DD>
+このプログラムはデータファイルの偶数行を出力する。
+<SAMP>`NR % 2 == 1'</SAMP>という式を使うと、奇数行を出力するようになる。
+</DL>
+
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_3.html">前</A>, <A HREF="gawk_5.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

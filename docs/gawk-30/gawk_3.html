@@ -1,0 +1,929 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - Getting Started with awk</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_2.html">前</A>, <A HREF="gawk_4.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC10" HREF="gawk_toc.html#SEC10">Getting Started with <CODE>awk</CODE></A></H1>
+<P>
+<A NAME="IDX34"></A>
+<A NAME="IDX35"></A>
+<A NAME="IDX36"></A>
+<A NAME="IDX37"></A>
+
+</P>
+<P>
+<CODE>awk</CODE>の基本的な機能は、ファイルからあるパターンを含んでいる行(もし 
+くは他のテキストの構成単位)を検索することである。ある行がパターンの一つ 
+にマッチしたとき、<CODE>awk</CODE>は特定のアクションをその行に対して実行する。
+<CODE>awk</CODE>はこのようにして入力ファイルの最後の行までそれぞれの行を処理し
+続ける。
+
+</P>
+<P>
+<A NAME="IDX38"></A>
+<A NAME="IDX39"></A>
+<A NAME="IDX40"></A>
+<A NAME="IDX41"></A>
+<CODE>awk</CODE>のプログラムは他の大部分の言語とは異なっていて、<STRONG>data-driven</STRONG>
+である。これは処理したいと思うデータについて記述し、さらにそれを 
+見つけたときにどのようなことをするのかということについて記述する。という
+ことである。他のほとんどの言語は<STRONG>手続き型(procedural)</STRONG>である。それら
+においては、事細かに、プログラムの各ステップ毎にどのようにするかを記述し
+なければならない。手続き型言語を使用しているときは、あなたがプログラムで
+処理しようとしているデータがどのような構造をしているかを明確に記述するこ
+とは、一般的には簡単ではない。このため、<CODE>awk</CODE>プログラムはしばしば書
+くのも、読むのもやさしいということになるのである。
+
+</P>
+<P>
+<A NAME="IDX42"></A>
+<A NAME="IDX43"></A>
+<CODE>awk</CODE> を実行したときに<CODE>awk</CODE> がどのように動作するかを<CODE>awk</CODE>
+プログラムで指定できる。プログラムはルールの集まりからなる(関数定義も含ま
+れるが、高度な機能なので今のところは無視する。
+セクション <A HREF="gawk_14.html#SEC129">ユーザー定義関数</A>を参照.)。
+個々のルールはある特定のパターンを探し、見つかったパターンで定義されたア
+クションを実行する。
+
+</P>
+<P>
+文法的には、ルールはパターンとそれに続くアクションから構成される。アクショ
+ンはカーリーブレースによってアクションと区切られる。ルールは一般的には改行
+によって区切られる。その結果、 <CODE>awk</CODE>  プログラムは以下のような形式と
+なる。
+
+</P>
+
+<PRE>
+<VAR>pattern</VAR> { <VAR>action</VAR> }
+<VAR>pattern</VAR> { <VAR>action</VAR> }
+...
+</PRE>
+
+
+
+<H2><A NAME="SEC11" HREF="gawk_toc.html#SEC11">A Rose By Any Other Name</A></H2>
+
+<P>
+<A NAME="IDX44"></A>
+<A NAME="IDX45"></A>
+<CODE>awk</CODE>言語は何年にも渡って発展してきた。その詳しい説明は
+セクション <A HREF="gawk_18.html#SEC174"><CODE>awk</CODE>の発展</A>を参照
+で述べられている。このマニュアルで説明されている言語は
+ほとんどが"new <CODE>awk</CODE>"として知られているものである。
+
+</P>
+<P>
+このため、多くのシステムでは複数のバージョンの<CODE>awk</CODE>が存在する。一部
+のシステムはオリジナルバージョンの<CODE>awk</CODE>言語のインプリメントである
+<CODE>awk</CODE>ユーティリティと、新しいバージョンである<CODE>nawk</CODE>ユーティリテ
+ィを持っている。他の一部は"古い<CODE>awk</CODE>"である<CODE>oawk</CODE>を持ってい 
+る。残りのものは一つのみ、通常は新しいほうを<CODE>awk</CODE>として            
+持っている。<A NAME="FOOT3" HREF="gawk_foot.html#FOOT3">(3)</A>
+
+</P>
+<P>
+重要な事は、このことによって、あなたが書いたプログラムをどのバージョンの
+<CODE>awk</CODE>で実行すればよいかということを知ることが難しくなるということで
+ある。ここで私達ができる最善のアドバイスは、あなたのシステムのドキュメン
+トを確かめて欲しい。ということである。<CODE>gawk</CODE>に対してと同じくらい
+<CODE>awk</CODE>, <CODE>oawk</CODE>, <CODE>nawk</CODE>を見て欲しい。あなたが使っているシス 
+テムには新しいバージョンの<CODE>awk</CODE>があり、あなたのプログラムを実行する
+ときにはそれを使ったほうがよい局面があるかもしれない(もちろん、あなたが 
+このマニュアルを読めば、<CODE>gawk</CODE>を持つ機会があるわけだ!)
+
+</P>
+<P>
+このマニュアルを通じて、POSIXでの<CODE>awk</CODE>の実装が備えている
+言語の機能を示すときには、単純に<CODE>awk</CODE>という語を使う。GNUでの実装
+に特有な機能を示すときには<CODE>gawk</CODE>という語を使用する。
+
+</P>
+
+
+<H2><A NAME="SEC12" HREF="gawk_toc.html#SEC12"><CODE>awk</CODE>プログラムの実行の仕方</A></H2>
+
+<P>
+<A NAME="IDX46"></A>
+<A NAME="IDX47"></A>
+<CODE>awk</CODE>プログラムを実行するには幾つかの方法がある。
+プログラムが短いのならば、下の例のように<CODE>awk</CODE>を実行するコマンド
+に含めてしまうのがもっとも簡単である。
+
+</P>
+
+<PRE>
+awk '<VAR>プログラム</VAR>' <VAR>入力ファイル1</VAR> <VAR>入力ファイル2</VAR> ...
+</PRE>
+
+<P>
+<VAR>プログラム</VAR>は、先に説明したようにパターンとアクションの並びである
+(なぜ引用符が書かれているのかについては)
+セクション <A HREF="gawk_3.html#SEC13">使い捨ての一発<CODE>awk</CODE>プログラム</A>を参照.)。
+
+</P>
+<P>
+プログラムが長い場合、プログラムをファイルにしてしまい、次のようにして
+コマンドと一緒に実行するのが一般的には便利である。
+
+</P>
+
+<PRE>
+awk -f <VAR>プログラムファイル</VAR> <VAR>入力ファイル1</VAR> <VAR>入力ファイル2</VAR> ...
+</PRE>
+
+
+
+<H3><A NAME="SEC13" HREF="gawk_toc.html#SEC13">使い捨ての一発<CODE>awk</CODE>プログラム</A></H3>
+
+<P>
+一度<CODE>awk</CODE>に慣れ親しんでしまえば、単純なプログラムを
+必要とするときにタイプするようになるだろう。
+そのようなとき、そんなプログラムは<CODE>awk</CODE>コマンドの
+最初の引数として記述できる。このように。
+
+</P>
+
+<PRE>
+awk '<VAR>プログラム</VAR>' <VAR>入力ファイル1</VAR> <VAR>入力ファイル2</VAR> ...
+</PRE>
+
+<P>
+<VAR>プログラム</VAR>は先に説明したように、
+<VAR>パターン</VAR>と<VAR>アクション</VAR>の並びからなる。
+
+</P>
+<P>
+<A NAME="IDX48"></A>
+このコマンドは<STRONG>シェル</STRONG>やコマンドインタープリターに対して<CODE>awk</CODE>を
+起動させ、<VAR>プログラム</VAR>が入力ファイル中のレコードを処理するように指
+示するものである。<VAR>プログラム</VAR>の周りには引用符があり、これによってシ
+ェルは、シェルにとってのスペシャルキャラクタとなる<CODE>awk</CODE>のキャラクタ
+を誤って解釈することがなくなる。同時にこれは、シェルに対して<VAR>プログ 
+ラム</VAR>が<CODE>awk</CODE>に対する一つの引数にし、また<VAR>プログラム</VAR>が複数行に 
+渡ることも可能にする。
+
+</P>
+<P>
+この書式は<CODE>awk</CODE>プログラムを別のファイルに分ける必要がないので、短い
+ものから中程度の大きさの<CODE>awk</CODE>プログラムをシェルスクリプトから実行す
+るのに便利である。自己完結した(self-contained)シェルスクリプトは分割されているファイル
+を間違った場所に置くことがないので、より信頼性がある。
+
+</P>
+<P>
+幾つかの、短い自己完結したプログラムは
+セクション <A HREF="gawk_4.html#SEC24">便利な一行野郎</A>を参照.にある。
+
+</P>
+
+
+<PRE>
+awk '/foo/' <VAR>files</VAR> ...
+</PRE>
+
+<P>
+このようなコマンドは
+次のものと同じである。
+
+</P>
+<P>
+<A NAME="IDX49"></A>
+
+<PRE>
+egrep foo <VAR>files</VAR> ...
+</PRE>
+
+
+
+<H3><A NAME="SEC14" HREF="gawk_toc.html#SEC14">入力ファイルなしの<CODE>awk</CODE>の実行</A></H3>
+
+<P>
+<A NAME="IDX50"></A>
+<A NAME="IDX51"></A>
+<CODE>awk</CODE>を入力ファイルなしで実行することもできる。それには
+こうコマンドラインでタイプすればよい。
+
+</P>
+
+<PRE>
+awk '<VAR>program</VAR>'
+</PRE>
+
+<P>
+このとき、<CODE>awk</CODE>は<VAR>program</VAR>の入力を<STRONG>標準入力</STRONG>にする。
+標準入力は通常、あなたが端末からタイプしたものである。
+これはあなたが<KBD>Control-d</KBD>をタイプしてファイルの終端を
+指示するまで続く(他のオペレーティングシステムではファイルの終端を
+示すキャラクタは違ったものである。例えばOS/2やMS-DOSでは
+<KBD>Control-z</KBD>である)。
+
+</P>
+<P>
+以下の例にあるプログラムは親切なアドバイスを出力し
+(Douglas Adamsの <CITE>The Hitchhiker's Guide to the Galaxy</CITE>より)、
+コンピュータプログラミングの複雑さに対して恐れないようにする
+(<SAMP>`BEGIN'</SAMP>はまだ説明していない機能である)。
+
+</P>
+
+<PRE>
+$ awk "BEGIN { print \"Don't Panic!\" }"
+-| Don't Panic!
+</PRE>
+
+<P>
+<A NAME="IDX52"></A>
+<A NAME="IDX53"></A>
+このプログラムは何の入力も読まない。ダブルクォートの前にある
+<SAMP>`\'</SAMP>は、シェルのクォートルールのために、
+特にダブルクォートとシングルクォートを混ぜて使う場合に
+必要である。
+
+</P>
+<P>
+次なる単純な<CODE>awk</CODE>プログラムは<CODE>cat</CODE>ユーティリティを
+模倣するものである。これはキーボードからタイプしたものすべてを
+標準出力にコピーする(こんなに短いのにちゃんと働くのだ)。
+
+</P>
+
+<PRE>
+$ awk '{ print }'
+Now is the time for all good men
+-| Now is the time for all good men
+to come to the aid of their country.
+-| to come to the aid of their country.
+Four score and seven years ago, ...
+-| Four score and seven years ago, ...
+What, me worry?
+-| What, me worry?
+<KBD>Control-d</KBD>
+</PRE>
+
+
+
+<H3><A NAME="SEC15" HREF="gawk_toc.html#SEC15">長いプログラムを実行する</A></H3>
+
+<P>
+<A NAME="IDX54"></A>
+<A NAME="IDX55"></A>
+<A NAME="IDX56"></A>
+<A NAME="IDX57"></A>
+ときとして<CODE>awk</CODE>プログラムが非常に大きくなることがある。
+この場合、プログラムを別のファイルに分けて置くのが便利である
+<CODE>awk</CODE>に対してプログラムの入ったファイルを指定するには
+次のようにタイプする。
+
+</P>
+
+<PRE>
+awk -f <VAR>ソースファイル</VAR> <VAR>入力ファイル1</VAR> <VAR>入力ファイル2</VAR> ...
+</PRE>
+
+<P>
+<SAMP>`-f'</SAMP>は<CODE>awk</CODE>ユーティリティに対して<CODE>awk</CODE>プログラムを
+<VAR>ソースファイル</VAR>というファイルから受け取るということを指定する。任意
+の名前を<VAR>ソースファイル</VAR>に使うことができる。たとえば、次のようなプロ
+グラムを
+
+</P>
+
+<PRE>
+BEGIN { print "Don't Panic!" }
+</PRE>
+
+<P>
+<TT>`advice'</TT>という名前のファイルに置くことができ、
+次のようなコマンドで使う。
+
+</P>
+
+<PRE>
+awk -f advice
+</PRE>
+
+<P>
+これは次の例とおなじことである。
+
+</P>
+
+<PRE>
+awk "BEGIN { print \"Don't Panic!\" }"
+</PRE>
+
+<P>
+<A NAME="IDX58"></A>
+<A NAME="IDX59"></A>
+こちらは既に説明した
+(セクション <A HREF="gawk_3.html#SEC14">入力ファイルなしの<CODE>awk</CODE>の実行</A>を参照)。
+大部分のファイル名はシェルのスペシャルキャラクタを含んでいないので、通
+常は<SAMP>`-f'</SAMP>で指定するファイル名を引用符で括る必要はない。<TT>`advice'</TT>
+中では、<CODE>awk</CODE>プログラムは引用符で括られていない。引用符をつける必
+要があるのは<CODE>awk</CODE>のコマンドライン上でプログラムを与える場合だけで
+ある。
+
+</P>
+<P>
+もし<CODE>awk</CODE>プログラムのファイルの確認を明確にしたいのなら、ファイル
+名に<TT>`.awk'</TT>という拡張子を追加することができる。これは<CODE>awk</CODE>プ
+ログラムの実行には影響を及ぼさないが、"housekeeping"を容易にする。
+
+</P>
+
+
+<H3><A NAME="SEC16" HREF="gawk_toc.html#SEC16">実行可能な<CODE>awk</CODE>プログラム</A></H3>
+<P>
+<A NAME="IDX60"></A>
+ @cindex scripts, executable
+<A NAME="IDX61"></A>
+<A NAME="IDX62"></A>
+<A NAME="IDX63"></A>
+<A NAME="IDX64"></A>
+一度<CODE>awk</CODE>を学んでしまえば、シェルの<SAMP>`#!'</SAMP> 構文を使って、独立した
+<CODE>awk</CODE> スクリプトを書いてみたくなるだろう。多くのUnixシステム
+<A NAME="FOOT4" HREF="gawk_foot.html#FOOT4">(4)</A>
+でこれが可能である(そしていつかはGNUシステムでも)。
+
+</P>
+<P>
+例を挙げると、<TT>`advice'</TT>というファイルを次のようにすることができる。
+
+</P>
+
+<PRE>
+#! /bin/awk -f
+
+BEGIN    { print "Don't Panic!" }
+</PRE>
+
+<P>
+このファイルを(<CODE>chmod</CODE>ユーティリティを使って)実行可能にした後で、
+シェルから単純に<SAMP>`advice'</SAMP>とタイプするだけで、<SAMP>`awk -f advice'</SAMP>と
+タイプしたのと同じようにシステムが<CODE>awk</CODE>を実行するようアレンジする
+<A NAME="FOOT5" HREF="gawk_foot.html#FOOT5">(5)</A>。
+
+</P>
+
+<PRE>
+$ advice
+-| Don't Panic!
+</PRE>
+
+<P>
+自己完結した<CODE>awk</CODE>スクリプトは、
+それを使う人がそのプログラムを<CODE>awk</CODE>で書かれたものであることを
+知ることなしに起動できるプログラムを書きたいと思うときに便利である。
+
+</P>
+<P>
+<STRONG>警告:</STRONG><SAMP>`#!'</SAMP>の行で<CODE>awk</CODE>のパスの後に
+二つ以上の引数を置くべきではない。これをしてしまうと
+正しく動作しないだろう。オペレーティングシステムは行の残りの部分
+を一つの引数として取り扱い、それを<CODE>awk</CODE>に渡す。
+これによって混乱した動作がもたらされる。ありがちなのは、
+<CODE>awk</CODE>のusageメッセージの類が出力されることだろう。
+
+</P>
+
+<P>
+<A NAME="IDX65"></A>
+<A NAME="IDX66"></A>
+一部の古いシステムでは<SAMP>`#!'</SAMP>機構をサポートしていない。
+同じ効果を、通常のシェルスクリプトを使って得ることができる。
+それにはこのようにすればよい。
+
+</P>
+
+<PRE>
+: The colon ensures execution by the standard shell.
+awk '<VAR>program</VAR>' "$@"
+</PRE>
+
+<P>
+このテクニックを使うとき、シングルクォートで<VAR>プログラム</VAR>を囲むこと
+はシェルが解釈するのを防ぐために<STRONG>重要</STRONG>である。もしクォートを取って
+しまったら、シェルの達人だけしか結果を見通せないだろう。
+
+</P>
+<P>
+<CODE>"$@"</CODE>はシェルに対して、(シェルスクリプトに渡された)コマンドライ
+ン引数をシェルが解釈することなしに<CODE>awk</CODE>プログラムに渡すようにさせ
+る。コロンで始まっている最初の行は、このシェルスクリプトがCシェルを使っ
+ているユーザーが起動した場合でもきちんと動くようにするためのものである
+(古いシステムすべてでこの手段が有効であるとは限らないが、多くのシステム
+で使用できる)。
+
+</P>
+
+
+<H3><A NAME="SEC17" HREF="gawk_toc.html#SEC17"><CODE>awk</CODE>プログラム中のコメント</A></H3>
+<P>
+<A NAME="IDX67"></A>
+<A NAME="IDX68"></A>
+<A NAME="IDX69"></A>
+<A NAME="IDX70"></A>
+
+</P>
+<P>
+<STRONG>コメント</STRONG>とはプログラム中で、人が（プログラムを）読みやすくするために含
+められるテキストであり、プログラムにとって必要不可欠というものではない。コメ
+ントはプログラムが書けるところならどこでも置けるが、何の働きもしない。身近な
+全てのプログラミング言語はその様な目的のためにコメントを使える様になっている
+が、それは典型的なプログラムというものは何らかの助けなしには理解するのが非常
+に難しいからである。
+
+</P>
+<P>
+<CODE>awk</CODE>言語のコメントは<SAMP>`#'</SAMP>で始まり、その行の終わりまで続く。
+<CODE>awk</CODE>言語は<SAMP>`#'</SAMP>に続く部分を無視する。
+例えば、<TT>`advice'</TT>に次のように追加を行うことができる。
+
+</P>
+
+<PRE>
+# This program prints a nice friendly message.  It helps
+# keep novice users from being afraid of the computer.
+BEGIN    { print "Don't Panic!" }
+</PRE>
+
+<P>
+<CODE>awk</CODE>プログラムをキーボードから直接入力しているような場合でもコメント行
+を入力することは可能であるけれども、これはあまり有効なことではないだろう。な
+ぜならコメントを使う目的が、後日あなたか、あるいは他の人がそのプログラムを
+読んだときに理解するのを助けるためだからだ。
+
+</P>
+<P>
+  
+<STRONG>警告:</STRONG>セクション <A HREF="gawk_3.html#SEC13">使い捨ての一発<CODE>awk</CODE>プログラム</A>を参照
+で言及したように、小規模のプログラムをシングルクォートでくくることが
+可能であり、それによってあなたのシェルスクリプトをself-containdな
+ものにできる。これを行ったとき、アポストロフィ(シングルクォート)を
+コメント中(もしくはプログラムのどこかで)で使っては<EM>いけない</EM>。
+シェルはそのようなクォートをプログラム全体をくくるクォートとして
+扱ってしまう。結果として、通常はシェルがクォートのバランスが
+取れていないといったメッセージを出力する。そして、<CODE>awk</CODE>
+が実際に実行されたならば、構文エラーのような妙なメッセージを
+出力するだろう。例を挙げる:
+
+</P>
+
+<PRE>
+awk 'BEGIN { print "hello" } # let's be cute'
+</PRE>
+
+
+
+<H2><A NAME="SEC18" HREF="gawk_toc.html#SEC18">非常に単純な例</A></H2>
+
+<P>
+次のプログラムは<TT>`BBS-list'</TT>という入力ファイルから<SAMP>`foo'</SAMP>という
+キャラクタの並びを探し出す
+(キャラクタの並び(string of characters)は、通常<STRONG>文字列</STRONG>(string)と
+呼ばれる。<STRONG>string</STRONG>という語はおそらく
+"a string of pearls," とか "a string of cars in a train"のような
+英語一般に使われる用法に基づくものである)。
+
+</P>
+
+<PRE>
+awk '/foo/ { print $0 }' BBS-list
+</PRE>
+
+<P>
+<SAMP>`foo'</SAMP>を含む行が見つかると、その行が出力される。これは、
+<SAMP>`print $0'</SAMP>がカレント行の出力を意味するからである(代わりに
+<SAMP>`print'</SAMP>と書いても同じ結果が得られる)。
+
+</P>
+<P>
+<SAMP>`foo'</SAMP>を囲むスラッシュ<SAMP>`/'</SAMP>は検索するパターンを表している。こうい
+ったパターンは<STRONG>正規表現</STRONG>と呼ばれる。正規表現については後の方で詳しく
+述べられる(セクション <A HREF="gawk_5.html#SEC25">正規表現</A>を参照)。
+<CODE>awk</CODE>プログラムを引用符で囲んでいるのは、シェルのスペシャル
+キャラクタがあっても、それをシェルに解釈させないようにするためで
+ある。
+
+</P>
+<P>
+プログラムの出力は次のようになる
+
+</P>
+
+<PRE>
+$ awk '/foo/ { print $0 }' BBS-list
+-| fooey        555-1234     2400/1200/300     B
+-| foot         555-6699     1200/300          B
+-| macfoo       555-6480     1200/300          A
+-| sabafoo      555-2127     1200/300          C
+</PRE>
+
+<P>
+<A NAME="IDX71"></A>
+<A NAME="IDX72"></A>
+<A NAME="IDX73"></A>
+<A NAME="IDX74"></A>
+<CODE>awk</CODE>のルールでは、パターンかアクションのどちらかを省略することができ
+るが、両方とも省略することはできない。パターンが省略されると、(そのパター
+ンに対応する)アクションはすべての入力行に対して実行される。アクションが省
+略されていると、デフォルトのアクションとして(パターンにマッチした)その行
+を出力する。
+
+</P>
+<P>
+<A NAME="IDX75"></A>
+<A NAME="IDX76"></A>
+したがって、先の例ではアクション(<CODE>print</CODE>文とそれを囲むカーリーブレー
+ス)を省略でき、同じ結果、つまり<SAMP>`foo'</SAMP>とマッチする行を出力する。を得る
+事ができる。しかし、カーリーブレースは省略せずに<CODE>print</CODE> を省略した場合
+には何も行わず、行も出力されない。
+
+</P>
+
+
+<H2><A NAME="SEC19" HREF="gawk_toc.html#SEC19">二つのルールを持つ例</A></H2>
+<P>
+<A NAME="IDX77"></A>
+
+</P>
+<P>
+<CODE>awk</CODE>ユーティリティは、一度のファイル入力で一行だけ入力する。
+入力された個々の行に対し
+て、<CODE>awk</CODE>プログラムで記述されている各ルールのパターンとの照合
+を行う。
+パターンとマッチすればアクションが実行され、マッチするパターンが
+なければ何も実行されない。
+
+</P>
+<P>
+た後で<CODE>awk</CODE>は次の入力行の読み込みを行う(しかし例外はある。
+セクション <A HREF="gawk_10.html#SEC105">The <CODE>next</CODE> Statement</A>を参照と
+セクション <A HREF="gawk_10.html#SEC106">The <CODE>nextfile</CODE> Statement</A>を参照)。
+この動作はファイルの終端に達するまで繰り返される。
+
+</P>
+<P>
+例えばこの<CODE>awk</CODE>プログラムは
+
+</P>
+
+<PRE>
+/12/  { print $0 }
+/21/  { print $0 }
+</PRE>
+
+<P>
+二つのルールがある。最初のルールはパターンとして
+文字列<SAMP>`12'</SAMP>を、アクションとして <SAMP>`print $0'</SAMP>を持つ。二番目のルールは、
+パターンとして文字列 <SAMP>`21'</SAMP>を、アクションとして一番目のルールと同じ 
+<SAMP>`print $0'</SAMP>を持つ。各ルールはペアとなっているブレースによって囲まれてい
+る。
+
+</P>
+<P>
+この <CODE>awk</CODE> プログラムは、文字列12か文字列21を含むすべての行を出力する。
+もし、行の中に両方ともあれば、その行はそれぞれのルール毎に出力が
+行われるので結果として二回出力されることになる。
+
+</P>
+<P>
+このプログラムを<TT>`BBS-list'</TT> と <TT>`inventory-shipped'</TT>の
+二つのサンプルデータファイルに対して実行した場合の結果はこうなる
+
+</P>
+
+<PRE>
+$ awk '/12/ { print $0 }
+&#62;      /21/ { print $0 }' BBS-list inventory-shipped
+-| aardvark     555-5553     1200/300          B
+-| alpo-net     555-3412     2400/1200/300     A
+-| barfly       555-7685     1200/300          A
+-| bites        555-1675     2400/1200/300     A
+-| core         555-2912     1200/300          C
+-| fooey        555-1234     2400/1200/300     B
+-| foot         555-6699     1200/300          B
+-| macfoo       555-6480     1200/300          A
+-| sdace        555-3430     2400/1200/300     A
+-| sabafoo      555-2127     1200/300          C
+-| sabafoo      555-2127     1200/300          C
+-| Jan  21  36  64 620
+-| Apr  21  70  74 514
+</PRE>
+
+<P>
+<TT>`BBS-list'</TT> 中の<SAMP>`sabafoo'</SAMP>で始まる行が二回出力されているのは
+各ルールで一回ずつ出力されたからであることに注意。
+
+</P>
+
+
+<H2><A NAME="SEC20" HREF="gawk_toc.html#SEC20">より複雑な例</A></H2>
+
+<P>
+以下の例は、あなたに<CODE>awk</CODE>プログラムの行うことの典型的な
+アイデアを与えるためのものである。この例は<CODE>awk</CODE>に対して、
+他のユーティリティの出力を要約し、選択し、アレンジするための
+方法を示している。まだ説明がされていない機能が使われているが、
+(スクリプトの)全てが理解できなくても心配することはない。
+
+</P>
+
+<PRE>
+ls -lg | awk '$6 == "Nov" { sum += $5 }
+             END { print sum }'
+</PRE>
+
+<P>
+<A NAME="IDX78"></A>
+このコマンドはカレントディレクトリにある11月（年は何年でもよい）に最後の修
+正がなされたファイルの大きさの合計バイト数を出力する。 (あなたがCシェルを使っ
+ていた場合、このサンプルを実行するには最初の行の最後にセミコロンとバックス
+ラッシュを付け加える必要がある。 POSIX に従ったシェル、例えばBシェル
+であるとか、Bash(GNU Bourne-Again shell)を使っている場合にはサンプルを
+そのまま打ってみてかまわない)
+
+</P>
+<P>
+例の<SAMP>`ls -lg'</SAMP> の部分は、あるディレクトリ中のファイルをそのサイズと
+最終修正日付とともにリストアウトするためのコマンドであり、その出力は
+以下のような形である。
+
+</P>
+
+<PRE>
+-rw-r--r--  1 arnold   user   1933 Nov  7 13:05 Makefile
+-rw-r--r--  1 arnold   user  10809 Nov  7 13:03 gawk.h
+-rw-r--r--  1 arnold   user    983 Apr 13 12:14 gawk.tab.h
+-rw-r--r--  1 arnold   user  31869 Jun 15 12:20 gawk.y
+-rw-r--r--  1 arnold   user  22414 Nov  7 13:03 gawk1.c
+-rw-r--r--  1 arnold   user  37455 Nov  7 13:03 gawk2.c
+-rw-r--r--  1 arnold   user  27511 Dec  9 13:07 gawk3.c
+-rw-r--r--  1 arnold   user   7989 Nov  7 13:03 gawk4.c
+</PRE>
+
+<P>
+最初のフィールドは読み書きの許可フラグ、二番目のフィールドはそのファイルへ
+リンクしているリンクの数、三番目のフィールドはそのファイルのオーナーのID、
+四番目がファイルのグループ、
+五番目がそのファイルの大きさをバイトで表したもの、6,7,8番目のフィールドは
+最後にそのファイルが修正された月、日、時間である。
+最後の9番目のフィールドはファイルの名前である。
+
+</P>
+<P>
+<A NAME="IDX79"></A>
+<A NAME="IDX80"></A>
+この<CODE>awk</CODE>プログラムの<CODE>$6 == "Nov"</CODE>という式は、 <SAMP>`ls -l'</SAMP>の
+出力の六番目のフィールドが<SAMP>`Nov'</SAMP>という文字列とマッチするかどうかをテス
+トしている。 <SAMP>`Nov'</SAMP>という文字列を六番目のフィールドに持つ行が読み込まれ
+るたびに <SAMP>`{ sum += $4 }'</SAMP>というアクションが実行される。このアクション
+では、五番目のフィールド（ファイルサイズ）を<CODE>sum</CODE> という変数に足し込ん
+でいる。結果として、<CODE>sum</CODE>はパターンにマッチした行のファイルの大きさの
+合計を表す(<CODE>awk</CODE>の変数は、自動的に 0で初期化されている)。
+
+</P>
+<P>
+<CODE>ls</CODE> の出力から渡される最後の行が処理された後で、<CODE>END</CODE>ルールが実
+行され、 <CODE>sum</CODE>の値が出力される。この例では、 <CODE>sum</CODE>の値は80600にな
+るだろう。
+
+</P>
+<P>
+こういった類の高度な<CODE>awk</CODE>の使い方は、後の方のセクションで述べられて
+いる(セクション <A HREF="gawk_9.html#SEC97">Overview of Actions</A>を参照)けれども、その様な使 
+い方を覚える前にどのように入力が解釈され、どのように出力が表示されるかを
+知ったほうがよいだろう。フィールドを操作し、<CODE>print</CODE>文を使うことによ
+って、有用なそして華やかな見栄えのするレポートを作成することができる。
+
+</P>
+
+
+<H2><A NAME="SEC21" HREF="gawk_toc.html#SEC21"><CODE>awk</CODE> の文と行</A></H2>
+<P>
+<A NAME="IDX81"></A>
+<A NAME="IDX82"></A>
+
+</P>
+<P>
+ほとんどの場合、<CODE>awk</CODE> programの各行は次の例にみられるように独立した文、
+あるいは独立したルールである。
+
+</P>
+
+<PRE>
+awk '/12/  { print $0 }
+     /21/  { print $0 }' BBS-list inventory-shipped
+</PRE>
+
+<P>
+しかし、<CODE>gawk</CODE>は以下に挙げるものに続く改行は無視する。
+
+</P>
+
+<PRE>
+,    {    ?    :    ||    &#38;&#38;    do    else
+</PRE>
+
+<P>
+その他の場所にある改行は文の終端として認識される。 (<SAMP>`?'</SAMP>と<SAMP>`:'</SAMP> の後
+の行の分割は<CODE>gawk</CODE>特有の拡張である <SAMP>`?'</SAMP> と <SAMP>`:'</SAMP>三つのオペランド
+を取る条件式であり、詳しい説明は 
+セクション <A HREF="gawk_8.html#SEC84">Conditional Expressions</A>を参照.)
+
+</P>
+<P>
+<A NAME="IDX83"></A>
+<A NAME="IDX84"></A>
+一つの文を二つの行に改行で分けたいときに、行末にバックスラッシュ<SAMP>`\'</SAMP>を置
+くことによって行を継続することができる。このバックスラッシュによる行の継続は
+どこにでも置く事ができる。たとえ、文字列や正規表現の途中であっても可能である。
+例えば
+
+</P>
+
+<PRE>
+awk '/This regular expression is too long, so continue it\
+ on the next line/ { print $1 }'
+</PRE>
+
+<P>
+<A NAME="IDX85"></A>
+このマニュアルにあるサンプルプログラムでは、通常バックスラッシュに
+よる継続を使用しない。なぜなら、<CODE>gawk</CODE>には一行の長さに制限がなく、 
+継続の必要が全くないからである。また、継続を使わないことによってプログラ
+ムがより読みやすくなるということもある。同じ理由によって、サンプルプログ
+ラムではほとんどの文を短く保っている。バックスラッシュによる継続は、あな
+たの<CODE>awk</CODE>プログラムがコマンドライン上でタイプされるものの代わりに分
+割されたソースファイルであるときに非常に便利である。ここで、バックスラッ
+シュによる行継続は各<CODE>awk</CODE>処理系の実装に依存するものであることに注意
+するべきである。たとえば、文字列定数を行継続を使って分割することを許して
+いない処理系がある。したがって、あなたの作成する<CODE>awk</CODE>プログラムの移
+植性を最大限に保つためには、正規表現や文字列の途中での行の分割を行わない
+ことが最良の手段である。
+
+</P>
+<P>
+<A NAME="IDX86"></A>
+<STRONG>警告:バックスラッシュによる行の継続はCシェルではこのマニュアルに
+書かれている通りには動作しない。</STRONG> バックスラッシュによる行継続はファイル
+に記述された<CODE>awk</CODE>プログラムや Bourne シェル、Bash(GNU Bourne-Again 
+shell)等のPOSIX に従ったシェルでのone-shot programsでは働くが、         
+Cシェル(<CODE>csh</CODE>)ではそうではない! Cシェルの場合はバックスラッシュを改
+行の前に二つ続けて書かなければならない。同様に、Cシェルを使っているとき 
+にはawkプログラムの<STRONG>すべての行</STRONG>の改行をバックスラッシュでエスケープ
+しなければならないことに気をつけること。例を挙げよう。
+
+</P>
+
+<PRE>
+% awk 'BEGIN { \
+?   print \\
+?       "hello, world" \
+? }'
+-| hello, world
+</PRE>
+
+<P>
+ここで、<SAMP>`%'</SAMP> や <SAMP>`?'</SAMP>はそれぞれCシェルの一次プロンプトと
+二次プロンプトである(標準シェルでは <SAMP>`$'</SAMP>と<SAMP>`&#62;'</SAMP>)。
+
+</P>
+<P>
+<CODE>awk</CODE>は行指向の言語である。各々のルールのアクションはパターンとして
+同じ行に置かねばならない。パターンとアクションを分割した行に置くには、バ
+ックスラッシュによる行継続を使わなければならない。
+
+</P>
+<P>
+<A NAME="IDX87"></A>
+<A NAME="IDX88"></A>
+バックスラッシュによる継続とコメントとを混ぜないように気をつけよう。
+<CODE>awk</CODE>は<SAMP>`#'</SAMP>を見つけるやいなや、
+コメントが始るとみなし、そこから、行の後の
+ほうは<EM>すべて</EM>無視する。例を挙げる。
+
+</P>
+
+
+<PRE>
+$ gawk 'BEGIN { print "dont panic" # a friendly \
+&#62;                                    BEGIN rule
+&#62; }'
+error--> gawk: cmd. line:2:                BEGIN rule
+error--> gawk: cmd. line:2:                ^ parse error
+</PRE>
+
+<P>
+<SAMP>`BEGIN'</SAMP> is noted as a syntax error.
+ここで、バックスラッシュはコメントを次の行に継続しているようにみえる。
+どんなやり方でも、バックスラッシュと改行の組み合わせは決して(awkには)
+気づかれない。なぜなら、それ(バックスラッシュ）が、コメントの
+内部に“隠れた”からである。したがって、<SAMP>`BEGIN'</SAMP>は文法エラーとして指摘
+される。
+
+</P>
+<P>
+<A NAME="IDX89"></A>
+<CODE>awk</CODE>の文があるルールが短いときには、それを一行にいくつもまとめて書
+きたいと考えるだろう。そのためにはセミコロン<SAMP>`;'</SAMP>を使って文を区切る。
+
+</P>
+<P>
+これはルールそれ自身にも適用できる。したがって、
+先の例はこのように書くこともできる。
+
+</P>
+
+<PRE>
+/12/ { print $0 } ; /21/ { print $0 }
+</PRE>
+
+<P>
+<STRONG>注意:</STRONG> オリジナルの<CODE>awk</CODE>言語では、同じ行にあるルールを
+セミコロンで区切らなくても良かった。これ(セミコロンでルールを区切ること)は
+アクション中にあるステートメントの扱いとの一貫性をとるために
+付け加えられたものである。
+
+</P>
+
+
+<H2><A NAME="SEC22" HREF="gawk_toc.html#SEC22"><CODE>awk</CODE>のその他の機能。</A></H2>
+
+<P>
+<CODE>awk</CODE>は、作成したプログラムが<CODE>awk</CODE>から情報を得るための
+組込みであらかじめ定義されている幾つかの変数を提供している。
+その他にも、プログラム中で<CODE>awk</CODE>がどのようにデータを処理するかを
+制御するための変数がある。
+
+</P>
+<P>
+さらに、<CODE>awk</CODE>は一般的な計算や文字列操作をおこなうための組込み関数を
+提供している。
+
+</P>
+
+<P>
+ここまで<CODE>awk</CODE>について説明してきたように、
+我々は変数の大部分と多くの関数を紹介する。これらはセクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照
+とセクション <A HREF="gawk_13.html#SEC123">組み込み関数</A>を参照で定義されている。
+
+</P>
+
+
+<H2><A NAME="SEC23" HREF="gawk_toc.html#SEC23"><CODE>awk</CODE>を使うとき</A></H2>
+
+<P>
+<A NAME="IDX90"></A>
+<A NAME="IDX91"></A>
+(セクション <A HREF="gawk_3.html#SEC20">より複雑な例</A>を参照.)
+あなたは、<CODE>awk</CODE>があなたにとって役に立つのかどうかを疑問に
+思うかもしれない。ユーティリティプログラムやパターン、
+フィールドの分割、算術文、などの選択基準を使って、
+より複雑な出力を作成することができる。
+<CODE>awk</CODE>言語は<CODE>ls</CODE>のようなほかのユーティリティの出力からの情報を
+要約するような、大きな生データからレポートを生成するような作業に便利である。
+(セクション <A HREF="gawk_3.html#SEC20">より複雑な例</A>を参照.)
+
+</P>
+<P>
+<CODE>awk</CODE>で書かれたプログラムは、通常は他の言語で書いたものよりも小さく
+なる。これは<CODE>awk</CODE>プログラムの作成と使用を簡単にする。しばしば、
+<CODE>awk</CODE>プログラムはターミナルで即座に作成し、一度だけ使って捨ててしま 
+うということもできる。<CODE>awk</CODE>プログラムはインタープリットされるために、
+エディット-コンパイル-デバッグというソフトウェア開発の典型的なサイクル
+を避けることができるのである。
+
+</P>
+<P>
+完全にretargetableな8ビットマイクロプロセッサ用のアセンブラ(詳しくは
+セクション <A HREF="gawk_22.html#SEC229">用語集</A>を参照)や、特殊目的用Prologコンピュータ用のマイクロコ
+ードアセン
+ブラのような複雑なプログラムが<CODE>awk</CODE>を使って記述されたことがある。し
+かしながら、<CODE>awk</CODE>の能力ではこのような複雑な仕事を行うには荷が重い。
+
+</P>
+<P>
+2、300行以上の<CODE>awk</CODE>スクリプトを書くようになったとき、違ったプログラミ
+ング言語の使用を考えていることに気がつくだろう。 Emacs Lisp は、文字列やパ
+ターンマッチングを扱う高度な能力を必要とするときにはよい選択といえる。シェ
+ルもまた文字列やパターンマッチングを扱う能力があり、それに加えて強力で便利
+なシステムユーティリティを使う事ができる。より伝統的な言語、CやC++、Lispと
+いったものは、システムプログラミングや大きなプログラムの複雑さを管理するの
+に便利であるだろう。これらの言語で記述したプログラムは、同じ作業をする
+<CODE>awk</CODE> プログラムよりも多くの行数を必要とするかも知れないが、より有効に
+実行したり、簡単にメンテナンスできる。
+
+</P>
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_2.html">前</A>, <A HREF="gawk_4.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

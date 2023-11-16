@@ -1,0 +1,110 @@
+/* ::::: http://www.blogger.com/static/v1/widgets/1832531788-widget_css_bundle.css ::::: */
+
+#ArchiveList .toggle { cursor: pointer; font-family: Arial,sans-serif; }
+#ArchiveList .toggle-open { line-height: 0.6em; }
+#ArchiveList { text-align: left; }
+#ArchiveList a.post-count-link, #ArchiveList a.post-count-link:link, #ArchiveList a.post-count-link:visited { text-decoration: none; }
+#ArchiveList a.toggle, #ArchiveList a.toggle:link, #ArchiveList a.toggle:visited, #ArchiveList a.toggle:hover { color: inherit; text-decoration: none; }
+.BlogArchive #ArchiveList ul li { background: none repeat scroll 0% 0% transparent; list-style: none outside none; border-width: 0px; padding-left: 15px; text-indent: -15px; margin: 0.25em 0px; }
+.BlogArchive #ArchiveList ul ul li { padding-left: 1.2em; }
+.BlogArchive #ArchiveList ul { margin: 0px; padding: 0px; list-style: none outside none; border-width: 0px; }
+.BlogArchive #ArchiveList ul.posts li { padding-left: 1.3em; }
+#ArchiveList .collapsed ul { display: none; }
+.post-footer abbr { border: medium none; }
+#blog-pager-newer-link { float: left; }
+#blog-pager-older-link { float: right; }
+#blog-pager { margin: 1em 0px; text-align: center; overflow: hidden; }
+.comment-form { max-width: 425px; clear: both; }
+#comments-block.avatar-comment-indent { margin-left: 45px; position: relative; }
+.comments { clear: both; margin-top: 10px; margin-bottom: 0px; }
+@media screen and (max-device-width: 480px) {
+  .comments .comments-content .comment-replies { margin-left: 0px; }
+}
+.item-control { display: none; }
+.item-control a, .item-action a { text-decoration: none ! important; }
+.widget-item-control { float: right; height: 20px; margin-top: -20px; position: relative; z-index: 10; }
+.widget-item-control a { opacity: 0.5; }
+.widget-item-control a:hover { opacity: 1; }
+.widget .widget-item-control a img { border: medium none; background: none repeat scroll 0% 0% transparent; box-shadow: none; }
+.icon-action { border-style: none ! important; margin: 0px 0px 0px 0.5em ! important; vertical-align: middle; }
+@media all {
+  .BLOG_mobile_video_class { display: none; }
+}
+@media handheld {
+  .BLOG_mobile_video_class { display: inline; }
+  .BLOG_video_class { display: none; }
+}
+.post-share-buttons { display: inline-block; margin-top: 0.5em; vertical-align: middle; }
+.goog-inline-block { position: relative; display: inline-block; }
+:first-child + html .goog-inline-block { display: inline; }
+:first-child + html .goog-custom-button-inner-box { left: -1px; }
+:first-child + html .goog-custom-button-rtl .goog-custom-button-inner-box { left: 1px; }
+.clear { clear: both; }
+.quickedit { cursor: pointer; }
+.Navbar iframe { display: block; }
+#navbar-iframe { display: block; height: 30px; }
+.profile-img { float: left; margin: 0px 5px 5px; }
+.profile-data { margin: 0px; }
+.profile-datablock { margin: 0.5em 0px; }
+.profile-name-link { background: none no-repeat scroll left top transparent; display: inline-block; min-height: 20px; padding-left: 20px; }
+.profile-textblock { margin: 0.5em 0px; }
+/* ::::: http://www.blogger.com/dyn-css/authorization.css?targetBlogID=2310485404319956884&zx=2ccf0708-cd81-4c43-9ebf-5232bd9ea868 ::::: */
+
+body { margin: 0px; font: 100% Arial,sans-serif; background: none repeat scroll 0% 0% rgb(255, 255, 255); color: rgb(0, 0, 0); }
+a:link { color: rgb(85, 136, 170); text-decoration: none; }
+a:visited { color: rgb(153, 153, 153); text-decoration: none; }
+a:hover { color: rgb(0, 0, 0); text-decoration: underline; }
+a img { border-width: 0px; }
+pre.waku_a { box-shadow: 1px 1px 3px rgb(0, 0, 0); border: 1px solid gray; padding: 3px; }
+#outer-wrapper { margin: 0px 3em; }
+h1 { border-bottom: 1px dotted rgb(153, 153, 153); margin-bottom: 0px; color: rgb(0, 0, 0); font: bold 200% Georgia,Serif; }
+h1 a, h1 a:link, h1 a:visited { color: rgb(0, 0, 0); }
+h2 { margin: 0px; padding: 0px; }
+#main .widget { padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px dotted rgb(153, 153, 153); clear: both; }
+#main .Header { border-bottom-width: 0px; }
+h2.date-header { padding-top: 15px; color: rgb(85, 85, 85); padding-bottom: 0px; margin-bottom: 0px; font-size: 90%; }
+h3.post-title { font-size: 140%; color: rgb(0, 0, 0); }
+.post { padding-left: 5%; padding-right: 10%; }
+.post-footer { color: rgb(85, 85, 85); }
+#comments { padding-top: 30px; color: rgb(0, 0, 0); padding-bottom: 0px; margin-bottom: 0px; font-weight: bold; }
+#comments .comment-footer { font-size: 1em; font-weight: normal; color: rgb(85, 85, 85); margin-right: 10px; display: inline; }
+.feed-links { clear: both; line-height: 2.5em; }
+#blog-pager-newer-link { float: left; }
+#blog-pager-older-link { float: right; }
+#blog-pager { text-align: center; }
+.clear { clear: both; }
+.profile-img { float: left; margin: 0px 5px 5px 0px; }
+/* ::::: http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.css ::::: */
+
+@media screen {
+  .str { color: rgb(0, 136, 0); }
+  .kwd { color: rgb(0, 0, 136); }
+  .com { color: rgb(136, 0, 0); }
+  .typ { color: rgb(102, 0, 102); }
+  .lit { color: rgb(0, 102, 102); }
+  .pun, .opn, .clo { color: rgb(102, 102, 0); }
+  .tag { color: rgb(0, 0, 136); }
+  .atn { color: rgb(102, 0, 102); }
+  .atv { color: rgb(0, 136, 0); }
+  .dec, .var { color: rgb(102, 0, 102); }
+  .fun { color: red; }
+}
+@media print, projection {
+  .str { color: rgb(0, 102, 0); }
+  .kwd { color: rgb(0, 0, 102); font-weight: bold; }
+  .com { color: rgb(102, 0, 0); font-style: italic; }
+  .typ { color: rgb(68, 0, 68); font-weight: bold; }
+  .lit { color: rgb(0, 68, 68); }
+  .pun, .opn, .clo { color: rgb(68, 68, 0); }
+  .tag { color: rgb(0, 0, 102); font-weight: bold; }
+  .atn { color: rgb(68, 0, 68); }
+  .atv { color: rgb(0, 102, 0); }
+}
+h1.jw_h { font-size: 2.5em; }
+h2.jw_h { font-size: 2em; }
+h3.jw_h { font-size: 1.7em; }
+h4.jw_h { font-size: 1.5em; }
+.jw_output { color: rgb(34, 68, 255); }
+.jw_message { color: rgb(204, 102, 34); }
+.jw_in { background-color: rgb(221, 221, 221); padding: 2px 4px; font-family: monospace; }
+.jw_cm { color: rgb(34, 139, 34); }

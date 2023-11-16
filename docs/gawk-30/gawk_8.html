@@ -1,0 +1,1735 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - 式</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_7.html">前</A>, <A HREF="gawk_9.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC68" HREF="gawk_toc.html#SEC68">式</A></H1>
+<P>
+<A NAME="IDX297"></A>
+
+</P>
+<P>
+式は<CODE>awk</CODE>のアクションの基本的な構成要素である。式を評価して得た値を出力
+することもできるし、テストしたり、変数に格納したり関数に渡すこともできる。そ
+れに加えて、代入文を使うことによって新たな値を変数やフィールドに代入すること
+もできる。
+
+</P>
+<P>
+式は文としても扱われる。大部分の文はオペランドとなるデータを特定する一つ以上
+の式からなる。他の多くの言語と同様に、<CODE>awk</CODE>における式は変数や、配列の参
+照、定数、関数呼び出し、そしてそれらの演算子による組み合わせも含まれる。
+
+</P>
+
+
+
+<H2><A NAME="SEC69" HREF="gawk_toc.html#SEC69">Constant Expressions</A></H2>
+<P>
+<A NAME="IDX298"></A>
+<A NAME="IDX299"></A>
+
+</P>
+<P>
+もっとも単純な式は<STRONG>定数</STRONG>である。これは常に同じ値を持つ。定数には三種類あ
+り、数値定数、文字列定数、正規表現定数である。
+
+</P>
+
+
+
+<H3><A NAME="SEC70" HREF="gawk_toc.html#SEC70">数値定数と文字列定数</A></H3>
+
+<P>
+<A NAME="IDX300"></A>
+<A NAME="IDX301"></A>
+<STRONG>数値定数</STRONG>は数を意味する。この数は整数でも良いし、小数でも良いし
+科学(指数)表記の数であっても良い
+<A NAME="FOOT8" HREF="gawk_foot.html#FOOT8">(8)</A>。
+以下に数値定数の例をいくつか挙げる。これらはすべて同じ値を持つ。
+
+</P>
+
+<PRE>
+105
+1.05e+2
+1050e-1
+</PRE>
+
+<P>
+文字列定数は二重引用符で囲まれたキャラクタの並びから構成される。
+たとえば、
+
+</P>
+
+<PRE>
+"parrot"
+</PRE>
+
+<P>
+<A NAME="IDX302"></A>
+これは<SAMP>`parrot'</SAMP>という構成の文字列である。<CODE>gawk</CODE>における文字列は、
+任意の長さの、ASCIIのNUL(キャラクタコード 0)も含めて任意の8bit ASCIIキャ
+ラクターを使うことが可能である。他の<CODE>awk</CODE>処理系では一部のキャラクタ
+コードを扱うことが難しいかもしれない。
+
+</P>
+<P>
+訳注:日本語対応したjgawkでは、16bit長の漢字コードを
+文字列の要素として使うことができる。
+
+</P>
+
+
+<H3><A NAME="SEC71" HREF="gawk_toc.html#SEC71">正規表現定数</A></H3>
+
+<P>
+<A NAME="IDX303"></A>
+<A NAME="IDX304"></A>
+正規表現定数は<CODE>/^beginning and end$/</CODE>のようにスラッシュで囲まれて
+記述されている正規表現である。<CODE>awk</CODE>で使われている大部分の正規表現は
+定数であるが、<SAMP>`~'</SAMP> や <SAMP>`!~'</SAMP>といったマッチング演算子は"動的な" 
+正規表現(正規表現を含む普通の文字列や、変数)に使うこともできる。
+
+</P>
+
+
+<H2><A NAME="SEC72" HREF="gawk_toc.html#SEC72">正規表現定数を使う</A></H2>
+
+<P>
+<SAMP>`~'</SAMP> や <SAMP>`!~'</SAMP>といった演算子の右側で使われたとき、
+正規表現定数は単にマッチングを試みる正規表現を意味するだけである。
+
+</P>
+<P>
+<A NAME="IDX305"></A>
+正規表現定数(<CODE>/foo/</CODE>)は単純な式のように扱われるかもしれない。
+正規表現定数がそれ自身として現れたとき、それは
+パターン中に現れたかのように、つまり<SAMP>`($0 ~ /foo/)'</SAMP> のように
+みなされる。(d.c.)
+(セクション <A HREF="gawk_9.html#SEC91">パターンとしての式</A>を参照).
+これにより、次のような二つのプログラム
+
+</P>
+
+
+<PRE>
+if ($0 ~ /barfly/ || $0 ~ /camelot/)
+    print "found"
+</PRE>
+
+<P>
+と
+
+</P>
+
+<PRE>
+if (/barfly/ || /camelot/)
+    print "found"
+</PRE>
+
+<P>
+は、意味的にはまったく同じなのである。
+
+</P>
+<P>
+この規則の一つの奇妙な結果とは、
+次の正当なブール式はが、ユーザーが期待する結果とはならない
+というものである。
+
+</P>
+
+<PRE>
+# note that /foo/ is on the left of the ~
+if (/foo/ ~ $1) print "found foo"
+</PRE>
+
+<P>
+このコードは"明らかに"<CODE>$1</CODE>と<CODE>/foo/</CODE>という正規表現とのマッチング
+を行なうように見える。しかし実際にはこの<CODE>(/foo/ ~ $1)</CODE>という式は、
+<CODE>(($0 ~ /foo/) ~ $1)</CODE> と同じである。言い換えるならば、最初に入力レコー
+ドに対して <CODE>/foo/</CODE>という正規表現を適用する。その結果は0か1のどちらかで
+あり、マッチの成否によって決定する。その結果に対してレコードの第一フィールド
+を適用してマッチングを行なう。
+
+</P>
+<P>
+こういった動作は本当にユーザーが望んでいたテストとは違ったものであろうから、
+こういった文をプログラム中で見つけると、<CODE>gawk</CODE>は警告を発する。
+
+</P>
+<P>
+もうひとつ、この規則による結果は代入文でも起きる。
+
+</P>
+
+<PRE>
+matches = /foo/
+</PRE>
+
+<P>
+この例では変数<CODE>matches</CODE>に、カレント入力レコードの内容によって0か1のどち
+らかが代入される。
+
+</P>
+<P>
+言語のこの機能は、POSIX標準までドキュメント化されなかった。
+
+</P>
+<P>
+<A NAME="IDX306"></A>
+<A NAME="IDX307"></A>
+正規表現定数は
+<CODE>gensub</CODE>, <CODE>sub</CODE>, <CODE>gsub</CODE> といった関数の
+第一引数として使用され、また、<CODE>match</CODE>関数の第二引数と
+して使われる
+(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照)。
+<CODE>gawk</CODE>も含めて
+最近の<CODE>awk</CODE>処理系では、<CODE>split</CODE>関数の
+第三引数として正規表現定数を許している。
+一部の古い処理系ではそうではない(d.c.)。
+
+</P>
+<P>
+これは、ユーザー定義関数
+(セクション <A HREF="gawk_14.html#SEC129">ユーザー定義関数</A>を参照)
+の引数として正規表現定数を使おうとしたときに混乱を引き起こす。
+例を挙げると、
+
+</P>
+
+<PRE>
+function mysub(pat, repl, str, global)
+{
+    if (global)
+        gsub(pat, repl, str)
+    else
+        sub(pat, repl, str)
+    return str
+}
+
+{
+    ...
+    text = "hi! hi yourself!"
+    mysub(/hi/, "howdy", text, 1)
+    ...
+}
+</PRE>
+
+<P>
+この例では、プログラムはユーザー定義関数<CODE>mysub</CODE>に
+それを通して<CODE>sub</CODE> や <CODE>gsub</CODE>に渡される
+正規表現定数を渡そうとしている。
+しかしながら、実際の動作では<CODE>pat</CODE>パラメータは1か0になり、
+それは<CODE>/hi/</CODE>が<CODE>$0</CODE>とマッチするかどうかに依存する。
+
+</P>
+<P>
+これはおそらくユーザーが本当に渡そうとした値とは異なったものであるから、
+<CODE>gawk</CODE>はユーザー定義関数に対するパラメータに正規表現定数を
+使おうしたときに警告を発する。
+
+</P>
+
+
+<H2><A NAME="SEC73" HREF="gawk_toc.html#SEC73">Variables</A></H2>
+
+<P>
+変数とはプログラムのある箇所で、後から別の箇所で参照するために値を格納す
+る方法である。ユーザーは変数をプログラムのテキストの中で自由に扱うことが
+でき、また、変数に対する値の代入を<CODE>awk</CODE>のコマンドラインで行うことが
+できる。
+
+</P>
+
+
+
+<H3><A NAME="SEC74" HREF="gawk_toc.html#SEC74">プログラム中で変数を使う</A></H3>
+
+<P>
+<A NAME="IDX308"></A>
+<A NAME="IDX309"></A>
+変数にはあとでその値を参照するために名前が付けられている。これまでにも多くの
+例で変数が出てきた。変数の名前は文字、数字、あるいはアンダースコアの並びでな
+ければならず、かつ、先頭が数字であってはいけない。変数名の大小文字は区別さ
+れ、したがって<CODE>a</CODE> と <CODE>A</CODE>は別の変数である。
+
+</P>
+<P>
+変数名はそれ自身が、変数の現在の値を表わす一つの正しい式である。
+変数は<STRONG>代入演算子</STRONG>や<STRONG>増加演算子</STRONG>によって新たな値を与えられる
+セクション <A HREF="gawk_8.html#SEC79">代入式</A>を参照.
+
+</P>
+<P>
+一部の変数はあらかじめ特別な意味を持っているものがある。フィールドセパレータ
+としての<CODE>FS</CODE>やカレント入力レコード中のフィールド数を表わす<CODE>NF</CODE>など
+がそれである。 セクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照.にそういった変数のリスト
+がある。これら組み込み変数は他の変数のように代入したり値を参照したりできるが、
+その値は自動的に<CODE>awk</CODE>が変更したり、使ったりする。組み込み変数の名前はそ
+れぞれ大文字だけからなる。
+
+</P>
+<P>
+<CODE>awk</CODE>での変数は数値でも文字列でも代入することができる。デフォルトでは文
+字列は空文字列で初期化され、それが数値に変換されるときには 0として扱われる。
+このことは、<CODE>awk</CODE>ではCやその他の多くの言語のように変数の初期化を陽に
+行う必要がないということである。
+
+</P>
+
+
+<H3><A NAME="SEC75" HREF="gawk_toc.html#SEC75">コマンドライン上での変数への代入</A></H3>
+
+<P>
+<CODE>awk</CODE>を起動したときに、コマンドライン上の引数に<STRONG>variable assignment</STRONG>
+を含めることによって、<CODE>awk</CODE>の変数に値をセットすることができる
+(セクション <A HREF="gawk_15.html#SEC136">Other Command Line Arguments</A>を参照)。
+代入は次のような形式である。
+
+</P>
+
+<PRE>
+<VAR>variable</VAR>=<VAR>text</VAR>
+</PRE>
+
+<P>
+こうすることによって、変数に対する値のセットを<CODE>awk</CODE>の起動時か
+入力ファイルと入力ファイルの間で行なうことができる。
+
+</P>
+<P>
+ここで、代入の前に<SAMP>`-v'</SAMP>というオプションを次のように付けた場合、
+
+</P>
+
+<PRE>
+-v <VAR>variable</VAR>=<VAR>text</VAR>
+</PRE>
+
+<P>
+変数に対する値のセットは一番最初、<CODE>BEGIN</CODE>ルールが実行される前に行なわれ
+る。<SAMP>`-v'</SAMP>オプションとその後の代入はすべてのファイル名の引数の前になけれ
+ばならず、またプログラムテキストがコマンドラインで与えられている場合にも、
+それの前になければならない)。
+
+</P>
+<P>
+そうでない場合には、変数に対する代入は前に位置しているファイル名を示す
+引数が処理された後で行なわれる。たとえば、
+
+</P>
+
+<PRE>
+awk '{ print $n }' n=4 inventory-shipped n=2 BBS-list
+</PRE>
+
+<P>
+この例は全ての入力レコードのフィールド番号が<CODE>n</CODE>のフィールドを出力する。
+最初のファイルが読まれる前に、コマンドラインで変数<CODE>n</CODE>に4がセットされる。
+これによって、<TT>`inventory-shipped'</TT>から入力されるレコードの 4番目のフィー
+ルドが出力される。最初のファイルの処理が終ったあと、そして二番目のファイルの
+処理が始まる前に、<CODE>n</CODE>は2にセットされる。したがって、<TT>`BBS-list'</TT>のレ
+コードの二番目のフィールドが出力される。
+
+</P>
+
+<PRE>
+$ awk '{ print $n }' n=4 inventory-shipped n=2 BBS-list
+-| 15
+-| 24
+...
+-| 555-5553
+-| 555-3412
+...
+</PRE>
+
+<P>
+コマンドライン引数は<CODE>awk</CODE>プログラム中で<CODE>ARGV</CODE>という名前の
+配列によって参照することができる
+(セクション <A HREF="gawk_11.html#SEC111">Using <CODE>ARGC</CODE> and <CODE>ARGV</CODE></A>を参照)。
+
+</P>
+<P>
+<A NAME="IDX310"></A>
+<CODE>awk</CODE> processes the values of command line assignments for escape
+sequences (d.c.) (セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照).
+
+</P>
+
+
+<H2><A NAME="SEC76" HREF="gawk_toc.html#SEC76">Conversion of Strings and Numbers</A></H2>
+
+<P>
+<A NAME="IDX311"></A>
+<CODE>awk</CODE>プログラムの文脈により、必要に応じて文字列を数値に変換したり数値を
+文字列に変換したりする。例えば、<CODE>foo + bar</CODE>という式があったときに、
+<CODE>foo</CODE> か <CODE>bar</CODE>の値（もしくは両方）が文字列であった場合、その値は加
+算が行われる前に、数値に変換される。逆に文字列連結中で数値があった場合にはそ
+れは文字列に変換される。例を挙げると、
+
+</P>
+
+<PRE>
+two = 2; three = 3
+print (two three) + 4
+</PRE>
+
+<P>
+この例は数値の27を出力する。変数 <CODE>two</CODE> と <CODE>three</CODE>の数としての値は
+文字列に変換され、それが連結される。その結果得られた文字列は再度 23という数
+に変換され、それに4が加えられる。
+
+</P>
+<P>
+<A NAME="IDX312"></A>
+<A NAME="IDX313"></A>
+何かの理由で数を強制的に文字列に変換したいときは、空文字列<CODE>""</CODE>を
+くっつける。逆に文字列を強制的に数に変換するには、文字列に0を加える。
+
+</P>
+<P>
+文字列の頭の方に数字列がついているような文字列は、文字列から数値に変換される。
+<CODE>"2.5"</CODE>は2.5に、<CODE>"1e3"</CODE>は1000に変換され、<CODE>"25fix"</CODE>は数の値と
+して25を持つ。正しい数として認識できない文字列は0に変換される。
+
+</P>
+<P>
+<A NAME="IDX314"></A>
+数値の文字列への変換のルールは、<CODE>awk</CODE>の組み込み変数<CODE>CONVFMT</CODE>
+(セクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照)によって制御される。
+数値は関数<CODE>sprintf</CODE>
+(セクション <A HREF="gawk_13.html#SEC123">組み込み関数</A>を参照) 
+で書式指定文字列に<CODE>CONVFMT</CODE>が渡されたのと同じ様に変換される。
+
+</P>
+<P>
+<CODE>CONVFMT</CODE>のデフォルトの値は<CODE>"%.6g"</CODE>であり、これは値を最低6文字ある
+として変換する。一部のアプリケーションのために、この精度を変更したいと考える
+かも知れない。最近のマシンの大部分では倍精度実数は十進数で16から17桁の精度があ
+る。
+
+</P>
+<P>
+<CODE>CONVFMT</CODE> に、<CODE>sprintf</CODE>で通常の浮動小数点数を指定しているような文
+字列ではないものをセットした場合、おかしな結果となるだろう。例えば書式文字列
+の<SAMP>`%'</SAMP>を忘れた場合には、全ての数値は同じ文字列定数に変換される。
+
+</P>
+<P>
+<A NAME="IDX315"></A>
+特別な場合として数値が整数であった場合、変換した結果の文字列は <STRONG>常に</STRONG> 
+整数のものとなり、<CODE>CONVFMT</CODE>の値に左右されない。次のようなプログラムの断
+片があったとすると、
+
+</P>
+
+<PRE>
+CONVFMT = "%2.2f"
+a = 12
+b = a ""
+</PRE>
+
+<P>
+<CODE>b</CODE> has the value <CODE>"12"</CODE>, not <CODE>"12.00"</CODE> (d.c.).
+<CODE>b</CODE>は<CODE>"12.00"</CODE>ではなく、<CODE>"12"</CODE>という値を持つ(d.c.)。
+
+</P>
+<P>
+<A NAME="IDX316"></A>
+<A NAME="IDX317"></A>
+<A NAME="IDX318"></A>
+POSIX の標準以前には、<CODE>awk</CODE>は数値から文字列への変換の為に <CODE>OFMT</CODE>の
+値を使用していた。 <CODE>OFMT</CODE>は<CODE>print</CODE>文で数値を出力するときの書式を指
+定する。 <CODE>CONVFMT</CODE>は、出力するときと、変換するときを区別するために導入
+された。<CODE>CONVFMT</CODE> と<CODE>OFMT</CODE>の両方とも、デフォルトの値は<CODE>"%.6g"</CODE>
+である。多くの場合、古い<CODE>awk</CODE>はその挙動を変えないだろう。しかし、この様
+な<CODE>OFMT</CODE>の使用は、プログラムを他のインプリメントによる <CODE>awk</CODE>処理系
+に持っていくような場合には、常にそのことに注意せねばならない。こういった場合、
+プログラムを直すよりも<CODE>gawk</CODE>それ自体を移植することを勧める。
+<CODE>print</CODE>文に関する詳しい説明はセクション <A HREF="gawk_7.html#SEC56">The <CODE>print</CODE> Statement</A>を参照。
+
+</P>
+
+
+<H2><A NAME="SEC77" HREF="gawk_toc.html#SEC77">Arithmetic Operators</A></H2>
+<P>
+<A NAME="IDX319"></A>
+<A NAME="IDX320"></A>
+<A NAME="IDX321"></A>
+<A NAME="IDX322"></A>
+<A NAME="IDX323"></A>
+<A NAME="IDX324"></A>
+<A NAME="IDX325"></A>
+<A NAME="IDX326"></A>
+<A NAME="IDX327"></A>
+
+</P>
+<P>
+<CODE>awk</CODE>言語は、式を評価するときに一般的な算術演算子を使用する、これらの
+算術演算子は通常の優先順位の規則にしたがっており、あなたの期待通りに働くだ
+ろう。
+
+</P>
+<P>
+これは、学生の名前と、各学生の三つのテストの点数が
+記録されたリストからなる<TT>`grades'</TT>というファイルの内容である
+(小さなクラスだ)。
+
+</P>
+
+<PRE>
+Pat   100 97 58
+Sandy  84 72 93
+Chris  72 92 89
+</PRE>
+
+<P>
+次のプログラムに<TT>`grades'</TT>を入力ファイルとして与えると、
+平均点を出力する。
+
+</P>
+
+<PRE>
+$ awk '{ sum = $2 + $3 + $4 ; avg = sum / 3
+&#62;        print $1, avg }' grades
+-| Pat 85
+-| Sandy 83
+-| Chris 84.3333
+</PRE>
+
+<P>
+以下のリストは<CODE>awk</CODE>の算術演算子一覧である。優先順位の高い順から
+低い順にならんでいる。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>- <VAR>x</VAR></CODE>
+<DD>
+符号反転。
+
+<DT><CODE>+ <VAR>x</VAR></CODE>
+<DD>
+単項のプラス。式を数値に変換する。
+
+<A NAME="IDX328"></A>
+<A NAME="IDX329"></A>
+<DT><CODE><VAR>x</VAR> ^ <VAR>y</VAR></CODE>
+<DD>
+<DT><CODE><VAR>x</VAR> ** <VAR>y</VAR></CODE>
+<DD>
+べき乗。<VAR>x</VAR>を<VAR>y</VAR>乗する。<CODE>2 ^ 3</CODE>の値は8である。 <SAMP>`**'</SAMP>という
+キャラクタの並びは<SAMP>`^'</SAMP>と同じ働きをする (POSIXの標準ではべき乗に
+<SAMP>`^'</SAMP>だけが使える)。
+
+<DT><CODE><VAR>x</VAR> * <VAR>y</VAR></CODE>
+<DD>
+Multiplication.
+
+<DT><CODE><VAR>x</VAR> / <VAR>y</VAR></CODE>
+<DD>
+割り算。<CODE>awk</CODE>のすべての数値は実数であるので、<SAMP>`3 / 4'</SAMP>
+の結果は整数に丸められることはなく、0.75となる。
+
+<DT><CODE><VAR>x</VAR> % <VAR>y</VAR></CODE>
+<DD>
+<A NAME="IDX330"></A>
+剰余。これは、商を0方向の整数に丸め、それに<VAR>y</VAR>を掛けたも
+のを <VAR>x</VAR>から減算した結果である。この操作は"trunc-mod."とし
+て知られる。以下の関係が常に保たれる。
+
+
+<PRE>
+b * int(a / b) + (a % b) == a
+</PRE>
+
+あるいは望ましくないであろう、この剰余の定義が起こす効果は <VAR>x</VAR>が負であっ
+たときには <CODE><VAR>x</VAR> % <VAR>y</VAR></CODE>の結果も負になるということである。
+したがって、
+
+
+<PRE>
+-17 % 8 = -1
+</PRE>
+
+となる。
+
+他の<CODE>awk</CODE>処理系では、剰余の符号は実行しているマシンに依存する。
+
+<DT><CODE><VAR>x</VAR> + <VAR>y</VAR></CODE>
+<DD>
+加算
+
+<DT><CODE><VAR>x</VAR> - <VAR>y</VAR></CODE>
+<DD>
+減算
+</DL>
+
+<P>
+移植性を最大限に保つために、<SAMP>`**'</SAMP>演算子を使わないこと。
+
+</P>
+<P>
+単項のプラスとマイナスは同じ優先順位であり、
+乗除演算子はすべて同じ優先順位を持つ。また、
+加算と減算は同じ優先順位である。
+
+</P>
+
+
+<H2><A NAME="SEC78" HREF="gawk_toc.html#SEC78">String Concatenation</A></H2>
+<P>
+<A NAME="IDX331"></A>
+
+<PRE>
+<I>It seemed like a good idea at the time.</I>
+Brian Kernighan
+</PRE>
+
+<P>
+
+<P>
+<A NAME="IDX332"></A>
+<A NAME="IDX333"></A>
+<A NAME="IDX334"></A>
+文字列の演算子はただ一つ、連接のみである。これはそれを表わす特定の
+演算子を持たない。その代わり、ある式を別の式に何の演算子も
+挟まずに連続して置いたときに連接が行われる。例を挙げよう。
+
+</P>
+
+<PRE>
+$ awk '{ print "Field number one: " $1 }' BBS-list
+-| Field number one: aardvark
+-| Field number one: alpo-net
+...
+</PRE>
+
+<P>
+ここで、次のように<SAMP>`:'</SAMP>のあとにスペースがない文字列にしても同様である。
+
+</P>
+
+<PRE>
+$ awk '{ print "Field number one:" $1 }' BBS-list
+-| Field number one:aardvark
+-| Field number one:alpo-net
+...
+</PRE>
+
+<P>
+文字列の連接が明確な演算子を持っていないので、連接を行なうアイテムをカッコで
+囲んで連接が確実に行なわれることを保証することがしばしば必要となる。たとえば
+次のようなコードでは<CODE>file</CODE> と <CODE>name</CODE>を連接するということが明確になっ
+ていない。
+
+</P>
+
+<PRE>
+file = "file"
+name = "name"
+print "something meaningful" &#62; file name
+</PRE>
+
+<P>
+これは次のように書く必要がある。
+
+</P>
+
+<PRE>
+print "something meaningful" &#62; (file name)
+</PRE>
+
+<P>
+連接を使うときには、いつでもカッコで連接の全体を囲むことを勧める
+(とくに<SAMP>`='</SAMP>の右辺のオペランドであったりしたときには)。
+
+</P>
+
+
+<H2><A NAME="SEC79" HREF="gawk_toc.html#SEC79">代入式</A></H2>
+<P>
+<A NAME="IDX335"></A>
+<A NAME="IDX336"></A>
+<A NAME="IDX337"></A>
+
+</P>
+<P>
+<STRONG>代入</STRONG>はある変数に新しい値をセットする式である。
+次の例では、<CODE>z</CODE>という変数に1を代入している。
+
+</P>
+
+<PRE>
+z = 1
+</PRE>
+
+<P>
+この式が実行された後では変数<CODE>z</CODE>の値は1になり、代入前の<CODE>z</CODE>の値は失
+われる。
+
+</P>
+<P>
+文字列も同じ様に代入を行うことができる。例えば、次の例では <CODE>message</CODE>と
+いう変数に<CODE>"this food is good"</CODE>という値が格納される。
+
+</P>
+
+<PRE>
+thing = "food"
+predicate = "good"
+message = "this " thing " is " predicate
+</PRE>
+
+<P>
+(この例はまた、文字列の連接も説明している)
+
+</P>
+<P>
+<SAMP>`='</SAMP>は<STRONG>代入演算子</STRONG>と呼ばれる演算子の中でもっとも単純なもので、右辺の
+値をそのまま変更せずに代入する。
+
+</P>
+<P>
+<A NAME="IDX338"></A>
+大部分の演算子(加算、連接、など)は、値を計算する以外になんの作用も持たない。
+もし、(計算された)その値を無視するならば、それは演算子を使わなかったのと同
+じ結果となるだろう。しかし代入演算子は異なっていて、値を生成しその値を無視
+したとしても代入操作は変更された値を自分に格納する。これは<STRONG>副作用</STRONG>と
+呼ばれる。
+
+</P>
+<P>
+<A NAME="IDX339"></A>
+<A NAME="IDX340"></A>
+代入の左辺は変数(セクション <A HREF="gawk_8.html#SEC73">Variables</A>を参照)を必ずしも必要とせず、それはフィールド
+(セクション <A HREF="gawk_6.html#SEC37">フィールドの内容を変更する</A>を参照) や配列の要素
+(セクション <A HREF="gawk_12.html#SEC112"><CODE>awk</CODE>における配列</A>を参照)であってもよい。これらは総称して
+<STRONG>左辺値</STRONG>と呼ばれ、代入演算子の左辺に置くことができる。右辺にはどのような
+式、特定の値を代入する式やフィールド、配列要素でも
+(右辺値と呼ばれるような値を)、置くことができる
+
+</P>
+<P>
+<A NAME="IDX341"></A>
+重要なことは、変数は常に同じ型であるというわけではないという事である。変数の
+型は単純に、その時点で格納している値によって決定される。次に挙げるプログラム
+の断片では、変数<CODE>foo</CODE>は最初は数の値を持ち、その後は文字列値を持っている。
+
+</P>
+
+<PRE>
+foo = 1
+print foo
+foo = "bar"
+print foo
+</PRE>
+
+<P>
+二番目の代入文で<CODE>foo</CODE>に文字列値を与えたときに、それ以前の数の値は失われ
+る。
+
+</P>
+<P>
+数字で始まっていない文字列の値は数値(numeric value)として
+はゼロである。次のコードを実行すると、<CODE>foo</CODE>の値は5となる。
+
+</P>
+
+<PRE>
+foo = "a string"
+foo = foo + 5
+</PRE>
+
+<P>
+(変数を数値として扱い、その後で文字列として扱うことは混乱を招きやすく、
+よくないプログラミングスタイルであることに注意すること。先の例は
+<CODE>awk</CODE>の動作がどんなものかを説明するものであって、
+このようにプログラムを書けば良いという方法<STRONG>ではない</STRONG>!)
+
+</P>
+
+<P>
+代入はそれ自身の値（代入された値）を持つ式である。従って、<CODE>z = 1</CODE>は1と
+いう値を持つ式である。この結果、多重代入を記述することもできる。
+
+</P>
+
+<PRE>
+x = y = z = 0
+</PRE>
+
+<P>
+この例では三つの変数全てに、0を格納する。なぜなら、<CODE>z = 0</CODE>の値は0であり、
+それが<CODE>y</CODE>に格納され、さらに<CODE>y = z = 0</CODE>の値、つまり0が<CODE>x</CODE>に格
+納される。
+
+</P>
+<P>
+代入は式のどこででも使うことができる。例えば<CODE>x != (y = 1)</CODE>という記述は
+正しく、これは<CODE>y</CODE> に1をセットし、それから<CODE>x</CODE>が1と等しいかどうかを
+テストする。しかし、このスタイルはプログラムを読みにくくするものである。
+one-shot programを除いては、このようなネストした代入を取り除くように書きなお
+すべきである。
+
+</P>
+<P>
+<SAMP>`='</SAMP>は別として、その他の代入演算子は変数の（代入前の）古い値と演算を行う。
+例えば、<SAMP>`+='</SAMP>という演算子は右辺値を変数の古い値と加算して新しい値を計算
+する。従って、次の例は<CODE>foo</CODE>の値に5加えるということになる。
+
+</P>
+
+<PRE>
+foo += 5
+</PRE>
+
+<P>
+これは次のように記述したものと同じである。
+
+</P>
+
+<PRE>
+foo = foo + 5
+</PRE>
+
+<P>
+<SAMP>`+='</SAMP>という演算子を使ったことによりプログラムの意味が明確になる。
+
+</P>
+<P>
+<SAMP>`+='</SAMP>(又は任意の代入演算子)を使ったときと、
+演算子の左側のオペランドを演算子の右側で繰り返し使ったときとで
+<STRONG>異なる</STRONG>場合がある。例を挙げよう。
+
+</P>
+<P>
+<A NAME="IDX342"></A>
+
+<PRE>
+# Pat Rankin に感謝
+BEGIN  {
+    foo[rand()] += 5
+    for (x in foo)
+       print x, foo[x]
+
+    bar[rand()] = bar[rand()] + 5
+    for (x in bar)
+       print x, bar[x]
+}
+</PRE>
+
+<P>
+<CODE>rand</CODE>は呼ばれるたびに異なる値を返すので、<CODE>bar</CODE>の
+添え字は異なることが保証される
+(配列と<CODE>rand</CODE>関数はまだ説明していない。詳しくは
+セクション <A HREF="gawk_12.html#SEC112"><CODE>awk</CODE>における配列</A>を参照,
+とセクション <A HREF="gawk_13.html#SEC125">Numeric Built-in Functions</A>を参照)。
+
+</P>
+<P>
+同様に、式が評価されるときに左側を最初にするのか、右を最初に
+するのかは処理系次第である。そのため、
+
+</P>
+
+<PRE>
+i = 1
+a[i += 2] = i + 1
+</PRE>
+
+<P>
+この例の<CODE>a[3]</CODE>の値は2にも4にもなりうる。
+
+</P>
+<P>
+以下は算術演算子の一覧である。これらの演算子は右辺のオペランドを数値
+に変換する。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE><VAR>lvalue</VAR> += <VAR>increment</VAR></CODE>
+<DD>
+<VAR>lvalue</VAR>の値に<VAR>increment</VAR>を加え、それを<VAR>lvalue</VAR>の新たな値とする。
+
+<DT><CODE><VAR>lvalue</VAR> -= <VAR>decrement</VAR></CODE>
+<DD>
+<VAR>lvalue</VAR>の値から<VAR>decrement</VAR>を減じる。
+
+<DT><CODE><VAR>lvalue</VAR> *= <VAR>coefficient</VAR></CODE>
+<DD>
+<VAR>lvalue</VAR> の値に<VAR>coefficient</VAR>を掛ける。
+
+<DT><CODE><VAR>lvalue</VAR> /= <VAR>divisor</VAR></CODE>
+<DD>
+<VAR>lvalue</VAR> の値を<VAR>quotient</VAR>で割る。
+
+<DT><CODE><VAR>lvalue</VAR> %= <VAR>modulus</VAR></CODE>
+<DD>
+<VAR>lvalue</VAR>を<VAR>modulus</VAR>で割ったときの剰余を<VAR>lvalue</VAR>にセットする。
+
+<A NAME="IDX343"></A>
+<A NAME="IDX344"></A>
+<DT><CODE><VAR>lvalue</VAR> ^= <VAR>power</VAR></CODE>
+<DD>
+<DT><CODE><VAR>lvalue</VAR> **= <VAR>power</VAR></CODE>
+<DD>
+<VAR>lvalue</VAR> を <VAR>power</VAR>乗した値を<VAR>lvalue</VAR>にセットする。
+(<CODE>^=</CODE>という演算子だけが POSIX で定義されている)
+</DL>
+
+<P>
+移植性を最大限に保つために、<SAMP>`**='</SAMP>演算子は使わないようにすること。
+
+</P>
+
+
+<H2><A NAME="SEC80" HREF="gawk_toc.html#SEC80">Increment and Decrement Operators</A></H2>
+
+<P>
+<A NAME="IDX345"></A>
+<A NAME="IDX346"></A>
+<STRONG>インクリメント演算子</STRONG>や<STRONG>デクリメント演算子</STRONG>は変数の値を1増や 
+すか、1減らすかする。この演算子は代入と同時に使うこともでき、 インクリメ
+ント演算子はそういった場合に<CODE>awk</CODE>言語に対して何の影響も及ぼさないが、
+非常によく行なわれることを省略して記述することができる。
+
+</P>
+<P>
+1を加える演算子は<SAMP>`++'</SAMP>と記述する。この演算子は変数のインクリメントを、
+その値を得る前、得た後のどちらでも行える。
+
+</P>
+<P>
+<VAR>v</VAR>に対して先にインクリメントを行うには<CODE>++<VAR>v</VAR></CODE>と記述する。これ
+は<VAR>v</VAR>の値に1を加えて、新しい値がこの式の値となる。 <CODE><VAR>v</VAR> += 1</CODE>と
+いう代入式はこれと全く同じである。
+
+</P>
+<P>
+変数の後に<SAMP>`++'</SAMP>を記述したものはポストインクリメントと呼ばれる。これは変
+数の値をインクリメントするが、先ほどと違って、インクリメント式自体の値は変数
+の古い値である。従って、<CODE>foo</CODE>の値が4のとき、<CODE>foo++</CODE>という式の値は4
+であるが <CODE>foo</CODE> の値は5に変更されている。
+
+</P>
+<P>
+ポストインクリメントの<CODE>foo++</CODE>は<CODE>(foo+= 1) - 1</CODE>という記述とほぼ
+同じであるが、完全に同じというわけではない。それは、<CODE>awk</CODE>での数値は
+全て浮動小数点数だからである。浮動小数点数では、 <CODE>foo + 1 - 1</CODE>は  
+code{foo}と同一ではない。しかし、かなり小さな数(10の12乗、つまり一兆未  
+満)しか扱わない限りはこういった違いはごく僅かである。
+
+</P>
+<P>
+あらゆる左辺値はインクリメントすることができる。フィールド、及び配列要素は変
+数と同じ様にインクリメントが行われる(フィールドの参照と、変数のインクリメ
+ントを同時に行いたいときには <SAMP>`$(i++)'</SAMP>を使う。この括弧はフィールド参照演
+算子<SAMP>`$'</SAMP>の優先順位の為に必ず付けなければならない)。
+
+</P>
+<P>
+<A NAME="IDX347"></A>
+<A NAME="IDX348"></A>
+デクリメント演算子<SAMP>`--'</SAMP>は<SAMP>`++'</SAMP>と同じ様に動作するが、加算ではなく、1
+を減算する。<SAMP>`++'</SAMP>と同じく、左辺値の前に置いてプリデクリメントで使用した
+り、左辺値の後ろに置いてポストデクリメントで使用することができる。
+
+</P>
+<P>
+次にインクリメント式、デクリメント式の簡単な説明をする。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>++<VAR>lvalue</VAR></CODE>
+<DD>
+この式は<VAR>lvalue</VAR>をインクリメントし、インクリメント後の値をこの式の値とす
+る。
+
+<DT><CODE><VAR>lvalue</VAR>++</CODE>
+<DD>
+この式も<VAR>lvalue</VAR>の内容をインクリメントするが、式の値はインクリメントす
+る前の<STRONG>古い</STRONG><VAR>lvalue</VAR>の値となる。
+
+<DT><CODE>--<VAR>lvalue</VAR></CODE>
+<DD>
+<CODE>++<VAR>lvalue</VAR></CODE>と似ているが、加算ではなく減算を行う。
+<CODE>++<VAR>lvalue</VAR></CODE>を減じ、その結果が式の値となる。
+
+<DT><CODE><VAR>lvalue</VAR>--</CODE>
+<DD>
+<CODE><VAR>lvalue</VAR>++</CODE>と似ているが加算ではなく減算を行う。
+<VAR>lvalue</VAR>を減じ、式の値はデクリメントする前の<STRONG>古い値</STRONG>となる。
+</DL>
+
+
+
+<H2><A NAME="SEC81" HREF="gawk_toc.html#SEC81">True and False in <CODE>awk</CODE></A></H2>
+<P>
+<A NAME="IDX349"></A>
+<A NAME="IDX350"></A>
+<A NAME="IDX351"></A>
+
+</P>
+<P>
+多くのプログラミング言語では、"真"、"偽"を表わすような特別なものがある。
+そういったものを持ったプログラミング言語では、<CODE>true</CODE>とか<CODE>false</CODE>
+あるいはこれらの大文字のものを一般に使っている、
+
+</P>
+<P>
+<A NAME="IDX352"></A>
+しかし<CODE>awk</CODE>は違っている。<CODE>awk</CODE>では、非常に単純な真、偽に関する
+コンセプトをCから受け継いでおり、0ではない数値、あるいは空ではない文字列は
+真となる。そうではない値(ゼロか空文字列、<CODE>""</CODE>)は偽となる。
+次のサンプルプログラムは、<SAMP>`A strange truth value'</SAMP>を三回出力する。
+
+</P>
+
+<PRE>
+BEGIN {
+   if (3.1415927)
+       print "A strange truth value"
+   if ("Four Score And Seven Years Ago")
+       print "A strange truth value"
+   if (j = 57)
+       print "A strange truth value"
+}
+</PRE>
+
+<P>
+<A NAME="IDX353"></A>
+びっくりするような"non-zero or non-null" の結果が生じることがある。
+<CODE>"0"</CODE>という文字列定数は、"真"である。なぜなら、これは
+空文字列ではないからである(d.c.)。
+
+</P>
+
+
+<H2><A NAME="SEC82" HREF="gawk_toc.html#SEC82">Variable Typing and Comparison Expressions</A></H2>
+<P>
+<A NAME="IDX354"></A>
+<A NAME="IDX355"></A>
+<A NAME="IDX356"></A>
+<A NAME="IDX357"></A>
+<A NAME="IDX358"></A>
+<A NAME="IDX359"></A>
+<A NAME="IDX360"></A>
+
+<PRE>
+<I>The Guide is definitive. Reality is frequently inaccurate.</I>
+The Hitchhiker's Guide to the Galaxy
+</PRE>
+
+<P>
+
+<P>
+他のプログラミング言語とは異なり、<CODE>awk</CODE>の変数は固定した型を持ってお
+らず、なにから代入されたかによって数値にも文字列にもなる
+
+</P>
+<P>
+<A NAME="IDX361"></A>
+1992年のPOSIX標準では、<STRONG>数値文字列</STRONG>(numeric string)の概念が
+導入された。これは<CODE>" +2"</CODE>のような、数値のように見える文字列である。
+この概念は変数の型を決定するのに使われる。
+
+</P>
+<P>
+変数の型は二つの変数をどのように比較するのかを決定するのに影響するので、
+非常に重要である。
+
+</P>
+<P>
+<CODE>gawk</CODE>では、変数の型は以下のルールに従う。
+
+</P>
+
+<OL>
+<LI>
+
+数値リテラルや数値演算の結果は<VAR>numeric</VAR>属性を持つ。
+
+<LI>
+
+文字列リテラルや文字列演算の結果は<VAR>string</VAR>属性を持つ。
+
+<LI>
+
+フィールド、<CODE>getline</CODE>入力、<CODE>FILENAME</CODE>、<CODE>ARGV</CODE>の要素、
+<CODE>ENVIRON</CODE>の要素、<CODE>split</CODE>で作成された配列、といったもので
+数値文字列のものは<VAR>strnum</VAR>属性を持っている。
+それ以外(数値文字列でないもの)は<VAR>string</VAR>属性を持つ。
+初期化されていない変数は同様に<VAR>strnum</VAR>を持つ。
+
+<LI>
+
+属性は代入を通じて伝播するが、使用することによって変化することはない。
+</OL>
+
+<P>
+この最後のルールは特に重要である。次のプログラムでは、<CODE>a</CODE>は、文字列演
+算の後でも数値タイプを持つ。
+
+</P>
+
+<PRE>
+BEGIN {
+         a = 12.345
+         b = a " is a cute number"
+         print b
+}
+</PRE>
+
+<P>
+二つのオペランドを比較するときは、オペランドの属性によって文字列演算子か
+数値演算子のいずれかが以下の一覧に従って決定され、使用される。
+
+</P>
+
+<P>
+基本的な考え方は、ユーザーの入力が数値のように見え、ユーザーが
+<STRONG>入力だけ</STRONG>行ったときには、たとえそのデータがキャラクタから構成され
+ていて、文字列であったとしても数値として扱う。
+
+</P>
+<P>
+<STRONG>比較式</STRONG>(comparison expression)は文字列あるいは数値の、等しいかな
+どの比較を行う。この式はCのスーパーセットになっている<STRONG>関係演算子</STRONG>
+(relational operators)を使用する。以下に一覧にする。
+
+</P>
+<P>
+<A NAME="IDX362"></A>
+<A NAME="IDX363"></A>
+<A NAME="IDX364"></A>
+<A NAME="IDX365"></A>
+<A NAME="IDX366"></A>
+<A NAME="IDX367"></A>
+<A NAME="IDX368"></A>
+<A NAME="IDX369"></A>
+<A NAME="IDX370"></A>
+<A NAME="IDX371"></A>
+<A NAME="IDX372"></A>
+<DL COMPACT>
+
+<DT><CODE><VAR>x</VAR> &#60; <VAR>y</VAR></CODE>
+<DD>
+<VAR>x</VAR>が<VAR>y</VAR>より小さいときに真。
+
+<DT><CODE><VAR>x</VAR> &#60;= <VAR>y</VAR></CODE>
+<DD>
+<VAR>x</VAR>が<VAR>y</VAR>以下のときに真。
+
+<DT><CODE><VAR>x</VAR> &#62; <VAR>y</VAR></CODE>
+<DD>
+<VAR>x</VAR>が<VAR>y</VAR>より大きいときに真。
+
+<DT><CODE><VAR>x</VAR> &#62;= <VAR>y</VAR></CODE>
+<DD>
+<VAR>x</VAR>が<VAR>y</VAR>以上のときに真。
+
+<DT><CODE><VAR>x</VAR> == <VAR>y</VAR></CODE>
+<DD>
+<VAR>x</VAR>が<VAR>y</VAR>に等しいときに真。
+
+<DT><CODE><VAR>x</VAR> != <VAR>y</VAR></CODE>
+<DD>
+<VAR>x</VAR>と<VAR>y</VAR>が等しくないときに真。
+
+<DT><CODE><VAR>x</VAR> ~ <VAR>y</VAR></CODE>
+<DD>
+文字列<VAR>x</VAR>が正規表現<VAR>y</VAR>にマッチするときに真。
+
+<DT><CODE><VAR>x</VAR> !~ <VAR>y</VAR></CODE>
+<DD>
+文字列<VAR>x</VAR>が正規表現<VAR>y</VAR>にマッチしないときに真。
+
+<DT><CODE><VAR>subscript</VAR> in <VAR>array</VAR></CODE>
+<DD>
+<VAR>array</VAR>が<VAR>subscript</VAR>で添え字付けされる要素を持っている
+ときに真。
+
+</DL>
+
+<P>
+比較式はその式が真のときには1、偽のときは0という値を持つ。
+
+</P>
+<P>
+(セクション <A HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>を参照).
+異なるタイプを混ぜで比較を行うとき、数値のオペランドは
+<CODE>CONVFMT</CODE>の値を使って文字列に変換される
+(セクション <A HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>を参照)。
+
+</P>
+<P>
+文字列の比較は文字列の先頭からキャラクタごとの比較で行なわれる。した
+がって、 <CODE>"10"</CODE> は <CODE>"9"</CODE>よりも小さい、ということになる。二つ
+の文字列が他方の前の部分に等しいような場合、つまり <CODE>"abc"</CODE> と 
+<CODE>"abcd"</CODE>の比較では、短い方の文字列 <CODE>"abc"</CODE> がより小さい、と認
+識される。
+
+</P>
+<P>
+<A NAME="IDX373"></A>
+次の例は、非常にありがちな、<SAMP>`=='</SAMP>演算子の<SAMP>`='</SAMP>を一つ忘れてしまう
+というものである。これは正しい<CODE>awk</CODE>プログラムであるが、期待した動
+作はしないだろう。
+
+</P>
+
+<PRE>
+if (a = b)   # おっと、ここは a==bであるべきだ
+   ...
+else
+   ...
+</PRE>
+
+<P>
+<CODE>b</CODE>が0か、空文字列でない限り、<CODE>if</CODE>の条件式は常に真になる。演算
+子がこのように似ているために、この種のエラーはソースコードを眺めたときに
+見つけることは非常に難しい。
+
+</P>
+<P>
+以下に<CODE>gawk</CODE>がどのように比較を行ない、どのような結果となるのかの
+例をいくつか挙げる。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>1.5 &#60;= 2.0</CODE>
+<DD>
+数値の比較（真）
+
+<DT><CODE>"abc" &#62;= "xyz"</CODE>
+<DD>
+文字列の比較（偽）
+
+<DT><CODE>1.5 != " +2"</CODE>
+<DD>
+文字列の比較（真）
+
+<DT><CODE>"1e2" &#60; "3"</CODE>
+<DD>
+文字列の比較（真）
+
+<DT><CODE>a = 2; b = "2"</CODE>
+<DD>
+<DT><CODE>a == b</CODE>
+<DD>
+文字列の比較(真)
+
+<DT><CODE>a = 2; b = " +2"</CODE>
+<DD>
+<DT><CODE>a == b</CODE>
+<DD>
+文字列の比較(真)
+</DL>
+
+
+<PRE>
+$ echo 1e2 3 | awk '{ print ($1 &#60; $2) ? "true" : "false" }'
+-| false
+</PRE>
+
+<P>
+この例では<SAMP>`false'</SAMP>が出力される。なぜなら<CODE>$1</CODE> と <CODE>$2</CODE>の両方が
+<VAR>数値文字列</VAR>(strnum)であり、文字列でもあり数値でもあるので数値として比較が
+行なわれたからである。
+
+</P>
+<P>
+比較ルールと数値文字列を使用する目的は、正しい動作を、驚くようなことができる
+だけ少なくなるように行なわせるということである。
+
+</P>
+<P>
+<A NAME="IDX374"></A>
+<A NAME="IDX375"></A>
+<A NAME="IDX376"></A>
+文字列の比較と正規表現の比較は非常に異なっている。例を挙げると、
+
+</P>
+
+<PRE>
+x == "foo"
+</PRE>
+
+<P>
+この式は変数<CODE>x</CODE>が<SAMP>`foo'</SAMP>であるときに 1あるいは真の値を持つ。対
+照的に、
+
+</P>
+
+<PRE>
+x ~ /foo/
+</PRE>
+
+<P>
+この式は<CODE>x</CODE>に<SAMP>`foo'</SAMP>が含まれているもの、例えば 
+<CODE>"Oh, what a fool am I!"</CODE>であれば式の値は1となる。
+
+</P>
+<P>
+<SAMP>`~'</SAMP> 演算子や <SAMP>`!~'</SAMP>演算子の右側にくるオペランドは
+正規表現定数(<CODE>/.../</CODE>)でもあり、通常の式でもある。
+これは、ちょうど文字列としての式の値が動的正規表現
+(セクション <A HREF="gawk_5.html#SEC26">正規表現の使い方</A>を参照、
+セクション <A HREF="gawk_5.html#SEC32">動的正規表現を使う</A>を参照)
+であるということと同じである
+
+</P>
+<P>
+<A NAME="IDX377"></A>
+最近の<CODE>awk</CODE>の処理系では、スラッシュで囲まれた正規表現定数はそれ自体が
+式であり、<CODE>/<VAR>regexp</VAR>/</CODE>という正規表現は比較式の省略形である。
+
+</P>
+
+<PRE>
+$0 ~ /<VAR>regexp</VAR>/
+</PRE>
+
+<P>
+<CODE>/foo/</CODE> が<SAMP>`$0 ~ /foo/'</SAMP> の省略形に<STRONG>ならない</STRONG>
+特別な場所は、<SAMP>`~'</SAMP>演算子や<SAMP>`!~'</SAMP>の右辺のオペランドである。
+詳しくは
+セクション <A HREF="gawk_8.html#SEC72">正規表現定数を使う</A>を参照.
+で述べられている。
+
+</P>
+
+
+
+<H2><A NAME="SEC83" HREF="gawk_toc.html#SEC83">Boolean Expressions</A></H2>
+<P>
+<A NAME="IDX378"></A>
+<A NAME="IDX379"></A>
+<A NAME="IDX380"></A>
+<A NAME="IDX381"></A>
+<A NAME="IDX382"></A>
+<A NAME="IDX383"></A>
+<A NAME="IDX384"></A>
+<A NAME="IDX385"></A>
+<A NAME="IDX386"></A>
+<A NAME="IDX387"></A>
+<A NAME="IDX388"></A>
+<A NAME="IDX389"></A>
+<A NAME="IDX390"></A>
+<A NAME="IDX391"></A>
+
+</P>
+<P>
+<STRONG>ブール式</STRONG>は比較式やマッチング式を論理演算子(<SAMP>`||'</SAMP>)や (<SAMP>`&#38;&#38;'</SAMP>)、
+(<SAMP>`!'</SAMP>)を用いて繋げたものである。論理式全体の真偽は各部分式の真偽値の組み
+合わせによって決定される。ブール式は<STRONG>論理式</STRONG>でもあり、これら二つの
+単語の意味は同じである。
+
+</P>
+<P>
+ブール式は、比較式やマッチング式を記述できるところであればどこでも記述すること
+ができるし、<CODE>if</CODE>、<CODE>while</CODE>、<CODE>do</CODE> や <CODE>for</CODE> といった文のな
+かで使うこともできる
+(セクション <A HREF="gawk_10.html#SEC98">アクション中の制御文</A>を参照)。
+ブール式は真のとき1、偽のとき0の値を持ち、その結果を変数
+に格納したり、算術式に使うこともできる。
+
+</P>
+<P>
+それに加えて、それぞれのブール式は正しい論理パターンでもあるので、
+ルールの実行を制御するパターンとして使うこともできる。
+
+</P>
+<P>
+以下に三つのブール演算子と、それを使った例を挙げる。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE><VAR>boolean1</VAR> &#38;&#38; <VAR>boolean2</VAR></CODE>
+<DD>
+<VAR>boolean1</VAR> と <VAR>boolean2</VAR>の両方ともが真のときに真となる。たとえば、次
+の例ではカレント入力レコードに<SAMP>`2400'</SAMP> と <SAMP>`foo'</SAMP>の両方が含まれている
+ときにそのレコードが出力される。
+
+
+<PRE>
+if ($0 ~ /2400/ &#38;&#38; $0 ~ /foo/) print
+</PRE>
+
+部分式<VAR>boolean2</VAR>は、<VAR>boolean1</VAR>が真であったときにのみ評価が行なわ
+れる。このことによって、<VAR>boolean2</VAR>が副作用を持つ式であったときに違っ
+た結果になるようにすることもできる。たとえば
+<CODE>$0 ~ /foo/ &#38; ($2 == bar++)</CODE>といった式では、<SAMP>`foo'</SAMP>がレコード中に
+存在しなかった場合には変数<CODE>bar</CODE>はインクリメントされない。
+
+<DT><CODE><VAR>boolean1</VAR> || <VAR>boolean2</VAR></CODE>
+<DD>
+<VAR>boolean1</VAR> か <VAR>boolean2</VAR>の少なくともどちらか一方でも真であれば論理式
+全体が真となる。たとえば、次の例では <SAMP>`2400'</SAMP> か<SAMP>`foo'</SAMP>のどちらか一方、
+あるいはその両方が入力ファイル<TT>`BBS-list'</TT>からの入力レコード中にあったと
+きにそのレコードを出力する。
+
+
+<PRE>
+if ($0 ~ /2400/ || $0 ~ /foo/) print
+</PRE>
+
+部分式<VAR>boolean2</VAR>は、<VAR>boolean1</VAR>が偽であったときにだけ評価が行なわれる。
+このことにより、<VAR>boolean2</VAR>が副作用を持っていたときには異なった結果をもた
+らすこともある。
+
+<DT><CODE>! <VAR>boolean</VAR></CODE>
+<DD>
+<VAR>boolean</VAR>が偽であるときに真となる。たとえば、次の例では入力ファイル
+<TT>`BBS-list'</TT>からの入力レコード中で文字列<SAMP>`foo'</SAMP>を <STRONG>含まない</STRONG>レコ
+ードを出力する。
+
+
+<PRE>
+awk '{ if (! ($0 ~ /foo/)) print }' BBS-list
+</PRE>
+
+</DL>
+
+<P>
+<SAMP>`&#38;&#38;'</SAMP>演算子や<SAMP>`||'</SAMP>演算子は、その動作から<STRONG>短絡評価</STRONG>
+(short-circuit)演算子と呼ばれる。一部分を評価することで全体の
+値を決定できる場合には、式全体の評価は"短絡"(short-circuited)される。
+
+</P>
+<P>
+<A NAME="IDX392"></A>
+<SAMP>`&#38;&#38;'</SAMP> や <SAMP>`||'</SAMP>の後に改行を置くことによって、
+行の継続をすることができる。しかし、改行をこれらの演算子の
+前に、バックスラッシュによる行継続なしで置くことはできない
+(セクション <A HREF="gawk_3.html#SEC21"><CODE>awk</CODE> の文と行</A>を参照)。
+
+</P>
+<P>
+<SAMP>`!'</SAMP>演算子を使った式の値は1か0のいずれかになる。これは
+演算子を適用した式の真偽の値による。
+
+</P>
+<P>
+<SAMP>`!'</SAMP>演算子はフラグ変数の意味を
+真から偽に変えたり、逆方向に変えるのによく使われる。
+例えば、次のプログラムは特殊なパターン行の間の行を出力するものである。
+
+</P>
+
+<PRE>
+$1 == "START"   { interested = ! interested }
+interested == 1 { print }
+$1 == "END"     { interested = ! interested }
+</PRE>
+
+<P>
+<CODE>interested</CODE>という変数は、<CODE>awk</CODE>のすべての変数と同様に
+初期値0(偽)でスタートする。最初のフィールドが<SAMP>`START'</SAMP>である
+ような行を見つけたとき、<CODE>interested</CODE>の値は
+<SAMP>`!'</SAMP>を使って真へと変わる。最初のフィールドが<SAMP>`END'</SAMP>で
+あるような行を見つけたとき、<CODE>interested</CODE>は偽へと戻る。
+
+</P>
+
+
+<H2><A NAME="SEC84" HREF="gawk_toc.html#SEC84">Conditional Expressions</A></H2>
+<P>
+<A NAME="IDX393"></A>
+<A NAME="IDX394"></A>
+
+</P>
+<P>
+<STRONG>条件式</STRONG>は三つのオペランドをとる特殊な式である。この式は、ある一つの式の
+値によって二つの異なった式のうちどちらか一つを選択するのに使用できる。
+
+</P>
+<P>
+条件式はCのそれと同じ様に次のような形で記述される。
+
+</P>
+
+<PRE>
+<VAR>selector</VAR> ? <VAR>if-true-exp</VAR> : <VAR>if-false-exp</VAR>
+</PRE>
+
+<P>
+三つの部分式の内、最初の<VAR>selector</VAR>は常に最初に計算され、その値が"真"
+(0でなく、nullでもない)であれば、次に <VAR>if-true-exp</VAR>を計算し、その値が
+式全体の値となる。 "真"でなかった場合には、次に<VAR>if-false-exp</VAR>を計算し、
+その値が式全体の値となる。
+
+</P>
+<P>
+例えば、次の式は<CODE>x</CODE>の値の絶対値を作る。
+
+</P>
+
+<PRE>
+x &#62; 0 ? x : -x
+</PRE>
+
+<P>
+条件式が計算される毎に、<VAR>if-true-exp</VAR> か <VAR>if-false-exp</VAR>のどちらか一
+つだけが計算され、もう一つは無視される。このことは、式が副作用を持っていると
+きには重要なことである。例えば、次に挙げる条件式は配列<CODE>a</CODE>もしくは<CODE>b</CODE>
+の添字<CODE>i</CODE>の要素を取りだし、<CODE>i</CODE>をインクリメントする。
+
+</P>
+
+<PRE>
+x == y ? a[i++] : b[i++]
+</PRE>
+
+<P>
+この例では<CODE>i</CODE>のインクリメントを一回しか行わない。それは、この式全体が実
+行される度に、二つのインクリメント式のうちどちらか一つが実行され、もう片方は
+実行されないからである。
+配列に関する詳しい説明はセクション <A HREF="gawk_12.html#SEC112"><CODE>awk</CODE>における配列</A>を参照。
+
+</P>
+<P>
+<A NAME="IDX395"></A>
+<A NAME="IDX396"></A>
+<CODE>gawk</CODE>のちょっとした拡張として、<SAMP>`?:'</SAMP>を使って、
+そのいずれかのキャラクタの直後に改行を置くことによって
+文の継続を行うことができる。しかし、これらのキャラクタの
+前に改行を、バックスラッシュによる継続抜きで
+置くことはできない
+(セクション <A HREF="gawk_3.html#SEC21"><CODE>awk</CODE> の文と行</A>を参照)。
+<SAMP>`--posix'</SAMP>が指定されている場合
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)、この拡張は抑制される。
+
+</P>
+
+
+<H2><A NAME="SEC85" HREF="gawk_toc.html#SEC85">Function Calls</A></H2>
+<P>
+<A NAME="IDX397"></A>
+
+</P>
+<P>
+<STRONG>関数</STRONG>とは計算を特定する名前である。名前があるので、プログラム中の任意の
+場所で呼び出すことができる。例えば、<CODE>sqrt</CODE>関数は、数値の平方根を計算す
+る。
+
+</P>
+<P>
+ある固有の関数群は<STRONG>組み込み</STRONG>であり、全ての<CODE>awk</CODE>プログラムで使うこと
+ができる。 <CODE>sqrt</CODE>関数はそのうちの一つである。
+セクション <A HREF="gawk_13.html#SEC123">組み込み関数</A>を参照.に組み込み関数のリストと、関数の説明があ
+る。組み込み関数に加え、プログラムのどこかで使うためにユーザーが関数を定義す
+ることができる。これについては、 
+セクション <A HREF="gawk_14.html#SEC129">ユーザー定義関数</A>を参照。
+
+</P>
+<P>
+<A NAME="IDX398"></A>
+関数を使うには、関数名とそれに続く括弧で囲まれた引数リストからなる <STRONG>関数
+呼び出し</STRONG>式によって行う。引数は関数が計算を行う為に与えられる生のデータであ
+る。二個以上の引数がある場合には、引数の間にカンマを置く。引数がない場合には
+<SAMP>`()'</SAMP>を関数名に続けて書く。例を挙げる。
+
+</P>
+
+<PRE>
+sqrt(x^2 + y^2)        <I>引数一つ</I>
+atan2(y, x)            <I>引数二つ</I>
+rand()                 <I>引数なし</I>
+</PRE>
+
+<P>
+<STRONG>関数名と、開き括弧の間には空白を置いてはいけない!</STRONG> ユーザー定義関数
+の名前は変数名と同じ様に見え、空白は変数と括弧の中の式との連結のように見せて
+しまう。括弧の前の空白は組み込み関数には無害なものであるが、ユーザー定義関数
+を使用する時に、間違って余計な空白を入れないようにするには、常に関数名と開き
+括弧の間を空けないようにするのが最良の方法だろう。
+
+</P>
+<P>
+個々の関数にはその関数固有の数の引数がある。例えば、<CODE>sqrt</CODE>関数は、呼び
+出し時に必ず平方根を計算するための引数がなければならない。
+
+</P>
+
+<PRE>
+sqrt(<VAR>argument</VAR>)
+</PRE>
+
+<P>
+一部の組み込み関数では最後の引数を省略することができ、省略した場合には適当な
+デフォルトの値が使われる。詳しくはセクション <A HREF="gawk_13.html#SEC123">組み込み関数</A>を参照.を参照。
+ユーザー定義関数の呼び出しで引数を省略した場合、そのような引数はローカル変数
+として扱われ、空文字列に初期化される
+(セクション <A HREF="gawk_14.html#SEC129">ユーザー定義関数</A>を参照)。
+
+</P>
+<P>
+他の式と同様に関数呼び出しも値を持ち、その値は与えた引数に応じて関数が計算し
+た結果である。例えば、<CODE>sqrt(<VAR>argument</VAR>)</CODE> の値は与えた引数の平方根で
+ある。関数は変数への代入や入出力の実行のような副作用を持つことができる。
+
+</P>
+<P>
+次の例では、一行当たり一つの数値データを読み取り、読み取った値と、その平方根
+を一行に出力する。
+
+</P>
+
+<PRE>
+$ awk '{ print "The square root of", $1, "is", sqrt($1) }'
+1
+-| The square root of 1 is 1
+3
+-| The square root of 3 is 1.73205
+5
+-| The square root of 5 is 2.23607
+<KBD>Control-d</KBD>
+</PRE>
+
+
+
+<H2><A NAME="SEC86" HREF="gawk_toc.html#SEC86">Operator Precedence (How Operators Nest)</A></H2>
+<P>
+<A NAME="IDX399"></A>
+<A NAME="IDX400"></A>
+
+</P>
+<P>
+<STRONG>演算子優先順位</STRONG>は一つの式の中で異なった演算子があったときに、どのように
+演算子をまとめるかを決定する。例えば、<SAMP>`*'</SAMP> は <SAMP>`+'</SAMP>よりも優先順位が高
+く、従って<CODE>a + b * c</CODE>は <CODE>b</CODE> と <CODE>c</CODE>を掛けて、それに<CODE>a</CODE>を
+加える。つまり、 <CODE>a + (b * c)</CODE>の様に解釈される。
+
+</P>
+<P>
+演算子の優先順位は、括弧を使うことによって無視することができる。優先順位規則
+は括弧を書いた通りであると考えることができる。事実、通常使われないような演算
+子の結合があるときに、常に括弧を使うのは賢いやり方である。なぜなら、他の人が
+プログラムを読んだときに、その場合の優先順位を思い出せなかったりあるいは自分
+自身が忘れてしまったりするからである。陽に括弧を使うということは、このような
+ミスをしないような助けになる。
+
+</P>
+<P>
+優先順位が同じ演算子を一緒に使った場合、代入、条件式、そしてべき乗演算子を除
+けば左側からまとめられる。従って、<CODE>a - b + c</CODE>は<CODE>(a - b) + c</CODE>に、
+<CODE>a = b = c</CODE> は<CODE>a = (b = c)</CODE>に解釈される。
+
+</P>
+<P>
+単項で前置される演算子の優先順位は、それ単独で使うのと同じ様に、一番深いとこ
+ろが最初に解析されるので、あまり意味のないことである。それはただ一通り、にし
+か解釈できないからである。従って、<CODE>$++i</CODE> は <CODE>$(++i)</CODE>と解釈されるし、
+<CODE>++$x</CODE> は<CODE>++($x)</CODE>と解釈される。しかし、オペランドに他の演算子が続
+いているような場合には、単項演算子の優先順位が意味を持ってくる。つまり、
+<CODE>$x^2</CODE> は <CODE>($x)^2</CODE>であるが、<CODE>-x^2</CODE> は<CODE>-(x^2)</CODE> であるとい
+うことである。これは、<SAMP>`-'</SAMP>の優先順位が<SAMP>`^'</SAMP>よりも低く、 <SAMP>`$'</SAMP>が全
+体で最も高い優先順位であるからである。
+
+</P>
+<P>
+以下に<CODE>awk</CODE>の演算子を優先順位の高いものから並べる。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>(...)</CODE>
+<DD>
+グルーピング。
+
+<DT><CODE>$</CODE>
+<DD>
+フィールド。
+
+<DT><CODE>++ --</CODE>
+<DD>
+インクリメント、デクリメント。
+
+<A NAME="IDX401"></A>
+<A NAME="IDX402"></A>
+<DT><CODE>^ **</CODE>
+<DD>
+べき乗。これらの演算子は右から左へ結合する
+(<SAMP>`**'</SAMP>演算子はPOSIXでは定義されていない)。
+
+<DT><CODE>+ - !</CODE>
+<DD>
+単項のプラス、マイナスと論理"否定"。
+
+<DT><CODE>* / %</CODE>
+<DD>
+乗算、除算、剰余。
+
+<DT><CODE>+ -</CODE>
+<DD>
+加算、減算。
+
+<DT><CODE>Concatenation</CODE>
+<DD>
+連接を指示するための特別なトークンはない。
+オペランドを単純に並べて記述すればよい。
+
+<DT><CODE>&#60; &#60;= == !=</CODE>
+<DD>
+<DT><CODE>&#62; &#62;= &#62;&#62; |</CODE>
+<DD>
+関係演算子と、リダイレクション。これらは同じ優先順位である。 <SAMP>`&#62;'</SAMP>の様な
+キャラクタは、関係演算子としてもリダイレクションとしても使われる。この両者
+の区別は文脈によって決定される。
+
+<CODE>print</CODE>文や<CODE>printf</CODE>文中の入出力リダイレクション演算子は、式では
+なく文のレベルに属している。リダイレクションは他の演算子のオペランドとな
+る様な式を生成しない。その結果、リダイレクションをより優先順位の低い演算
+子のそばに括弧なしで記述するということは意味がなく、 例えば
+<SAMP>`print foo &#62; a ? b : c'</SAMP>はシンタックスエラーとなる。この文の正しい書き
+方は<SAMP>`print foo &#62; (a ? b : c)'</SAMP>である。
+
+<DT><CODE>~ !~</CODE>
+<DD>
+マッチする、マッチしない。
+
+<DT><CODE>in</CODE>
+<DD>
+配列の要素
+
+<DT><CODE>&#38;&#38;</CODE>
+<DD>
+論理的な"かつ"
+
+<DT><CODE>||</CODE>
+<DD>
+論理的な"または"
+
+<DT><CODE>?:</CODE>
+<DD>
+条件演算子。この演算子は右から左に結合する。
+
+<A NAME="IDX403"></A>
+<A NAME="IDX404"></A>
+<DT><CODE>= += -= *=</CODE>
+<DD>
+<DT><CODE>/= %= ^= **=</CODE>
+<DD>
+代入。これらの演算子は右から左に結合する(<SAMP>`**='</SAMP>演算子は
+POSIXでは定義されていない)。
+</DL>
+
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_7.html">前</A>, <A HREF="gawk_9.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

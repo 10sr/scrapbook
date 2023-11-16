@@ -1,0 +1,102 @@
+/* ::::: http://www.blogger.com/static/v1/v-css/3476427649-cmtfp.css ::::: */
+
+body { background: none repeat scroll 0% 0% transparent; font-family: "Trebuchet MS",Verdana,Arial,Sans-serif; font-size: 13px; margin: 0px; }
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  a, body, div, input, p, span, td { font-family: arial,sans-serif; font-size: 13px; }
+  a { color: rgb(0, 158, 184); text-decoration: underline; }
+  input[type="button"] { background-color: rgb(245, 245, 245); border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 2px 2px 2px 2px; color: rgb(34, 34, 34); font: bold 11px arial; height: 27px; margin: 1px 0px 0px 15px; padding-bottom: 0px; text-align: center; text-shadow: 0px 1px rgba(0, 0, 0, 0.1); vertical-align: top; width: 75px; }
+  input[type="button"]:active, input[type="button"]:focus:active { border: 1px solid rgb(77, 144, 254); box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1) inset; }
+}
+h3 { margin: 5px 0px; }
+label { font-weight: bold; }
+.postCommentButtonHolder { margin: 0.5em 0px 0px; }
+@media only screen and (max-device-width: 1024px) and (min-device-width: 768px) {
+  .postCommentButtonHolder { margin: 24px 0px 0px -3px; }
+}
+.dialog { position: absolute; width: 373px; color: rgb(0, 0, 0); }
+.dialog h3 { margin: 5px 0px 10px; }
+.dialog img { margin: 2px 0px; }
+.dialog input { margin: 2px 0px; position: relative; }
+.dialogField { width: 280px; }
+.dialog .group { margin: 5px 0px; }
+.dialog .top { background: url('') no-repeat scroll left top transparent; font-size: 90%; padding: 8px 15px 5px; margin: 0px; }
+.dialog .top h3 { font-size: 15px; }
+@media only screen and (max-device-width: 1024px) and (min-device-width: 768px) {
+  .dialog .top h3 { font-size: 16px; font-weight: normal; }
+}
+#captchaHolder .top, #openIdIdentityHolder .top, #genericOpenIdIdentityHolder .top, #nameUrlIdentityHolder .top { height: 200px; }
+.dialog .bottom { background: url('') no-repeat scroll left bottom transparent; height: 8px; font-size: 8px; }
+img.close { position: relative; margin: 5px 0px; float: right; cursor: pointer; }
+.shown-openid-url { color: rgb(136, 136, 136); font-style: italic; }
+#openIdUriDisplayUsername { color: rgb(0, 0, 0); }
+#postCommentSubmit { font-weight: bold; }
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  #postCommentSubmit { background-color: rgb(77, 144, 240); border: 1px solid rgb(48, 121, 237); color: rgb(255, 255, 255); margin: 1px 0px 0px 5px; }
+  #postCommentSubmit:focus { box-shadow: 0px 0px 0px 1px rgb(255, 255, 255) inset; }
+}
+#id-error, #empty-error, #captcha-error, #openIdDialogErrorHolder, #genericOpenIdDialogErrorHolder, #nameUrlDialogErrorHolder { margin-left: 10px; color: rgb(255, 51, 0); }
+#commentBodyField { margin: 5px 0px; width: 98%; }
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  #commentBodyField { background-color: rgb(255, 255, 255); border: 1px solid rgb(217, 217, 217); color: rgb(34, 34, 34); display: inline-block; font-family: arial; font-size: 13px; margin-left: 4px; vertical-align: top; width: 100%; -moz-box-sizing: border-box; }
+  #commentBodyField:focus { border: 1px solid rgb(77, 144, 240) ! important; outline: medium none; }
+  #commentBodyField.commentBody-err, #commentBodyField.commentBody-err:focus { border: 1px solid rgb(221, 75, 57) ! important; width: 100%; }
+}
+#LJLabel, #WPLabel, #TPLabel, #AIMLabel, #edit-profile-error, #main-status-holder, #main-error-holder, #identityHolder, #captchaHolder, #identityHolder .dialog { display: none; }
+#main-status-holder, #main-error-holder { margin-top: 5px; }
+#editButton, #settingsButton, #commentDash { display: none; margin-left: 5px; }
+table { font-size: 100%; border-width: 0px; border-spacing: 0px; border-style: none; border-collapse: collapse; }
+table.status-msg { margin: auto; width: auto; }
+table.status-msg td.corner { height: 1px; width: 1px; line-height: 1px; margin: 0px; background-color: transparent; }
+table.status-msg td.stretch { height: 2px; line-height: 2px; margin: 0px; }
+.error .msgcolor { background-color: rgb(204, 0, 0); color: rgb(255, 255, 255); visibility: visible; font-weight: bold; }
+@media only screen and (max-device-width: 1024px) and (min-device-width: 768px) {
+  .error .msgcolor { background: none repeat scroll 0% 0% transparent; color: rgb(221, 75, 57); font-weight: normal; }
+}
+.status .msgcolor { background-color: rgb(255, 241, 168); color: rgb(0, 0, 0); visibility: visible; }
+@media only screen and (max-device-width: 1024px) and (min-device-width: 768px) {
+  .status .msgcolor { background: none repeat scroll 0% 0% rgb(249, 237, 190); color: rgb(51, 51, 51); opacity: 1; }
+  .status-msg.status { border: 1px solid rgb(240, 195, 109); }
+}
+table.status-msg img { display: block; }
+#allHolder { width: 98%; }
+#subscribeButtonHolder { float: right; margin-top: 5px; margin-right: 5px; }
+#main-error, #main-status { padding: 2px 6px; }
+@media only screen and (max-device-width: 1024px) and (min-device-width: 768px) {
+  #comments-block { background-color: rgb(241, 241, 241); border: 1px solid rgb(235, 235, 235); height: 115px; }
+}
+@media only screen and (max-device-width: 1024px) and (min-device-width: 768px) {
+  #comments-block dl dt { width: 525px; }
+}
+@media only screen and (max-device-width: 1024px) and (min-device-width: 768px) {
+  #comments-block a { color: rgb(0, 158, 184) ! important; }
+}
+@media only screen and (max-device-width: 1024px) and (min-device-width: 768px) {
+  #comments-block dd, #comments-block dd p { color: rgb(34, 34, 34); }
+}
+@media only screen and (max-device-width: 1024px) and (min-device-width: 768px) {
+  .comment-timestamp { font-size: 11px; }
+}
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  #previewHolder { background-color: rgb(255, 255, 255); border: 1px solid rgb(187, 187, 187); width: 92%; }
+}
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  #comments-block .avatar-image-container { top: 2px; }
+}
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  #upload-profile-photo-zippy { margin-top: 10px; }
+}
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  #comments-block .avatar-comment-border { border: 0px none; }
+}
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  #comments-block .avatar-comment-border #preview-header { width: 80%; }
+}
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  #signoutLink { padding-left: 15px; }
+  #identityControlsHolder { padding-top: 8px; }
+  #postCommentWrapper { left: -5px; }
+  #identityMenu { background-color: rgb(238, 238, 238); border: 1px solid rgba(0, 0, 0, 0.1); color: rgb(68, 68, 68); cursor: default; display: inline-block; height: 27px; position: relative; text-align: center; text-indent: 7px; text-decoration: none ! important; width: 22%; -moz-user-select: none; }
+  #identityMenu:focus, #identityMenu:active { box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1) inset; outline: 1px solid rgb(187, 187, 187); }
+}
+body { color: rgb(0, 0, 0); font-family: Arial,sans-serif; }
+a:link, a:visited, a:active, a:hover { color: rgb(85, 136, 170); }

@@ -1,0 +1,603 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - パターンとアクション</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_8.html">前</A>, <A HREF="gawk_10.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC87" HREF="gawk_toc.html#SEC87">パターンとアクション</A></H1>
+<P>
+<A NAME="IDX405"></A>
+
+</P>
+<P>
+既に説明したように、それぞれの<CODE>awk</CODE>の文は
+アクションを伴ったパターンから構成されている。
+この章ではパターンとアクションをどのように作成するかを
+説明する。
+
+</P>
+
+
+
+<H2><A NAME="SEC88" HREF="gawk_toc.html#SEC88">Pattern Elements</A></H2>
+
+<P>
+<CODE>awk</CODE>のパターンはルールの実行を制御する。あるルールはそのパターンと
+カレント入力レコードがマッチしたときに実行される。このセクションではパタ
+ーンの記述の仕方を説明する。
+
+</P>
+
+
+
+<H3><A NAME="SEC89" HREF="gawk_toc.html#SEC89">パターンの種類</A></H3>
+<P>
+<A NAME="IDX406"></A>
+
+</P>
+<P>
+以下に<CODE>awk</CODE>でサポートしているパターンをまとめる。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>/<VAR>regular expression</VAR>/</CODE>
+<DD>
+正規表現はパターンのようなものであり、入力レコードのテキストに一致したとき
+マッチする。
+(セクション <A HREF="gawk_5.html#SEC25">正規表現</A>を参照.)
+
+<DT><CODE><VAR>expression</VAR></CODE>
+<DD>
+一つの式。数値に変換して0でない、もしくは空でない文字列のときに
+マッチする
+(セクション <A HREF="gawk_9.html#SEC91">パターンとしての式</A>を参照.)
+
+カンマで区切られた二つのパターンはレコードの範囲を指定する。
+この範囲には<VAR>pat1</VAR>にマッチした
+最初のレコードと、<VAR>pat2</VAR>にマッチした最後のレコードの両方が
+含まれる(セクション <A HREF="gawk_9.html#SEC92">パターンを使ったレコード範囲の指定</A>を参照.)。
+
+<DT><CODE>BEGIN</CODE>
+<DD>
+<DT><CODE>END</CODE>
+<DD>
+<CODE>awk</CODE>プログラムで、前処理もしくは後処理をするための特別なパターン
+(セクション <A HREF="gawk_9.html#SEC93">特殊パターン<CODE>BEGIN</CODE>と<CODE>END</CODE></A>を参照.)
+
+<DT><CODE><VAR>empty</VAR></CODE>
+<DD>
+空のパターンはすべての入力レコードにマッチする
+(セクション <A HREF="gawk_9.html#SEC96">空パターン</A>を参照.)。
+</DL>
+
+
+
+<H3><A NAME="SEC90" HREF="gawk_toc.html#SEC90">パターンとしての正規表現</A></H3>
+
+<P>
+これまでのサンプルの中で、正規表現をパターンとして使ってきた。
+この種類のパターンは、
+あるルールのパターン部分にある
+単純な正規表現定数である。それは<SAMP>`$0 ~ /<VAR>pattern</VAR>/'</SAMP>.
+と同じ意味を持つ。これは入力レコードが正規表現にマッチしたとき、
+(入力レコードに)マッチするパターンである。
+例を挙げよう。
+
+</P>
+
+<PRE>
+/foo|bar|baz/  { buzzwords++ }
+END            { print buzzwords, "buzzwords seen" }
+</PRE>
+
+
+
+<H3><A NAME="SEC91" HREF="gawk_toc.html#SEC91">パターンとしての式</A></H3>
+
+<P>
+<CODE>awk</CODE>の任意の式は、そのまま<CODE>awk</CODE>の正しい<CODE>awk</CODE>のパターンである。
+そして、式の値が非0(数値の場合)でもなく、空でない文字列
+(文字列の場合)の場合には、パターンマッチするということになる。
+
+</P>
+<P>
+式は、ルールが新たな入力レコードに対してテストされる度に再評価が
+行われる。もしここで式が<CODE>$1</CODE>のようなフィールドを使っていた
+のならば、その値は新たな入力レコードテキストによるものである。
+それ以外のものは<CODE>awk</CODE>プログラムの実行時の動作にのみ
+依存する。
+
+</P>
+<P>
+パターンとして使われている式は、一般的に
+セクション <A HREF="gawk_8.html#SEC82">Variable Typing and Comparison Expressions</A>を参照.
+にある比較演算子を使った比較式をパターンとして使っている。
+
+</P>
+<P>
+(セクション <A HREF="gawk_5.html#SEC32">動的正規表現を使う</A>を参照).
+正規表現マッチング(と非マッチング)は非常に一般的な式である。
+<SAMP>`~'</SAMP>演算子や<SAMP>`!~'</SAMP>演算子の左オペランドは
+文字列であり、右オペランドはスラッシュで囲まれた
+(<CODE>/<VAR>regexp</VAR>/</CODE>のような)正規表現定数か
+動的正規表現として扱われる文字列値を持つ任意の式である。
+
+</P>
+<P>
+<SAMP>`~'</SAMP>演算子や<SAMP>`!~'</SAMP>演算子の左オペランドは文字列であり、
+右オペランドは(<CODE>/<VAR>regexp</VAR>/</CODE>)のように
+スラッシュで囲まれた正規表現定数か、動的正規表現として使用される
+文字列としての値を持つ任意の式である
+(セクション <A HREF="gawk_5.html#SEC32">動的正規表現を使う</A>を参照)。
+
+</P>
+
+<P>
+次に挙げる例は、第一フィールドが<SAMP>`foo'</SAMP>である入力レコードの第二フィ
+ールドを出力する。
+
+</P>
+
+<PRE>
+$ awk '$1 == "foo" { print $2 }' BBS-list
+</PRE>
+
+<P>
+(これはなにも出力しない。なぜなら、"foo"という名前のBBSは
+ないからだ。)
+対照的に、次の例では
+第一フィールドに<SAMP>`foo'</SAMP>を含むレコードを出力するものである。
+
+</P>
+
+
+<PRE>
+$ awk '$1 ~ /foo/ { print $2 }' BBS-list
+-| 555-1234
+-| 555-6699
+-| 555-6480
+-| 555-2127
+</PRE>
+
+<P>
+ブール式もまた同様にパターンとして使われている。パターンが入力レ
+コードにマッチするかどうかを、部分式がマッチするかどうかで判定す
+る。
+
+</P>
+<P>
+例を挙げると、次のコマンドは
+<SAMP>`2400'</SAMP>と<SAMP>`foo'</SAMP>の両方を含む<TT>`BBS-list'</TT>中の
+レコード全てを出力する。
+
+</P>
+
+<PRE>
+$ awk '/2400/ &#38;&#38; /foo/' BBS-list
+-| fooey        555-1234     2400/1200/300     B
+</PRE>
+
+<P>
+次の例は<SAMP>`2400'</SAMP> か <SAMP>`foo'</SAMP>の<STRONG>いずれか</STRONG>(両方でもよい)を含む
+<TT>`BBS-list'</TT>中のすべてのレコードをすべて出力する。
+
+</P>
+
+
+<PRE>
+$ awk '/2400/ || /foo/' BBS-list
+-| alpo-net     555-3412     2400/1200/300     A
+-| bites        555-1675     2400/1200/300     A
+-| fooey        555-1234     2400/1200/300     B
+-| foot         555-6699     1200/300          B
+-| macfoo       555-6480     1200/300          A
+-| sdace        555-3430     2400/1200/300     A
+-| sabafoo      555-2127     1200/300          C
+</PRE>
+
+<P>
+次の例では、<SAMP>`foo'</SAMP>という文字列を<STRONG>含まない</STRONG><TT>`BBS-list'</TT>の
+レコードを全て出力する。
+
+</P>
+
+<PRE>
+$ awk '! /foo/' BBS-list
+-| aardvark     555-5553     1200/300          B
+-| alpo-net     555-3412     2400/1200/300     A
+-| barfly       555-7685     1200/300          A
+-| bites        555-1675     2400/1200/300     A
+-| camelot      555-0542     300               C
+-| core         555-2912     1200/300          C
+-| sdace        555-3430     2400/1200/300     A
+</PRE>
+
+<P>
+パターン中にあるブール演算子の部分式は、正規表現定数や、比較、あるいは任
+意の<CODE>awk</CODE>式であってよい。範囲パターンは式ではなく、論理パターンの内
+側に置くことはできない。同様に、あらゆる入力レコードとはマッチしないスペ
+シャルパターン<CODE>BEGIN</CODE>や<CODE>END</CODE>も式ではなく、論理パターンの内側に
+置くことはできない。
+
+</P>
+<P>
+パターンとしての正規表現定数も同様に expression patternの特殊な
+ケースである。<CODE>/foo/</CODE>は、
+<SAMP>`foo'</SAMP>がカレント入力レコードにあるときに1という値を持つ式である。
+したがって、<CODE>/foo/</CODE>は<SAMP>`foo/'</SAMP>を含むレコードにマッチする
+パターンである。
+
+</P>
+
+
+<H3><A NAME="SEC92" HREF="gawk_toc.html#SEC92">パターンを使ったレコード範囲の指定</A></H3>
+
+<P>
+<A NAME="IDX407"></A>
+<A NAME="IDX408"></A>
+<A NAME="IDX409"></A>
+<STRONG>範囲パターン</STRONG>(range pattern)は<CODE><VAR>begpat</VAR>, <VAR>endpat</VAR></CODE>の
+ように、カンマで区切られた二つのパターンからなる。これは連続した範囲の
+入力レコードにマッチする。最初のパターン<VAR>begpat</VAR>は範囲の始まりを制
+御し、二番目のパターン<VAR>endpat</VAR>は範囲の終わりを制御する。たとえば
+
+</P>
+
+<PRE>
+awk '$1 == "on", $1 == "off"'
+</PRE>
+
+<P>
+これは<SAMP>`on'</SAMP>/<SAMP>`off'</SAMP>のあるレコードの間にあるレコードを
+<SAMP>`on'</SAMP>/<SAMP>`off'</SAMP>のあるレコードも含めて出力する。
+
+</P>
+<P>
+範囲パターンは入力レコードと比較し<VAR>begpat</VAR>とマッチすることで始まる。レコ
+ードが<VAR>begpat</VAR>とマッチした時、範囲パターンは真となる。 <VAR>endpat</VAR>とマッ
+チする入力レコードがみつかるまですべての入力レコードはパターンにマッチしたと
+扱われる。 <VAR>endpat</VAR>とマッチする入力レコードが見付かったとき、範囲パター
+ンはそれ以降の入力レコードのマッチングの際には偽となる。そして今度はまた入力
+レコードと<VAR>begpat</VAR>がマッチするかどうかを検査するのである。
+
+</P>
+<P>
+範囲パターンを真にしたり、偽にしたりしたレコードそのものも範囲パターンにマッ
+チしたと扱われる。もしここでそのようなレコードは扱いたくないというのであれば
+<CODE>if</CODE>文を使って、ルールのアクション部分でそのようなレコードを区別すれば
+良い。
+
+</P>
+<P>
+範囲の始まりと終わりを同じパターンにすることも可能である。そのような場合、ア
+クションはマッチしたレコードに対してのみ実行される。
+
+</P>
+<P>
+例えば、二つの目印(ここでは<SAMP>`%'</SAMP>としよう)に挟まれている
+テキストを無視したいと考えたとしよう。
+これを区切りのテキストを記述した範囲パターンと<CODE>next</CODE>文
+(まだ説明していない。セクション <A HREF="gawk_10.html#SEC105">The <CODE>next</CODE> Statement</A>を参照)
+を組み合わせて、<CODE>awk</CODE>に処理をスキップさせることを
+例えば以下ののプログラムのようにして試みるかもしれない。
+
+</P>
+
+<PRE>
+/^%$/,/^%$/    { next }
+               { print }
+</PRE>
+
+<P>
+<A NAME="IDX410"></A>
+このプログラムは、<SAMP>`%'</SAMP>だけがある最初の行で
+範囲の開始と終了を行ってしまうので失敗してしまう。
+これを行うには、フラグを使用して次のようなプログラムを
+書かなければならない。
+
+<PRE>
+/^%$/     { skip = ! skip; next }
+skip == 1 { next } # `skip' がセットされていたらその行を飛ばす
+</PRE>
+
+<P>
+範囲パターンの中では、<SAMP>`,'</SAMP>はすべての演算子の中で
+もっとも優先順位の低い(最後に評価が行われる)演算子であることに
+注意すること。したがって、次の例のようなプログラムでは
+別の単純なテストと範囲パターンが組み合わされて扱われてしまう。
+
+</P>
+
+<PRE>
+echo Yes | awk '/1/,/2/ || /Yes/'
+</PRE>
+
+<P>
+このプログラムの作者は<SAMP>`(/1/,/2/) || /Yes/'</SAMP>のつもりだった。
+しかし、<CODE>awk</CODE>はこれを<SAMP>`/1/, (/2/ || /Yes/)'</SAMP>のように
+解釈する。これは変更したり、対処したりすることはできない。
+範囲パターンは他のパターンと組み合わせないこと。
+
+</P>
+
+
+<H3><A NAME="SEC93" HREF="gawk_toc.html#SEC93">特殊パターン<CODE>BEGIN</CODE>と<CODE>END</CODE></A></H3>
+
+<P>
+<A NAME="IDX411"></A>
+<A NAME="IDX412"></A>
+<A NAME="IDX413"></A>
+<A NAME="IDX414"></A>
+<CODE>BEGIN</CODE>と<CODE>END</CODE>は特殊なパターンである。
+これらは入力レコードにマッチするためには使われなず、
+<CODE>awk</CODE>スクリプトのスタートアップやクリーンアップに
+使われる。
+
+</P>
+
+
+
+<H4><A NAME="SEC94" HREF="gawk_toc.html#SEC94">Startup and Cleanup Actions</A></H4>
+
+<P>
+<CODE>BEGIN</CODE>ルールは一度だけ、最初の入力レコードが読み込まれる前に実行され、
+<CODE>END</CODE>もやはり一度だけ、すべての入力が行なわれた後で実行される。
+例を挙げよう。
+
+</P>
+
+<PRE>
+$ awk '
+&#62; BEGIN { print "Analysis of \"foo\"" }
+&#62; /foo/ { ++n }
+&#62; END   { print "\"foo\" appears " n " times." }' BBS-list
+-| Analysis of "foo"
+-| "foo" appears 4 times.
+</PRE>
+
+<P>
+このプログラムは入力ファイル<TT>`BBS-list'</TT>中のレコードのうち、 <SAMP>`foo'</SAMP>と
+いう文字列を含むレコードの数を出力する。 <CODE>BEGIN</CODE>ルールでレポートのタイ
+トルを出力する。ここで、<CODE>BEGIN</CODE>ルールの中で、カウンタに使用する変数
+<CODE>foobar</CODE>を 0に初期化する必要はない。<CODE>awk</CODE>が自動的にそれを行なうか
+らである (セクション <A HREF="gawk_8.html#SEC73">Variables</A>を参照).
+
+</P>
+<P>
+二番目のルールで、<SAMP>`foo'</SAMP>を含むレコードを読むたびに変数<CODE>foobar</CODE>をイ
+ンクリメントしている。 <CODE>END</CODE>ルールでは実行終了時の<CODE>foobar</CODE>の値を出
+力している。
+
+</P>
+<P>
+<CODE>BEGIN</CODE> と <CODE>END</CODE>は範囲を示すためには使えないし、論理演算子と一緒に
+使うこともできない(それどころかそれらは他の演算子と一緒に使うこともできない)。
+
+</P>
+<P>
+<CODE>awk</CODE>プログラムでは<CODE>BEGIN</CODE> ルールや <CODE>END</CODE>ルールを複数記述
+することもできる。そのような複数のルールは、プログラムの先頭から見付かっ
+た順に全ての<CODE>BEGIN</CODE>ルールはスタートアップ時に、全ての<CODE>END</CODE>ルー
+ルは終了時に実行される。この機能は、<CODE>awk</CODE>の1987年のバージョンで付け
+加えられた。また、これはPOSIXの標準にも含まれている。オリジナル(1978年) 
+の<CODE>awk</CODE>では、<CODE>BEGIN</CODE>ルールはプログラムの先頭に、<CODE>END</CODE>ルー
+ルはプログラムの最後に置かれていて、それぞれプログラム中に一つだけあるこ
+とを要求していた。今やこうする必要はないのだが、このようにすることはプロ
+グラムの構成を改良し、可読性を向上させるアイデアではある。
+
+</P>
+<P>
+複数の<CODE>BEGIN</CODE> や <CODE>END</CODE>はライブラリを記述するのに便利である。ラ
+イブラリはそれぞれ自分の<CODE>BEGIN</CODE> ルールや <CODE>END</CODE>ルールを自分のス
+タートアップやクリーンアップのために持つことができる。気を付けなければな
+らないのは、コマンドラインに記述されるライブラリの名前の順番によって、  
+（ライブラリ中の）<CODE>BEGIN</CODE> ルールや <CODE>END</CODE>ルールの実行される順番
+が左右されるということである。したがって、ライブラリファイルで実行される
+順番に依存するような記述をしないように注意しなければならない。より詳しい
+ライブラリ関数の使い方は
+セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照、
+便利なライブラリ関数は
+セクション <A HREF="gawk_16.html#SEC141"><CODE>awk</CODE>の関数ライブラリ</A>を参照。
+
+</P>
+
+<P>
+<A NAME="IDX415"></A>
+<CODE>BEGIN</CODE>ルールだけで、他のルールを一切持っていない<CODE>awk</CODE>プログラ
+ムは、<CODE>BEGIN</CODE>ルールを実行した後でプログラムの実行を終了する(オリジ 
+ナルバージョンの<CODE>awk</CODE>では、ファイルの終端まで入力ファイルを読み込み、
+呼んだ内容を無視していた)。しかし、<CODE>END</CODE>ルールがあった場合には他の 
+ルールがなかったとしても、入力の読み込みを行う。これは<CODE>END</CODE>ルールで
+<CODE>FNR</CODE> や <CODE>NR</CODE>という変数をチェックする場合に必要だからである
+(d.c.)。
+
+</P>
+<P>
+<CODE>BEGIN</CODE> ルールおよび、 <CODE>END</CODE>ルールはアクション部を持っていなければ
+ならない。これらのルールにはデフォルトアクションはなく、実行時にカレントレコ
+ードも存在しないからである。
+
+</P>
+
+
+<H4><A NAME="SEC95" HREF="gawk_toc.html#SEC95">Input/Output from <CODE>BEGIN</CODE> and <CODE>END</CODE> Rules</A></H4>
+
+<P>
+<A NAME="IDX416"></A>
+<CODE>BEGIN</CODE>ルールや<CODE>END</CODE>ルールから入出力を行ったときに
+生じる幾つかの(時として微妙な)事柄がある。
+
+</P>
+<P>
+第一の点は、<CODE>BEGIN</CODE>ルール中で<CODE>$0</CODE>の値を扱うことに関してのもの 
+である。<CODE>BEGIN</CODE>ルールは何等かの入力が行われる前に実行されるので、入
+力レコードも、フィールドも<CODE>BEGIN</CODE>ルール実行時には存在していない。
+<CODE>$0</CODE>やフィールドを参照すると、その結果は空文字列かゼロ(これは文脈によ
+る)のいずれかになる。<CODE>$0</CODE>に本当の値を格納する手段としては、変数指定
+なしで<CODE>getline</CODE>(セクション <A HREF="gawk_6.html#SEC46"><CODE>getline</CODE>を使った入力</A>を参照)
+コマンドを使うというものがある。もう一つのやり方として、単に値を代入すると
+いう手段もある。
+
+</P>
+<P>
+<A NAME="IDX417"></A>
+第二の点は第一のものに似ているが、違う方向のものである。<CODE>END</CODE>ルール
+の内側では、<CODE>$0</CODE>や<CODE>NF</CODE>は伝統的に大部分の処理系において<CODE>END</CODE>
+ルール中の<CODE>$0</CODE>や<CODE>NF</CODE>は<STRONG>未定義</STRONG>だった。POSIXの標準は、
+<CODE>NF</CODE>が<CODE>END</CODE>ルール中で使用可能であることを規定しており、その内容
+は最後の入力レコードのフィールド数を保持しているように定められている。恐
+らくは見落としのために、この標準では論理上そう考えるべきであるにもかから
+わず、<CODE>$0</CODE>を同様に保存するということに言及していない。事実、
+<CODE>gawk</CODE>は<CODE>END</CODE>ルールのために、<CODE>$0</CODE>の値を保存している。
+
+</P>
+<P>
+第三の点は、先の二つに関連するものである。<CODE>BEGIN</CODE>ルールや
+<CODE>END</CODE>ルール中で<SAMP>`print'</SAMP>が意味するところはなんだろうか?
+それは通常と同じく、<SAMP>`print $0'</SAMP>である。
+<CODE>$0</CODE>が空文字列であれば、空行が印刷される。
+長い間<CODE>awk</CODE>プログラマは、<CODE>BEGIN</CODE>ルールや<CODE>END</CODE>ルールの
+中で、<CODE>$0</CODE>が空文字列であることを当てにして
+<SAMP>`print ""'</SAMP>の意味で<SAMP>`print'</SAMP>を使っていた。
+<CODE>BEGIN</CODE>ルールでこれを使っていたらそれはやめたほうが良い。
+少なくとも<CODE>gawk</CODE>を使っているときには、これを
+<CODE>END</CODE>ルールで使うのは悪いアイデアである。
+これは良くないスタイルであり、空の行を出力したいのならば
+それを明確に記述すべきである。
+
+</P>
+
+
+<H3><A NAME="SEC96" HREF="gawk_toc.html#SEC96">空パターン</A></H3>
+
+<P>
+<A NAME="IDX418"></A>
+<A NAME="IDX419"></A>
+空のパターン(つまり、パターンがないということ)は<STRONG>すべての</STRONG>入力レコー
+ドとマッチするように扱われる。例えば次のプログラムでは、
+
+</P>
+
+<PRE>
+awk '{ print $1 }' BBS-list
+</PRE>
+
+<P>
+すべてのレコードの第一フィールドを出力する。
+
+</P>
+
+
+<H2><A NAME="SEC97" HREF="gawk_toc.html#SEC97">Overview of Actions</A></H2>
+<P>
+<A NAME="IDX420"></A>
+<A NAME="IDX421"></A>
+<A NAME="IDX422"></A>
+<A NAME="IDX423"></A>
+
+</P>
+<P>
+<CODE>awk</CODE>のプログラムはルールと関数定義などの並びの集まりである
+(関数はこの後で説明する。
+セクション <A HREF="gawk_14.html#SEC129">ユーザー定義関数</A>を参照.)。
+
+</P>
+<P>
+ルールはパターンとアクション、もしくはそのどちらか一方からなる。
+<STRONG>アクション</STRONG>の目的は<CODE>awk</CODE>に対してパターンがマッチしたときに何を行な
+うかを示すということである。したがって、完全な形のプログラムは次のようなもの
+である。
+
+</P>
+
+<PRE>
+[<VAR>pattern</VAR>] [{ <VAR>action</VAR> }]
+[<VAR>pattern</VAR>] [{ <VAR>action</VAR> }]
+...
+function <VAR>name</VAR>(<VAR>args</VAR>) { ... }
+...
+</PRE>
+
+<P>
+アクションは、カーリーブレース(<SAMP>`{'</SAMP> and <SAMP>`}'</SAMP>)に囲まれたひとつ以上
+の<CODE>awk</CODE>の文から構成される。それぞれの文は一つのことをする。文は改行かセ
+ミコロンで区切られている。
+
+</P>
+<P>
+たとえアクション部がたった一つの文だけであったり、文がなかったとしても、アク
+ション部をカーリーブレースで囲まなければならない。しかし、アクション部を省略
+するのであればカーリーブレースも一緒に省略することができる(省略されたアクショ
+ンは<SAMP>`{ print $0 }'</SAMP>と同じ働きをする)。
+
+</P>
+
+<PRE>
+/foo/  { }  # fooにマッチして、なにもしない - 空のアクション
+/foo/       # fooにマッチしてレコードを出力 - 省略されたアクション
+</PRE>
+
+<P>
+以下に挙げるものは<CODE>awk</CODE>がサポートする文の種類である。
+
+</P>
+
+<UL>
+<LI>
+
+関数呼び出しや変数への値の代入などの式。
+(セクション <A HREF="gawk_8.html#SEC68">式</A>を参照). 
+この種の文の実行は単に式の値を計算し、それを無視するだけである。
+これは式の副作用を活用するということである
+(セクション <A HREF="gawk_8.html#SEC79">代入式</A>を参照).
+
+<LI>
+
+<CODE>awk</CODE>プログラムの制御フローを特定する制御文。 <CODE>awk</CODE>言語ではCと同じ
+ような(<CODE>if</CODE>, <CODE>for</CODE>, <CODE>while</CODE>, など) 制御文と、幾つかの特殊な制
+御文がある
+(セクション <A HREF="gawk_10.html#SEC98">アクション中の制御文</A>を参照).
+
+<LI>
+
+一つ以上の文をカーリーブレースで囲んだ複合文。
+複合文は幾つかの文を一つにまとめて、<CODE>if</CODE>文や<CODE>while</CODE>文、
+<CODE>do</CODE>文、<CODE>for</CODE>文で扱うために使用する。
+
+<LI>
+
+<CODE>getline</CODE>コマンド
+(セクション <A HREF="gawk_6.html#SEC46"><CODE>getline</CODE>を使った入力</A>を参照)や
+<CODE>next</CODE>文
+(セクション <A HREF="gawk_10.html#SEC105">The <CODE>next</CODE> Statement</A>を参照)、
+<CODE>nextfile</CODE> 文
+(セクション <A HREF="gawk_10.html#SEC106">The <CODE>nextfile</CODE> Statement</A>を参照).
+を使った入力文。
+
+<LI>
+
+<CODE>print</CODE> や <CODE>printf</CODE>といった出力文。
+セクション <A HREF="gawk_7.html#SEC55">出力を行う</A>を参照.
+
+<LI>
+
+配列要素を削除するための削除文。
+セクション <A HREF="gawk_12.html#SEC118">The <CODE>delete</CODE> Statement</A>を参照.
+</UL>
+
+<P>
+次の章は制御文を詳しく説明している。
+
+</P>
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_8.html">前</A>, <A HREF="gawk_10.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

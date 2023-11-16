@@ -1,0 +1,338 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - Table of Contents</TITLE>
+</HEAD>
+<BODY>
+<H1>Effective AWK Programming</H1>
+<H2>A User's Guide for GNU Awk</H2>
+<H2>Edition 1.0.4</H2>
+<H2>April, 1999</H2>
+<ADDRESS>Arnold D. Robbins</ADDRESS>
+<P>
+<UL>
+<LI><A NAME="SEC1" HREF="gawk_1.html#SEC1">はじめに</A>
+<UL>
+<LI><A NAME="SEC2" HREF="gawk_1.html#SEC2"><CODE>awk</CODE>と<CODE>gawk</CODE>の歴史</A>
+<LI><A NAME="SEC3" HREF="gawk_1.html#SEC3">The GNU Project and This Book</A>
+<LI><A NAME="SEC4" HREF="gawk_1.html#SEC4">Acknowledgements</A>
+</UL>
+<LI><A NAME="SEC5" HREF="gawk_2.html#SEC5">Introduction</A>
+<UL>
+<LI><A NAME="SEC6" HREF="gawk_2.html#SEC6">Using This Book</A>
+<UL>
+<LI><A NAME="SEC7" HREF="gawk_2.html#SEC7">Dark Corners</A>
+</UL>
+<LI><A NAME="SEC8" HREF="gawk_2.html#SEC8">Typographical Conventions</A>
+<LI><A NAME="SEC9" HREF="gawk_2.html#SEC9">例で使用するデータファイル</A>
+</UL>
+<LI><A NAME="SEC10" HREF="gawk_3.html#SEC10">Getting Started with <CODE>awk</CODE></A>
+<UL>
+<LI><A NAME="SEC11" HREF="gawk_3.html#SEC11">A Rose By Any Other Name</A>
+<LI><A NAME="SEC12" HREF="gawk_3.html#SEC12"><CODE>awk</CODE>プログラムの実行の仕方</A>
+<UL>
+<LI><A NAME="SEC13" HREF="gawk_3.html#SEC13">使い捨ての一発<CODE>awk</CODE>プログラム</A>
+<LI><A NAME="SEC14" HREF="gawk_3.html#SEC14">入力ファイルなしの<CODE>awk</CODE>の実行</A>
+<LI><A NAME="SEC15" HREF="gawk_3.html#SEC15">長いプログラムを実行する</A>
+<LI><A NAME="SEC16" HREF="gawk_3.html#SEC16">実行可能な<CODE>awk</CODE>プログラム</A>
+<LI><A NAME="SEC17" HREF="gawk_3.html#SEC17"><CODE>awk</CODE>プログラム中のコメント</A>
+</UL>
+<LI><A NAME="SEC18" HREF="gawk_3.html#SEC18">非常に単純な例</A>
+<LI><A NAME="SEC19" HREF="gawk_3.html#SEC19">二つのルールを持つ例</A>
+<LI><A NAME="SEC20" HREF="gawk_3.html#SEC20">より複雑な例</A>
+<LI><A NAME="SEC21" HREF="gawk_3.html#SEC21"><CODE>awk</CODE> の文と行</A>
+<LI><A NAME="SEC22" HREF="gawk_3.html#SEC22"><CODE>awk</CODE>のその他の機能。</A>
+<LI><A NAME="SEC23" HREF="gawk_3.html#SEC23"><CODE>awk</CODE>を使うとき</A>
+</UL>
+<LI><A NAME="SEC24" HREF="gawk_4.html#SEC24">便利な一行野郎</A>
+<LI><A NAME="SEC25" HREF="gawk_5.html#SEC25">正規表現</A>
+<UL>
+<LI><A NAME="SEC26" HREF="gawk_5.html#SEC26">正規表現の使い方</A>
+<LI><A NAME="SEC27" HREF="gawk_5.html#SEC27">エスケープシーケンス</A>
+<LI><A NAME="SEC28" HREF="gawk_5.html#SEC28">正規表現演算子</A>
+<LI><A NAME="SEC29" HREF="gawk_5.html#SEC29"><CODE>gawk</CODE>でのみ使える正規表現演算子</A>
+<LI><A NAME="SEC30" HREF="gawk_5.html#SEC30">大小文字を区別するマッチング</A>
+<LI><A NAME="SEC31" HREF="gawk_5.html#SEC31">How Much Text Matches?</A>
+<LI><A NAME="SEC32" HREF="gawk_5.html#SEC32">動的正規表現を使う</A>
+</UL>
+<LI><A NAME="SEC33" HREF="gawk_6.html#SEC33">入力ファイルの読み込み</A>
+<UL>
+<LI><A NAME="SEC34" HREF="gawk_6.html#SEC34">入力をレコードへと分割をするやりかた</A>
+<LI><A NAME="SEC35" HREF="gawk_6.html#SEC35">フィールドの検査</A>
+<LI><A NAME="SEC36" HREF="gawk_6.html#SEC36">定数でないフィールド番号</A>
+<LI><A NAME="SEC37" HREF="gawk_6.html#SEC37">フィールドの内容を変更する</A>
+<LI><A NAME="SEC38" HREF="gawk_6.html#SEC38">フィールドの分割方法の指定</A>
+<UL>
+<LI><A NAME="SEC39" HREF="gawk_6.html#SEC39">フィールド分割の基礎</A>
+<LI><A NAME="SEC40" HREF="gawk_6.html#SEC40">フィールド分割に正規表現を使う</A>
+<LI><A NAME="SEC41" HREF="gawk_6.html#SEC41">個々のキャラクタを別個のフィールドにする</A>
+<LI><A NAME="SEC42" HREF="gawk_6.html#SEC42">コマンドラインで <CODE>FS</CODE> の設定をする</A>
+<LI><A NAME="SEC43" HREF="gawk_6.html#SEC43">フィールド分割のまとめ</A>
+</UL>
+<LI><A NAME="SEC44" HREF="gawk_6.html#SEC44">固定長データの読み込み</A>
+<LI><A NAME="SEC45" HREF="gawk_6.html#SEC45">複数行レコード</A>
+<LI><A NAME="SEC46" HREF="gawk_6.html#SEC46"><CODE>getline</CODE>を使った入力</A>
+<UL>
+<LI><A NAME="SEC47" HREF="gawk_6.html#SEC47">Introduction to <CODE>getline</CODE></A>
+<LI><A NAME="SEC48" HREF="gawk_6.html#SEC48">引数なしで<CODE>getline</CODE>を使う</A>
+<LI><A NAME="SEC49" HREF="gawk_6.html#SEC49">変数にgetlineの結果を格納する</A>
+<LI><A NAME="SEC50" HREF="gawk_6.html#SEC50"><CODE>getline</CODE>を使ったファイルからの入力</A>
+<LI><A NAME="SEC51" HREF="gawk_6.html#SEC51"><CODE>getline</CODE>を使ってファイルから変数へ格納</A>
+<LI><A NAME="SEC52" HREF="gawk_6.html#SEC52"><CODE>getline</CODE>を使ったパイプからの入力</A>
+<LI><A NAME="SEC53" HREF="gawk_6.html#SEC53"><CODE>getline</CODE>を使ってパイプからの内容を変数に格納する</A>
+<LI><A NAME="SEC54" HREF="gawk_6.html#SEC54">各種<CODE>getline</CODE> のまとめ</A>
+</UL>
+</UL>
+<LI><A NAME="SEC55" HREF="gawk_7.html#SEC55">出力を行う</A>
+<UL>
+<LI><A NAME="SEC56" HREF="gawk_7.html#SEC56">The <CODE>print</CODE> Statement</A>
+<LI><A NAME="SEC57" HREF="gawk_7.html#SEC57">Examples of <CODE>print</CODE> Statements</A>
+<LI><A NAME="SEC58" HREF="gawk_7.html#SEC58">Output Separators</A>
+<LI><A NAME="SEC59" HREF="gawk_7.html#SEC59">Controlling Numeric Output with <CODE>print</CODE></A>
+<LI><A NAME="SEC60" HREF="gawk_7.html#SEC60">Using <CODE>printf</CODE> Statements for Fancier Printing</A>
+<UL>
+<LI><A NAME="SEC61" HREF="gawk_7.html#SEC61">Introduction to the <CODE>printf</CODE> Statement</A>
+<LI><A NAME="SEC62" HREF="gawk_7.html#SEC62">書式制御文字</A>
+<LI><A NAME="SEC63" HREF="gawk_7.html#SEC63"><CODE>printf</CODE>の書式の修飾子</A>
+<LI><A NAME="SEC64" HREF="gawk_7.html#SEC64"><CODE>printf</CODE>を使った例</A>
+</UL>
+<LI><A NAME="SEC65" HREF="gawk_7.html#SEC65">Redirecting Output of <CODE>print</CODE> and <CODE>printf</CODE></A>
+<LI><A NAME="SEC66" HREF="gawk_7.html#SEC66">Special File Names in <CODE>gawk</CODE></A>
+<LI><A NAME="SEC67" HREF="gawk_7.html#SEC67">Closing Input and Output Files and Pipes</A>
+</UL>
+<LI><A NAME="SEC68" HREF="gawk_8.html#SEC68">式</A>
+<UL>
+<LI><A NAME="SEC69" HREF="gawk_8.html#SEC69">Constant Expressions</A>
+<UL>
+<LI><A NAME="SEC70" HREF="gawk_8.html#SEC70">数値定数と文字列定数</A>
+<LI><A NAME="SEC71" HREF="gawk_8.html#SEC71">正規表現定数</A>
+</UL>
+<LI><A NAME="SEC72" HREF="gawk_8.html#SEC72">正規表現定数を使う</A>
+<LI><A NAME="SEC73" HREF="gawk_8.html#SEC73">Variables</A>
+<UL>
+<LI><A NAME="SEC74" HREF="gawk_8.html#SEC74">プログラム中で変数を使う</A>
+<LI><A NAME="SEC75" HREF="gawk_8.html#SEC75">コマンドライン上での変数への代入</A>
+</UL>
+<LI><A NAME="SEC76" HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>
+<LI><A NAME="SEC77" HREF="gawk_8.html#SEC77">Arithmetic Operators</A>
+<LI><A NAME="SEC78" HREF="gawk_8.html#SEC78">String Concatenation</A>
+<LI><A NAME="SEC79" HREF="gawk_8.html#SEC79">代入式</A>
+<LI><A NAME="SEC80" HREF="gawk_8.html#SEC80">Increment and Decrement Operators</A>
+<LI><A NAME="SEC81" HREF="gawk_8.html#SEC81">True and False in <CODE>awk</CODE></A>
+<LI><A NAME="SEC82" HREF="gawk_8.html#SEC82">Variable Typing and Comparison Expressions</A>
+<LI><A NAME="SEC83" HREF="gawk_8.html#SEC83">Boolean Expressions</A>
+<LI><A NAME="SEC84" HREF="gawk_8.html#SEC84">Conditional Expressions</A>
+<LI><A NAME="SEC85" HREF="gawk_8.html#SEC85">Function Calls</A>
+<LI><A NAME="SEC86" HREF="gawk_8.html#SEC86">Operator Precedence (How Operators Nest)</A>
+</UL>
+<LI><A NAME="SEC87" HREF="gawk_9.html#SEC87">パターンとアクション</A>
+<UL>
+<LI><A NAME="SEC88" HREF="gawk_9.html#SEC88">Pattern Elements</A>
+<UL>
+<LI><A NAME="SEC89" HREF="gawk_9.html#SEC89">パターンの種類</A>
+<LI><A NAME="SEC90" HREF="gawk_9.html#SEC90">パターンとしての正規表現</A>
+<LI><A NAME="SEC91" HREF="gawk_9.html#SEC91">パターンとしての式</A>
+<LI><A NAME="SEC92" HREF="gawk_9.html#SEC92">パターンを使ったレコード範囲の指定</A>
+<LI><A NAME="SEC93" HREF="gawk_9.html#SEC93">特殊パターン<CODE>BEGIN</CODE>と<CODE>END</CODE></A>
+<UL>
+<LI><A NAME="SEC94" HREF="gawk_9.html#SEC94">Startup and Cleanup Actions</A>
+<LI><A NAME="SEC95" HREF="gawk_9.html#SEC95">Input/Output from <CODE>BEGIN</CODE> and <CODE>END</CODE> Rules</A>
+</UL>
+<LI><A NAME="SEC96" HREF="gawk_9.html#SEC96">空パターン</A>
+</UL>
+<LI><A NAME="SEC97" HREF="gawk_9.html#SEC97">Overview of Actions</A>
+</UL>
+<LI><A NAME="SEC98" HREF="gawk_10.html#SEC98">アクション中の制御文</A>
+<UL>
+<LI><A NAME="SEC99" HREF="gawk_10.html#SEC99">The <CODE>if</CODE>-<CODE>else</CODE> Statement</A>
+<LI><A NAME="SEC100" HREF="gawk_10.html#SEC100">The <CODE>while</CODE> Statement</A>
+<LI><A NAME="SEC101" HREF="gawk_10.html#SEC101">The <CODE>do</CODE>-<CODE>while</CODE> Statement</A>
+<LI><A NAME="SEC102" HREF="gawk_10.html#SEC102">The <CODE>for</CODE> Statement</A>
+<LI><A NAME="SEC103" HREF="gawk_10.html#SEC103">The <CODE>break</CODE> Statement</A>
+<LI><A NAME="SEC104" HREF="gawk_10.html#SEC104">The <CODE>continue</CODE> Statement</A>
+<LI><A NAME="SEC105" HREF="gawk_10.html#SEC105">The <CODE>next</CODE> Statement</A>
+<LI><A NAME="SEC106" HREF="gawk_10.html#SEC106">The <CODE>nextfile</CODE> Statement</A>
+<LI><A NAME="SEC107" HREF="gawk_10.html#SEC107">The <CODE>exit</CODE> Statement</A>
+</UL>
+<LI><A NAME="SEC108" HREF="gawk_11.html#SEC108">組み込み変数</A>
+<UL>
+<LI><A NAME="SEC109" HREF="gawk_11.html#SEC109">Built-in Variables that Control <CODE>awk</CODE></A>
+<LI><A NAME="SEC110" HREF="gawk_11.html#SEC110">情報を伝達する組込み変数</A>
+<LI><A NAME="SEC111" HREF="gawk_11.html#SEC111">Using <CODE>ARGC</CODE> and <CODE>ARGV</CODE></A>
+</UL>
+<LI><A NAME="SEC112" HREF="gawk_12.html#SEC112"><CODE>awk</CODE>における配列</A>
+<UL>
+<LI><A NAME="SEC113" HREF="gawk_12.html#SEC113">Introduction to Arrays</A>
+<LI><A NAME="SEC114" HREF="gawk_12.html#SEC114">Referring to an Array Element</A>
+<LI><A NAME="SEC115" HREF="gawk_12.html#SEC115">Assigning Array Elements</A>
+<LI><A NAME="SEC116" HREF="gawk_12.html#SEC116">Basic Array Example</A>
+<LI><A NAME="SEC117" HREF="gawk_12.html#SEC117">Scanning All Elements of an Array</A>
+<LI><A NAME="SEC118" HREF="gawk_12.html#SEC118">The <CODE>delete</CODE> Statement</A>
+<LI><A NAME="SEC119" HREF="gawk_12.html#SEC119">Using Numbers to Subscript Arrays</A>
+<LI><A NAME="SEC120" HREF="gawk_12.html#SEC120">Using Uninitialized Variables as Subscripts</A>
+<LI><A NAME="SEC121" HREF="gawk_12.html#SEC121">Multi-dimensional Arrays</A>
+<LI><A NAME="SEC122" HREF="gawk_12.html#SEC122">Scanning Multi-dimensional Arrays</A>
+</UL>
+<LI><A NAME="SEC123" HREF="gawk_13.html#SEC123">組み込み関数</A>
+<UL>
+<LI><A NAME="SEC124" HREF="gawk_13.html#SEC124">Calling Built-in Functions</A>
+<LI><A NAME="SEC125" HREF="gawk_13.html#SEC125">Numeric Built-in Functions</A>
+<LI><A NAME="SEC126" HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>
+<LI><A NAME="SEC127" HREF="gawk_13.html#SEC127">Built-in Functions for Input/Output</A>
+<LI><A NAME="SEC128" HREF="gawk_13.html#SEC128">Functions for Dealing with Time Stamps</A>
+</UL>
+<LI><A NAME="SEC129" HREF="gawk_14.html#SEC129">ユーザー定義関数</A>
+<UL>
+<LI><A NAME="SEC130" HREF="gawk_14.html#SEC130">Function Definition Syntax</A>
+<LI><A NAME="SEC131" HREF="gawk_14.html#SEC131">Function Definition Examples</A>
+<LI><A NAME="SEC132" HREF="gawk_14.html#SEC132">Calling User-defined Functions</A>
+<LI><A NAME="SEC133" HREF="gawk_14.html#SEC133">The <CODE>return</CODE> Statement</A>
+</UL>
+<LI><A NAME="SEC134" HREF="gawk_15.html#SEC134"><CODE>awk</CODE>を実行する</A>
+<UL>
+<LI><A NAME="SEC135" HREF="gawk_15.html#SEC135">コマンドラインオプション</A>
+<LI><A NAME="SEC136" HREF="gawk_15.html#SEC136">Other Command Line Arguments</A>
+<LI><A NAME="SEC137" HREF="gawk_15.html#SEC137"><CODE>AWKPATH</CODE>環境変数</A>
+<LI><A NAME="SEC138" HREF="gawk_15.html#SEC138">Obsolete Options and/or Features</A>
+<LI><A NAME="SEC139" HREF="gawk_15.html#SEC139">ドキュメント化されていないオプションと機能</A>
+<LI><A NAME="SEC140" HREF="gawk_15.html#SEC140">Known Bugs in <CODE>gawk</CODE></A>
+</UL>
+<LI><A NAME="SEC141" HREF="gawk_16.html#SEC141"><CODE>awk</CODE>の関数ライブラリ</A>
+<UL>
+<LI><A NAME="SEC142" HREF="gawk_16.html#SEC142">Simulating <CODE>gawk</CODE>-specific Features</A>
+<LI><A NAME="SEC143" HREF="gawk_16.html#SEC143">Implementing <CODE>nextfile</CODE> as a Function</A>
+<LI><A NAME="SEC144" HREF="gawk_16.html#SEC144">Assertions</A>
+<LI><A NAME="SEC145" HREF="gawk_16.html#SEC145">Rounding Numbers</A>
+<LI><A NAME="SEC146" HREF="gawk_16.html#SEC146">Translating Between Characters and Numbers</A>
+<LI><A NAME="SEC147" HREF="gawk_16.html#SEC147">Merging an Array Into a String</A>
+<LI><A NAME="SEC148" HREF="gawk_16.html#SEC148">Turning Dates Into Timestamps</A>
+<LI><A NAME="SEC149" HREF="gawk_16.html#SEC149">Managing the Time of Day</A>
+<LI><A NAME="SEC150" HREF="gawk_16.html#SEC150">Noting Data File Boundaries</A>
+<LI><A NAME="SEC151" HREF="gawk_16.html#SEC151">コマンドラインオプションの処理</A>
+<LI><A NAME="SEC152" HREF="gawk_16.html#SEC152">Reading the User Database</A>
+<LI><A NAME="SEC153" HREF="gawk_16.html#SEC153">Reading the Group Database</A>
+<LI><A NAME="SEC154" HREF="gawk_16.html#SEC154">Naming Library Function Global Variables</A>
+</UL>
+<LI><A NAME="SEC155" HREF="gawk_17.html#SEC155">実用的な <CODE>awk</CODE> プログラム</A>
+<UL>
+<LI><A NAME="SEC156" HREF="gawk_17.html#SEC156">Re-inventing Wheels for Fun and Profit</A>
+<UL>
+<LI><A NAME="SEC157" HREF="gawk_17.html#SEC157">フィールドとカラムの切り出し</A>
+<LI><A NAME="SEC158" HREF="gawk_17.html#SEC158">ファイル中の正規表現を探す</A>
+<LI><A NAME="SEC159" HREF="gawk_17.html#SEC159">ユーザー情報を出力する</A>
+<LI><A NAME="SEC160" HREF="gawk_17.html#SEC160">大きなファイルを分割する</A>
+<LI><A NAME="SEC161" HREF="gawk_17.html#SEC161">出力を複数のファイルに複製する</A>
+<LI><A NAME="SEC162" HREF="gawk_17.html#SEC162">テキストの重複のない行を出力する</A>
+<LI><A NAME="SEC163" HREF="gawk_17.html#SEC163">数え上げ</A>
+</UL>
+<LI><A NAME="SEC164" HREF="gawk_17.html#SEC164">A Grab Bag of <CODE>awk</CODE> Programs</A>
+<UL>
+<LI><A NAME="SEC165" HREF="gawk_17.html#SEC165">ドキュメント中の重複した語を探しだす</A>
+<LI><A NAME="SEC166" HREF="gawk_17.html#SEC166">アラーム時計プログラム</A>
+<LI><A NAME="SEC167" HREF="gawk_17.html#SEC167">キャラクタを変換する</A>
+<LI><A NAME="SEC168" HREF="gawk_17.html#SEC168">郵便の宛て名を出力する</A>
+<LI><A NAME="SEC169" HREF="gawk_17.html#SEC169">単語の使用数を調べる</A>
+<LI><A NAME="SEC170" HREF="gawk_17.html#SEC170">ソートされていないテキストから重複を取り除く</A>
+<LI><A NAME="SEC171" HREF="gawk_17.html#SEC171">Texinfoのソースファイルからプログラムを取り出す</A>
+<LI><A NAME="SEC172" HREF="gawk_17.html#SEC172">シンプルなストリームエディター</A>
+<LI><A NAME="SEC173" HREF="gawk_17.html#SEC173">ライブラリを使う簡単な方法</A>
+</UL>
+</UL>
+<LI><A NAME="SEC174" HREF="gawk_18.html#SEC174"><CODE>awk</CODE>の発展</A>
+<UL>
+<LI><A NAME="SEC175" HREF="gawk_18.html#SEC175">Major Changes between V7 and SVR3.1</A>
+<LI><A NAME="SEC176" HREF="gawk_18.html#SEC176">Changes between SVR3.1 and SVR4</A>
+<LI><A NAME="SEC177" HREF="gawk_18.html#SEC177">Changes between SVR4 and POSIX <CODE>awk</CODE></A>
+<LI><A NAME="SEC178" HREF="gawk_18.html#SEC178">Extensions in the Bell Laboratories <CODE>awk</CODE></A>
+<LI><A NAME="SEC179" HREF="gawk_18.html#SEC179">POSIX <CODE>awk</CODE>にはない<CODE>gawk</CODE>の拡張</A>
+</UL>
+<LI><A NAME="SEC180" HREF="gawk_19.html#SEC180"><CODE>gawk</CODE> に関するまとめ</A>
+<UL>
+<LI><A NAME="SEC181" HREF="gawk_19.html#SEC181">コマンドラインオプションのまとめ</A>
+<LI><A NAME="SEC182" HREF="gawk_19.html#SEC182">言語のまとめ</A>
+<LI><A NAME="SEC183" HREF="gawk_19.html#SEC183">変数とフィールド</A>
+<UL>
+<LI><A NAME="SEC184" HREF="gawk_19.html#SEC184">Fields</A>
+<LI><A NAME="SEC185" HREF="gawk_19.html#SEC185">Built-in Variables</A>
+<LI><A NAME="SEC186" HREF="gawk_19.html#SEC186">Arrays</A>
+<LI><A NAME="SEC187" HREF="gawk_19.html#SEC187">Data Types</A>
+</UL>
+<LI><A NAME="SEC188" HREF="gawk_19.html#SEC188">パターン</A>
+<UL>
+<LI><A NAME="SEC189" HREF="gawk_19.html#SEC189">Pattern Summary</A>
+<LI><A NAME="SEC190" HREF="gawk_19.html#SEC190">Regular Expressions</A>
+</UL>
+<LI><A NAME="SEC191" HREF="gawk_19.html#SEC191">アクション</A>
+<UL>
+<LI><A NAME="SEC192" HREF="gawk_19.html#SEC192">演算子</A>
+<LI><A NAME="SEC193" HREF="gawk_19.html#SEC193">制御文</A>
+<LI><A NAME="SEC194" HREF="gawk_19.html#SEC194">I/O Statements</A>
+<LI><A NAME="SEC195" HREF="gawk_19.html#SEC195"><CODE>printf</CODE> Summary</A>
+<LI><A NAME="SEC196" HREF="gawk_19.html#SEC196">Special File Names</A>
+<LI><A NAME="SEC197" HREF="gawk_19.html#SEC197">Built-in Functions</A>
+<LI><A NAME="SEC198" HREF="gawk_19.html#SEC198">Time Functions</A>
+<LI><A NAME="SEC199" HREF="gawk_19.html#SEC199">String Constants</A>
+</UL>
+<LI><A NAME="SEC200" HREF="gawk_19.html#SEC200">ユーザー定義関数</A>
+<LI><A NAME="SEC201" HREF="gawk_19.html#SEC201">歴史的な機能</A>
+</UL>
+<LI><A NAME="SEC202" HREF="gawk_20.html#SEC202"><CODE>gawk</CODE>をインストールする</A>
+<UL>
+<LI><A NAME="SEC203" HREF="gawk_20.html#SEC203"><CODE>gawk</CODE> の配布パッケージ</A>
+<UL>
+<LI><A NAME="SEC204" HREF="gawk_20.html#SEC204">Getting the <CODE>gawk</CODE> Distribution</A>
+<LI><A NAME="SEC205" HREF="gawk_20.html#SEC205">Extracting the Distribution</A>
+<LI><A NAME="SEC206" HREF="gawk_20.html#SEC206">Contents of the <CODE>gawk</CODE> Distribution</A>
+</UL>
+<LI><A NAME="SEC207" HREF="gawk_20.html#SEC207">UNIX上での <CODE>gawk</CODE>のコンパイルとインストール</A>
+<UL>
+<LI><A NAME="SEC208" HREF="gawk_20.html#SEC208">Compiling <CODE>gawk</CODE> for Unix</A>
+<LI><A NAME="SEC209" HREF="gawk_20.html#SEC209">The Configuration Process</A>
+</UL>
+<LI><A NAME="SEC210" HREF="gawk_20.html#SEC210">VMS上での<CODE>gawk</CODE>のコンパイルとインストール</A>
+<UL>
+<LI><A NAME="SEC211" HREF="gawk_20.html#SEC211">Compiling <CODE>gawk</CODE> on VMS</A>
+<LI><A NAME="SEC212" HREF="gawk_20.html#SEC212">Installing <CODE>gawk</CODE> on VMS</A>
+<LI><A NAME="SEC213" HREF="gawk_20.html#SEC213">Running <CODE>gawk</CODE> on VMS</A>
+<LI><A NAME="SEC214" HREF="gawk_20.html#SEC214">Building and Using <CODE>gawk</CODE> on VMS POSIX</A>
+</UL>
+<LI><A NAME="SEC215" HREF="gawk_20.html#SEC215">MS-DOS および OS/2 でのインストールとコンパイル</A>
+<LI><A NAME="SEC216" HREF="gawk_20.html#SEC216">Atari STでの <CODE>gawk</CODE> のインストール</A>
+<UL>
+<LI><A NAME="SEC217" HREF="gawk_20.html#SEC217">Compiling <CODE>gawk</CODE> on the Atari ST</A>
+<LI><A NAME="SEC218" HREF="gawk_20.html#SEC218">Running <CODE>gawk</CODE> on the Atari ST</A>
+</UL>
+<LI><A NAME="SEC219" HREF="gawk_20.html#SEC219">Amigaでの<CODE>gawk</CODE> のインストール</A>
+<LI><A NAME="SEC220" HREF="gawk_20.html#SEC220">問題やバグの報告</A>
+<LI><A NAME="SEC221" HREF="gawk_20.html#SEC221">自由に入手可能な他の<CODE>awk</CODE>処理系</A>
+</UL>
+<LI><A NAME="SEC222" HREF="gawk_21.html#SEC222">Implementation Notes</A>
+<UL>
+<LI><A NAME="SEC223" HREF="gawk_21.html#SEC223">互換性とデバッグ</A>
+<LI><A NAME="SEC224" HREF="gawk_21.html#SEC224"><CODE>gawk</CODE>に追加を行う</A>
+<UL>
+<LI><A NAME="SEC225" HREF="gawk_21.html#SEC225">Adding New Features</A>
+<LI><A NAME="SEC226" HREF="gawk_21.html#SEC226">Porting <CODE>gawk</CODE> to a New Operating System</A>
+</UL>
+<LI><A NAME="SEC227" HREF="gawk_21.html#SEC227">将来予定されている拡張</A>
+<LI><A NAME="SEC228" HREF="gawk_21.html#SEC228">改良の提案</A>
+</UL>
+<LI><A NAME="SEC229" HREF="gawk_22.html#SEC229">用語集</A>
+<LI><A NAME="SEC230" HREF="gawk_23.html#SEC230">GNU GENERAL PUBLIC LICENSE</A>
+<UL>
+<LI><A NAME="SEC231" HREF="gawk_23.html#SEC231">Preamble</A>
+<LI><A NAME="SEC232" HREF="gawk_23.html#SEC232">TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION</A>
+<LI><A NAME="SEC233" HREF="gawk_23.html#SEC233">How to Apply These Terms to Your New Programs</A>
+</UL>
+<LI><A NAME="SEC234" HREF="gawk_24.html#SEC234">GNU 一般公有使用許諾書</A>
+<LI><A NAME="SEC235" HREF="gawk_25.html#SEC235">Index</A>
+</UL>
+<HR>
+<P>This document was generated on 10 文月 1999 using the
+<A HREF="http://wwwcn.cern.ch/dci/texi2html/">texi2html</A>
+translator version 1.47.</P>
+</BODY>
+</HTML>

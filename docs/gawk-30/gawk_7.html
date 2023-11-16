@@ -1,0 +1,1213 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - 出力を行う</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_6.html">前</A>, <A HREF="gawk_8.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC55" HREF="gawk_toc.html#SEC55">出力を行う</A></H1>
+
+<P>
+<A NAME="IDX239"></A>
+<A NAME="IDX240"></A>
+もっともよく行われるアクションの一つは、入力の一部もしくは全部を出力するこ
+とである。単純な出力のために<CODE>print</CODE>文を使い、整形して出力するために
+<CODE>printf</CODE>文を使う。この両者はこの章で説明する。
+
+</P>
+
+
+
+<H2><A NAME="SEC56" HREF="gawk_toc.html#SEC56">The <CODE>print</CODE> Statement</A></H2>
+<P>
+<A NAME="IDX241"></A>
+
+</P>
+<P>
+<CODE>print</CODE>文は出力を単純に、標準的な書式で行う。カンマで区切られたリストに
+なっているデータを文字列とするか数値として出力するかを特定できるだけである。
+出力は一つのスペースで区切られ、最後に改行が加えられる。例を挙げよう。
+
+</P>
+
+<PRE>
+print <VAR>item1</VAR>, <VAR>item2</VAR>, ...
+</PRE>
+
+<P>
+アイテムのリストは、全体を括弧でくくる事もできる。この括弧は、アイテムのいず
+れかが関係演算子を使った式である場合には使う必要がある。そうしないと、リダ
+イレクションと混同してしまう可能性があるだろう
+(セクション <A HREF="gawk_7.html#SEC65">Redirecting Output of <CODE>print</CODE> and <CODE>printf</CODE></A>を参照).
+
+</P>
+<P>
+プリントの対象となるアイテムは文字列定数や数値定数、カレントレコードのフィー
+ルド(<CODE>$1</CODE>のような)、変数、式である。 <CODE>print</CODE>文は出力する値を完全
+に計算する。二つの例外として、どのように出力するか、つまりどの位カラムを出力
+するか、指数表示を使うか使わないか等を指定することはできない
+
+</P>
+<P>
+<CODE>print</CODE>文は演算結果を出力するのに汎用的なものである。しかしながら、
+二つの例外があって、<STRONG>どのように</STRONG>出力するのか、つまりどのくらいのカ 
+ラム数で、とか指数表記を使うのか使わないのかなどということを指定できない
+(この例外についてはセクション <A HREF="gawk_7.html#SEC58">Output Separators</A>を参照, および
+セクション <A HREF="gawk_7.html#SEC59">Controlling Numeric Output with <CODE>print</CODE></A>を参照.)。
+このためには<CODE>printf</CODE> 文を使う必要がある
+(セクション <A HREF="gawk_7.html#SEC60">Using <CODE>printf</CODE> Statements for Fancier Printing</A>を参照)。
+
+</P>
+<P>
+単に<SAMP>`print'</SAMP> とだけ書かれて何もアイテムのない<SAMP>`print'</SAMP> 文は 
+<SAMP>`print $0'</SAMP>と同じ動作、つまりカレントレコード全体を出力する。空行を出力
+するには、<SAMP>`print ""'</SAMP>として、空文字列を指定する。
+
+</P>
+<P>
+固定したテキストを出力するためには、<CODE>"Hello there"</CODE>の様な文字列定数
+を使う。ここで二重引用符を忘れた場合、そのテキストは式として扱われて、おそ
+らくはエラーとなるだろう。また、二つのアイテムの間にはスペースが出力される
+ことを覚えておいて欲しい。
+
+</P>
+<P>
+ほとんどの場合、各々の<CODE>print</CODE>文は一行の出力を作り出す。しかし、一行にか
+ぎらない。もし、アイテムの値が改行を含む文字列であった場合、改行は残りの文字
+列とともに出力される。このやり方で、一つの<CODE>print</CODE>で多くの行を出力するこ
+とができる。
+
+</P>
+
+
+<H2><A NAME="SEC57" HREF="gawk_toc.html#SEC57">Examples of <CODE>print</CODE> Statements</A></H2>
+
+<P>
+次に挙げるのは改行が埋め込まれた文字列の出力の例である
+(<SAMP>`\n'</SAMP>はエスケープシーケンスであり、改行を表わすものである
+セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照)。
+
+</P>
+
+<PRE>
+$ awk 'BEGIN { print "line one\nline two\nline three" }'
+-| line one
+-| line two
+-| line three
+</PRE>
+
+<P>
+次の例はカレントレコードの最初の二つのフィールドを空白で区切って出力する。
+
+</P>
+
+<PRE>
+$ awk '{ print $1, $2 }' inventory-shipped
+-| Jan 13
+-| Feb 15
+-| Mar 15
+...
+</PRE>
+
+<P>
+<A NAME="IDX242"></A>
+<A NAME="IDX243"></A>
+<A NAME="IDX244"></A>
+<CODE>print</CODE> 文を使うときにありがちな間違いは、二つのアイテムの間に置かれるカ
+ンマを忘れてしまうという事である。それはスペースなしに、一つにまとまって出力
+される結果となるだろう。なぜなら、二つの並んだ文字列というのは<CODE>awk</CODE> で
+は連接を行う式を意味するからだ。カンマがない例として、
+
+</P>
+
+<PRE>
+$ awk '{ print $1 $2 }' inventory-shipped
+-| Jan13
+-| Feb15
+-| Mar15
+...
+</PRE>
+
+<P>
+<TT>`inventory-shipped'</TT>にあまり馴染みのない人に対してもわかりやすい出力
+をしよう。最初のヘッダ行で何を出力しているかを明確にしようとして、月ごと
+の量(<CODE>$1</CODE>)と、緑のクレーの積込量(<CODE>$2</CODE>)のテーブルにヘッダを付け
+加えている。これを<CODE>BEGIN</CODE>パターン
+(セクション <A HREF="gawk_9.html#SEC93">特殊パターン<CODE>BEGIN</CODE>と<CODE>END</CODE></A>を参照)
+を使って出力の最初に一回だけ出力させている。
+
+</P>
+
+<PRE>
+awk 'BEGIN {  print "Month Crates"
+              print "----- ------" }
+           {  print $1, $2 }' inventory-shipped
+</PRE>
+
+<P>
+どう出力されるか予想できるだろうか? このプログラムの出力はこうなる。
+
+</P>
+
+<PRE>
+Month Crates
+----- ------
+Jan 13
+Feb 15
+Mar 15
+...
+</PRE>
+
+<P>
+ ヘッダとデータのテーブルがきちんと揃っていない! しかし、二つのフィールドの
+間に固定長のスペースを出力するようにできる。
+
+</P>
+
+<PRE>
+awk 'BEGIN { print "Month Crates"
+             print "----- ------" }
+           { print $1, "     ", $2 }' inventory-shipped
+</PRE>
+
+<P>
+このカラムの揃え方は多くのカラムがあった場合に揃えるのが少々面倒になることが
+想像できるだろう。二、三個のカラムのためなら単純にスペースを数えられるだろう
+が、これがもっと多かったりすると数え間違えやすくなる。それが
+<CODE>printf</CODE> 文が作られた理由である
+(セクション <A HREF="gawk_7.html#SEC60">Using <CODE>printf</CODE> Statements for Fancier Printing</A>を参照)。
+その機能の一つにデータのカラムをそろえることがある。
+
+</P>
+<P>
+<A NAME="IDX245"></A>
+<CODE>print</CODE>文や<CODE>printf</CODE>文では、任意のカンマの後に
+改行を置くだけで行の継続を行うことができる。
+(セクション <A HREF="gawk_3.html#SEC21"><CODE>awk</CODE> の文と行</A>を参照).
+
+</P>
+
+
+<H2><A NAME="SEC58" HREF="gawk_toc.html#SEC58">Output Separators</A></H2>
+
+<P>
+<A NAME="IDX246"></A>
+<A NAME="IDX247"></A>
+<A NAME="IDX248"></A>
+<A NAME="IDX249"></A>
+先に述べたように、<CODE>print</CODE>文はカンマで区切られたアイテムのリストを含
+む。出力では、各アイテムは単一のスペースで区切られる。これはただのデフォ
+ルトであり、常にそうであるわけではない。組込み変数の<CODE>OFS</CODE>に任意の文
+字列をセットすることによって<STRONG>出力フィールドセパレータ</STRONG>を指定すること
+ができる。この変数の初期値は<CODE>" "</CODE>であり、単一のスペースである。
+
+</P>
+<P>
+<CODE>print</CODE>文による出力全体は<STRONG>出力レコード</STRONG>と呼ばれる。各<CODE>print</CODE>
+文は一つのレコードを出力し、その後に<STRONG>出力レコードセパレータ</STRONG>と呼ばれ
+る文字列を出力する。組込み変数<CODE>ORS</CODE>がこの文字列を特定する。<CODE>ORS</CODE>
+の初期値は<CODE>"\n"</CODE>という文字列である。これは改行であり、したがって、通
+常は各<CODE>print</CODE>文は分割された行を作成する。
+
+</P>
+<P>
+<CODE>OFS</CODE>や<CODE>ORS</CODE>といった変数に新しい値をセットすることによって、
+出力フィールドや出力レコードをどのように分割するかを変更することが
+できる。通常これを行う場所は、入力がまだ処理されない<CODE>BEGIN</CODE>ルール
+(セクション <A HREF="gawk_9.html#SEC93">特殊パターン<CODE>BEGIN</CODE>と<CODE>END</CODE></A>を参照)
+の中である。同じことを、コマンドライン上で入力ファイル名の前に変数への
+代入を行うことでもできるし、<SAMP>`-v'</SAMP>オプションを使うことでもできる。
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照).
+
+</P>
+
+<P>
+次の例では、各入力レコード中のセミコロンで区切られた
+フィールドの一番目と二番目を、各行の後ろに空行を追加して出力する。
+
+</P>
+
+<PRE>
+$ awk 'BEGIN { OFS = ";"; ORS = "\n\n" }
+&#62;            { print $1, $2 }' BBS-list
+-| aardvark;555-5553
+-| 
+-| alpo-net;555-3412
+-| 
+-| barfly;555-7685
+...
+</PRE>
+
+<P>
+<CODE>ORS</CODE>が改行を含んでいなければ、すべての出力は
+陽に改行を出力しない限りは一行にまとまって出力されることになる。
+
+</P>
+
+
+<H2><A NAME="SEC59" HREF="gawk_toc.html#SEC59">Controlling Numeric Output with <CODE>print</CODE></A></H2>
+<P>
+<A NAME="IDX250"></A>
+<A NAME="IDX251"></A>
+<A NAME="IDX252"></A>
+<A NAME="IDX253"></A>
+<CODE>print</CODE> 文を数値を出力するために使った場合、<CODE>awk</CODE>は内部で数値を 
+(その数値を表す)文字列に変換し、その文字列を出力する。 <CODE>awk</CODE>はこの変 
+換動作のために<CODE>sprintf</CODE>関数を使用する。(セクション <A HREF="gawk_13.html#SEC126">Built-in Functions for String Manipulation</A>を参照).現在のところ、<CODE>sprintf</CODE> 
+関数が数値(や文字列)をどのように書式化するかを記述されている <STRONG>format  
+specification</STRONG>を受諾し、数値の書式指定は違った方法が何種類もあるということ
+だけで十分である。書式の違いは セクション <A HREF="gawk_7.html#SEC62">書式制御文字</A>を参照.で詳しく述べられている。
+
+</P>
+<P>
+組込み変数の<CODE>OFMT</CODE>は、出力をおこなうときに<CODE>print</CODE>が<CODE>sprintf</CODE>
+を使って数値を文字列に変換するための書式のデフォルト設定を保持している。
+<CODE>OFMT</CODE>のデフォルトの値は<CODE>"%.6g"</CODE>である。<CODE>OFMT</CODE>の値を違ったも
+のにすることによって、<CODE>print</CODE>が数値をどのように出力するかを変更するこ
+とができる。簡単な例を挙げよう。
+
+</P>
+
+<PRE>
+$ awk 'BEGIN {
+&#62;   OFMT = "%.0f"  # 数値を整数として(丸めて)出力する
+&#62;   print 17.23 }'
+-| 17
+</PRE>
+
+<P>
+<A NAME="IDX254"></A>
+<A NAME="IDX255"></A>
+<A NAME="IDX256"></A>
+POSIX標準に従えば、<CODE>OFMT</CODE>に浮動小数点の変換指定ではない
+なにかをセットした場合の<CODE>awk</CODE>の動作は定義されてない(d.c.)。
+
+</P>
+
+
+<H2><A NAME="SEC60" HREF="gawk_toc.html#SEC60">Using <CODE>printf</CODE> Statements for Fancier Printing</A></H2>
+<P>
+<A NAME="IDX257"></A>
+<A NAME="IDX258"></A>
+あなたが<CODE>print</CODE>で出力するには複雑な書式を使いたいのであれば、<CODE>printf</CODE>
+を使うと良い。 <CODE>printf</CODE>を使うことによってアイテムごとにその幅を指定し
+たり、数値を出力するのにそれをどのようなスタイルで出力するのかを指定するこ
+とができるようになる（使用する基数や、符号を出力するかどうか、小数点以下何
+桁まで出力するか）。あなたは他の引数をどのように、どこに出力するかを制御する
+<STRONG>format string</STRONG>と呼ばれる文字列によって、それを行なうことが可能である。
+
+</P>
+
+
+
+<H3><A NAME="SEC61" HREF="gawk_toc.html#SEC61">Introduction to the <CODE>printf</CODE> Statement</A></H3>
+
+<P>
+<A NAME="IDX259"></A>
+<CODE>printf</CODE> 文は次のような形式である。
+
+</P>
+
+<PRE>
+printf <VAR>format</VAR>, <VAR>item1</VAR>, <VAR>item2</VAR>, ...
+</PRE>
+
+<P>
+引数リスト全体をカッコで括ることもできる。このカッコはリストのいずれかの
+アイテムが関係演算子<SAMP>`&#62;'</SAMP>を使った式であるときには必要となる。
+カッコがないと、その文はリダイレクトと混同される可能性がある。
+(セクション <A HREF="gawk_7.html#SEC65">Redirecting Output of <CODE>print</CODE> and <CODE>printf</CODE></A>を参照).
+
+</P>
+<P>
+<A NAME="IDX260"></A>
+<CODE>printf</CODE>と<CODE>print</CODE>の違いは引数<VAR>format</VAR>にある。
+これは文字列として扱われる式で、他の引数をそれぞれどのように
+出力するかを指定する。これは<STRONG>書式文字列</STRONG>(format string)と
+呼ばれる。
+
+</P>
+<P>
+この書式文字列は ANSI Cライブラリの<CODE>printf</CODE>関数のものと同じである。大
+部分の書式は（書式文字列の）文字通りに出力されるテキストである。書式指定子
+はアイテム一つ毎に一つの割りあいで、このテキスト中に置かれている。個々の書
+式指定子は、次のアイテムをどのような書式で出力するかを指定している。
+
+</P>
+<P>
+<CODE>printf</CODE>文は改行を自動的に付加することはせず、書式文字列で
+指定されたものだけを出力する。
+したがって、改行が必要ならば、書式文字列にそれを含めなければならない。
+<CODE>OFS</CODE>や<CODE>ORS</CODE>といった変数にある出力セパレータは
+<CODE>printf</CODE>に対して何の影響も与えない。例えば、
+
+</P>
+
+<PRE>
+BEGIN {
+   ORS = "\nOUCH!\n"; OFS = "!"
+   msg = "Don't Panic!"; printf "%s\n", msg
+}
+</PRE>
+
+<P>
+これは<SAMP>`Don't Panic!'</SAMP>というメッセージを出力する。
+
+</P>
+
+
+<H3><A NAME="SEC62" HREF="gawk_toc.html#SEC62">書式制御文字</A></H3>
+<P>
+<A NAME="IDX261"></A>
+<A NAME="IDX262"></A>
+書式指定子は<SAMP>`%'</SAMP> で始まり、(printf文でどのように出力するかを指定する) 書
+式指定文字で終わる(<SAMP>`%'</SAMP>そのものを出力したい場合には <SAMP>`%%'</SAMP>と記述する)。
+書式指定文字は値をどのように出力するかを指定する。書式指定子の残りは、どの位
+のフィールド幅で出力するかというような事を指定する(省略可能な)修飾子である。
+
+</P>
+<P>
+以下に書式指定文字の一覧を挙げる。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>c</CODE>
+<DD>
+数値をASCIIキャラクタとみなして出力する。<SAMP>`printf "%c",65'</SAMP>は <SAMP>`A'</SAMP>を
+出力する。文字列を与えた場合は文字列の先頭にあるキャラクタを出力する。
+
+<DT><CODE>d</CODE>
+<DD>
+<DT><CODE>i</CODE>
+<DD>
+どちらも同じで、十進整数を出力する。
+<SAMP>`%i'</SAMP>はANSI Cとの互換性のための仕様である。
+
+<DT><CODE>e</CODE>
+<DD>
+<DT><CODE>E</CODE>
+<DD>
+これは数値を科学(または指数)形式で出力する。
+例えば、
+
+
+<PRE>
+printf "%4.3e\n", 1950
+</PRE>
+
+これは小数点以下を含めて全部で四つの数字からなる
+<SAMP>`1.950e+03'</SAMP>を出力する。
+<SAMP>`4.3'</SAMP> は 修飾子(<STRONG>modifiers</STRONG>)であり、詳しくは後述する。
+<SAMP>`%E'</SAMP>は<SAMP>`e'</SAMP>の代わりに<SAMP>`E'</SAMP>を出力するものである。
+
+<DT><CODE>f</CODE>
+<DD>
+浮動小数点形式で数値を出力する。例えば、
+
+
+<PRE>
+printf "%4.3f", 1950
+</PRE>
+
+これは小数点以下三桁を伴った四桁のsignificant figuresである
+<SAMP>`1950.000'</SAMP>を出力する。
+<SAMP>`4.3'</SAMP> は 修飾子(<STRONG>modifiers</STRONG>)であり、詳しくは後述する。
+
+<DT><CODE>g</CODE>
+<DD>
+<DT><CODE>G</CODE>
+<DD>
+科学表記か浮動小数点表記の、いずれか出力するキャラクタ数が少なくなる
+方で出力する。結果が科学表記であったとき、
+<SAMP>`%G'</SAMP> は <SAMP>`E'</SAMP> を <SAMP>`e'</SAMP>の代わりに使用する。
+
+<DT><CODE>o</CODE>
+<DD>
+無符号の発進整数を出力する(八進数、もしくは八進表記は数字として<SAMP>`0'</SAMP>
+から <SAMP>`7'</SAMP>を使用する。十進数の8は八進数では<SAMP>`10'</SAMP>と表記される)
+
+<DT><CODE>s</CODE>
+<DD>
+文字列を出力する
+
+<DT><CODE>x</CODE>
+<DD>
+<DT><CODE>X</CODE>
+<DD>
+16進の符号なし整数を出力する(十六進もしくは十六進表記では、数字は<SAMP>`0'</SAMP>
+から<SAMP>`9'</SAMP>までと<SAMP>`a'</SAMP>から<SAMP>`f'</SAMP>である。十六進数字の<SAMP>`f'</SAMP>は十進
+数の15を表わす)。<SAMP>`%X'</SAMP>は<SAMP>`a'</SAMP>から<SAMP>`f'</SAMP>ではなく、<SAMP>`A'</SAMP> から 
+<SAMP>`F'</SAMP>の文字を使用する。
+
+<DT><CODE>%</CODE>
+<DD>
+これは本当は書式制御文字ではない、しかし<SAMP>`%'</SAMP>の後に続けて書かれた場合
+には意味がある。<SAMP>`%%'</SAMP>と並べて書いたときには一文字の<SAMP>`%'</SAMP>を出力し、
+引数を取らない。また、すべての修飾子を無視する。
+</DL>
+
+<P>
+<A NAME="IDX263"></A>
+整数指定の書式指定子を、C言語の<CODE>long</CODE>で表わせる範囲外の
+値に対して使ったとき、<CODE>gawk</CODE>は書式指定子を
+<SAMP>`%g'</SAMP>に切り替える。他の<CODE>awk</CODE>処理系では
+不正な値を出力するか、完全に違うことをする。
+(d.c.)
+
+</P>
+
+
+<H3><A NAME="SEC63" HREF="gawk_toc.html#SEC63"><CODE>printf</CODE>の書式の修飾子</A></H3>
+
+<P>
+<A NAME="IDX264"></A>
+<A NAME="IDX265"></A>
+書式指定には出力されるアイテムの値と、出力する大きさを制御するために 
+<STRONG>修飾子</STRONG>を含めることができる。修飾子は<SAMP>`%'</SAMP>と書式指定文字の間に置か
+れる。後で挙げる例では、出力中の空白を"*" というシンボルで表わし
+ている。以下は使用することのできる修飾子である。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>-</CODE>
+<DD>
+マイナス記号は出力幅の修飾に使い、与えられた出力幅の中で左詰めを行うことを
+指示する。通常は与えられた出力幅の中で右詰めで表示がなされる。
+従って、次のような指定をすると、
+
+
+<PRE>
+printf "%-4s", "foo"
+</PRE>
+
+<SAMP>`foo*'</SAMP>が出力される。
+
+<DT><CODE><VAR>space</VAR></CODE>
+<DD>
+数値の変換の際に、その値が正であればスペースを、負であればマイナス記号を
+数値の前に置く。
+
+<DT><CODE>+</CODE>
+<DD>
+プラス記号は幅指定の修飾子(後述する)の前で使用し、変換された数値が正の数
+値であっても、その前に必ず符号をつけることを指示する。<SAMP>`+'</SAMP>はスペース
+修飾子をオーバーライドする。
+
+<DT><CODE>#</CODE>
+<DD>
+<SAMP>`%o'</SAMP>の前に置いた場合、数値の前にゼロを置く。
+<SAMP>`%x'</SAMP>や<SAMP>`%X'</SAMP>の前に置いた場合、出力する数値が0でなかったときに
+それに先行して<SAMP>`0x'</SAMP> や <SAMP>`0X'</SAMP>を置く。
+<SAMP>`%e'</SAMP>, <SAMP>`%E'</SAMP>, <SAMP>`%f'</SAMP> の場合、常に小数点をつけるようにする。
+<SAMP>`%g'</SAMP>, <SAMP>`%G'</SAMP>の場合、小数点以下の0も省略されないようにする。
+
+<A NAME="IDX266"></A>
+<DT><CODE>0</CODE>
+<DD>
+%に続いた<SAMP>`0'</SAMP>はフラグとして動作し、出力のパディングを、スペースでは 
+なく0で行うようにする。これは数値ではない出力書式のときも適用される(d. c.)
+このフラグはフィールド幅が実際に出力される値の幅よりも大きい場合にの 
+み効果を持つ。
+
+<DT><CODE><VAR>width</VAR></CODE>
+<DD>
+これはフィールドの幅を指定する数字である。 <SAMP>`%'</SAMP> と書式指定文字の間に置
+かれ、この幅にフィールドを広げて出力を行うことを指定する。デフォルトではフィ
+ールドを埋めるためのスペースはフィールドの左から置かれる。
+次のように指定した場合、
+
+
+<PRE>
+printf "%4s", "foo"
+</PRE>
+
+<SAMP>`*foo'</SAMP>を出力する。
+
+<VAR>width</VAR> は(出力の)最小幅であって、最大幅ではない。アイテムの値が
+<VAR>width</VAR> よりも多くのキャラクタを必要としたならば、出力はその幅となる。
+したがって、
+
+
+<PRE>
+printf "%4s", "foobar"
+</PRE>
+
+これは<SAMP>`foobar'</SAMP>を出力する。
+
+マイナス記号を伴ったフィールド幅指定は、幅あわせのためのスペースを
+フィールドの左ではなく右に置く。
+
+<DT><CODE>.<VAR>prec</VAR></CODE>
+<DD>
+これは出力のときを精度を指定するのに使用する数字である。
+書式指定が<SAMP>`e'</SAMP>, <SAMP>`E'</SAMP>, <SAMP>`f'</SAMP> の場合には、
+この数字は小数点以下何桁まで出力したいかをしめす数字である。
+書式指定が<SAMP>`g'</SAMP>, <SAMP>`G'</SAMP> の場合、
+有効数字の最大桁数を示す数字である。
+<SAMP>`d'</SAMP>, <SAMP>`o'</SAMP>, <SAMP>`i'</SAMP>, <SAMP>`u'</SAMP>, <SAMP>`x'</SAMP>, <SAMP>`X'</SAMP> 
+といった書式指定の場合、出力する数値の最少桁数である。
+文字列にたいしては、出力する文字列の最大文字数を指定する
+数字となる。したがって、
+
+
+<PRE>
+printf "%.4s", "foobar"
+</PRE>
+
+この例の出力は <SAMP>`foob'</SAMP>となる。
+</DL>
+
+<P>
+Cライブラリの<CODE>printf</CODE>は実行時に<VAR>width</VAR>と<VAR>prec</VAR>を指定すること
+(例えば<CODE>"%*.*s"</CODE>のように)ができる。書式文字列中で<VAR>width</VAR> や  
+<VAR>prec</VAR>を記述する代わりに、引数リストでそれを渡す事ができる。例えば
+
+</P>
+
+<PRE>
+w = 5
+p = 3
+s = "abcdefg"
+printf "%*.*s\n", w, p, s
+</PRE>
+
+<P>
+これは次の書き方と等しい。
+
+</P>
+
+<PRE>
+s = "abcdefg"
+printf "%5.3s\n", s
+</PRE>
+
+<P>
+上のプログラムは両方とも<SAMP>`&#60;**abc&#62;'</SAMP>を出力する。
+
+</P>
+<P>
+<CODE>awk</CODE> の初期のバージョンではこの機能がサポートされていなかった。次の様
+に書式文字列を組み立てるのに文字列連接を使う事で、この機能をシミュレートす
+る事が可能である。
+
+</P>
+
+<PRE>
+w = 5
+p = 3
+s = "abcdefg"
+printf "%" w "." p "s\n", s
+</PRE>
+
+<P>
+これは読み易いとは云えないが、きちんと働く。
+
+</P>
+<P>
+<A NAME="IDX267"></A>
+<A NAME="IDX268"></A>
+Cプログラマは<CODE>printf</CODE>の書式指定文字列中で<SAMP>`l'</SAMP>とsamp{h}というフ 
+ラグを使っているかもしれない。これらは<CODE>awk</CODE>では不正なフラグである。
+大部分の<CODE>awk</CODE>処理系ではこれらを何の警告もなしに無視する。
+<SAMP>`--lint'</SAMP>がコマンドラインで指定されている場合
+(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)、<CODE>gawk</CODE>はこれらのフラグを
+使用したときに警告を発する。同様に<SAMP>`--posix'</SAMP>が指定されている場合には
+致命的エラーとなる。
+
+</P>
+
+
+<H3><A NAME="SEC64" HREF="gawk_toc.html#SEC64"><CODE>printf</CODE>を使った例</A></H3>
+
+<P>
+次の例は、<CODE>printf</CODE>を整列したテーブルの出力に
+どのように使用するかというものである。
+
+</P>
+
+<PRE>
+awk '{ printf "%-10s %s\n", $1, $2 }' BBS-list
+</PRE>
+
+<P>
+このプログラムは
+<TT>`BBS-list'</TT>というファイル中のBBSの名前(<CODE>$1</CODE>)
+を10文字の文字列として、左寄せで出力する。同様に
+電話番号(<CODE>$2</CODE>)をそれに続いて出力する。
+結果として、二つのカラムからなる、名前と電話番号の
+きちんと並んだテーブルが作成される。
+
+</P>
+
+<PRE>
+$ awk '{ printf "%-10s %s\n", $1, $2 }' BBS-list
+-| aardvark   555-5553
+-| alpo-net   555-3412
+-| barfly     555-7685
+-| bites      555-1675
+-| camelot    555-0542
+-| core       555-2912
+-| fooey      555-1234
+-| foot       555-6699
+-| macfoo     555-6480
+-| sdace      555-3430
+-| sabafoo    555-2127
+</PRE>
+
+<P>
+なぜ電話番号を数値として出力するように指定していないのかわかるだろうか? ここ
+では数字がダッシュで区切られているので文字列として出力している。もし、これを
+数値として出力しようとしたならば、そこで得られるものは最初の三つの数字
+<SAMP>`555'</SAMP>である、これは混乱を招くだろう。
+
+</P>
+<P>
+ここでは電話番号の出力時の幅を指定していない。それは
+出力行の最後にあるものであり、その後ろにスペースを置く必要が
+ないからだ。
+
+</P>
+<P>
+先頭のカラムにヘッダを付け加えることによってテーブルをより見やすいものに
+している。これを行う為に、<CODE>BEGIN</CODE>パターン
+(セクション <A HREF="gawk_9.html#SEC93">特殊パターン<CODE>BEGIN</CODE>と<CODE>END</CODE></A>を参照)
+を使ってヘッダを<CODE>awk</CODE>プログラムの始めで一度だけ出力している。
+
+</P>
+
+<PRE>
+awk 'BEGIN { print "Name      Number"
+             print "----      ------" }
+     { printf "%-10s %s\n", $1, $2 }' BBS-list
+</PRE>
+
+<P>
+この例では<CODE>print</CODE>文と <CODE>printf</CODE>文を混ぜて使っているのに
+気がついただろうか?、同じ結果を<CODE>printf</CODE>文だけを使って得る事ができる。
+
+</P>
+
+<PRE>
+awk 'BEGIN { printf "%-10s %s\n", "Name", "Number"
+             printf "%-10s %s\n", "----", "------" }
+     { printf "%-10s %s\n", $1, $2 }' BBS-list
+</PRE>
+
+<P>
+ヘッダと同じ書式指定を使って各カラムを出力しているので、ヘッダと
+同じように桁揃えされる。
+
+</P>
+<P>
+三回同じ書式を指定するのに、変数に書式を代入してその変数で指定する方法が
+ある。実例を挙げよう。
+
+</P>
+
+<PRE>
+awk 'BEGIN { format = "%-10s %s\n"
+             printf format, "Name", "Number"
+             printf format, "----", "------" }
+     { printf format, $1, $2 }' BBS-list
+</PRE>
+
+<P>
+試しに以前に説明した
+(セクション <A HREF="gawk_7.html#SEC56">The <CODE>print</CODE> Statement</A>を参照).
+<TT>`inventory-shipped'</TT>の例の、表題と表のデータを
+<CODE>printf</CODE>文でそろえてみてほしい。
+
+</P>
+
+
+<H2><A NAME="SEC65" HREF="gawk_toc.html#SEC65">Redirecting Output of <CODE>print</CODE> and <CODE>printf</CODE></A></H2>
+
+<P>
+<A NAME="IDX269"></A>
+<A NAME="IDX270"></A>
+これまでは出力は標準出力に対してのみ行われていた。
+<CODE>print</CODE> と <CODE>printf</CODE>の両方とも別の場所に出力を送ることができる。
+これは<STRONG>リダイレクト</STRONG>と呼ばれる。
+
+</P>
+<P>
+リダイレクションは<CODE>print</CODE> 文か <CODE>printf</CODE>文の後に書く事ができる。
+<CODE>awk</CODE>におけるリダイレクションはシェルコマンドのリダイレクションとよく似
+ているが、<CODE>awk</CODE>ではプログラムの中にリダイレクションの指示を書くという点
+が違っている。
+
+</P>
+<P>
+以下に、三種類の出力リダイレクションの例、
+出力をファイルに送ったり、ファイルに追加したり、パイプを通して
+他のコマンドに出力したりするものを挙げる。
+これらの例では<CODE>print</CODE>文が使わ
+れているが、<CODE>printf</CODE>文を使っても同じように動作する。
+
+</P>
+<DL COMPACT>
+
+<DT><CODE>print <VAR>items</VAR> &#62; <VAR>output-file</VAR></CODE>
+<DD>
+この書式のリダイレクションではアイテムの出力を<VAR>output-file</VAR>という
+ファイルに対して行う。ファイル名<VAR>output-file</VAR>は式であってもかまわない。
+式を文字列に変換し、その後にファイル名として使用する
+(セクション <A HREF="gawk_8.html#SEC68">式</A>を参照)。
+
+この書式のリダイレクションは最初の出力を行う前に、<VAR>output-file</VAR> 、ファイ
+ルの削除を実行する。以後は<VAR>output-file</VAR> の削除はしないでファイルに追加す
+る形で出力を行う。もし<VAR>output-file</VAR> が存在しなければファイルが新たに作成
+される。
+
+たとえば、次に挙げるプログラムはBBSの名前のリストを<TT>`name-list'</TT>という名
+前のファイルに、電話番号のリストを<TT>`phone-list'</TT>というファイルにそれぞれ
+出力する。出力されたファイルの各行は、一つの名前あるいは番号で構成される。
+
+
+<PRE>
+$ awk '{ print $2 &#62; "phone-list"
+&#62;        print $1 &#62; "name-list" }' BBS-list
+$ cat phone-list
+-| 555-5553
+-| 555-3412
+...
+$ cat name-list
+-| aardvark
+-| alpo-net
+...
+</PRE>
+
+<DT><CODE>print <VAR>items</VAR> &#62;&#62; <VAR>output-file</VAR></CODE>
+<DD>
+このリダイレクションは、出力を<VAR>output-file</VAR>というファイルに対して行う。
+先ほどの<SAMP>`&#62;'</SAMP>での指定と違うのは、<VAR>output-file</VAR>の削除が行われないとい
+うことである。出力はファイルに追加される形で行われる。
+もし<VAR>output-file</VAR>が存在していなければ、作成される。
+
+<A NAME="IDX271"></A>
+<A NAME="IDX272"></A>
+<DT><CODE>print <VAR>items</VAR> | <VAR>command</VAR></CODE>
+<DD>
+こうすることによって出力を、ファイルに対して行う代わりに<STRONG>pipe</STRONG>を通して渡
+す事ができる。このやり方のリダイレクションは <VAR>command</VAR>へのパイプをオープ
+ンし、そのパイプを通して、 <VAR>command</VAR>を実行する為に作られたプロセスへ
+<VAR>items</VAR>の値を出力する。
+
+リダイレクションの引数<VAR>command</VAR>は<CODE>awk</CODE>の式でも良い。
+その式の値はコマンドを実行するための文字列に変換される。
+
+次の例では二つのファイルが作られる。一つはソートされていないBBSの名前のリスト。
+もう一つはアルファベットの降順にソートされたリストである。
+
+
+<PRE>
+awk '{ print $1 &#62; "names.unsorted"
+       command = "sort -r &#62; names.sorted"
+       print $1 | command }' BBS-list
+</PRE>
+
+この例のソートされていないリストは、ソート済みリストがパイプを通って
+<CODE>sort</CODE>ユーティリティが出力する間に、通常のリダイレクトで書き込まれる。
+
+次の例はリダイレクトを使って、メイリングリスト<SAMP>`bug-system'</SAMP>に従ってメイ
+ルを送るものである。これはトラブルにあったときに、システムメンテナンスの為に
+定期的に<CODE>awk</CODE>スクリプトを実行するような場合に便利だろう。
+
+
+<PRE>
+report = "mail bug-system"
+print "Awk script failed:", $0 | report
+m = ("at record number " FNR " of " FILENAME)
+print m | report
+close(report)
+</PRE>
+
+メッセージは文字列連接と変数<CODE>m</CODE>に保持されている内容を
+使って組み立てられている。作成されたメッセージはパイプラインを
+通して<CODE>mail</CODE>プログラムに送られる。
+
+ここで<CODE>close</CODE>関数を呼んでいるのは、パイプを閉じてすぐに出力を送る
+ためである。 
+セクション <A HREF="gawk_7.html#SEC67">Closing Input and Output Files and Pipes</A>を参照,
+により詳しく記述されている。この例はファイル、コマンドを与えるのに変数を
+使っている。つまり常に文字列定数を使う、というわけではないということで
+ある。 <CODE>awk</CODE> が毎回文字列値を要求するので、変数を使うというのは一
+般にはいいアイデアである。
+</DL>
+
+<P>
+<SAMP>`&#62;'</SAMP>, <SAMP>`&#62;&#62;'</SAMP>, <SAMP>`|'</SAMP> を使って出力をリダイレクトするときに、<VAR>file</VAR>
+や <VAR>command</VAR>がそれまでにプログラム中で使っていなかったり出力する直前にク
+ローズを行っていたりすると、ファイルやパイプをオープンするためにシステムに問
+い合わせを行う。
+
+</P>
+<P>
+<A NAME="IDX273"></A>
+<A NAME="IDX274"></A>
+<A NAME="IDX275"></A>
+多くの<CODE>awk</CODE>処理系では、<CODE>awk</CODE>プログラムが
+オープンできるパイプラインの数はたった一つである!
+<CODE>gawk</CODE>ではこのような制限はなく、使用しているオペレーティングシステム
+が許すだけパイプラインをオープンすることができる。
+
+</P>
+
+
+<H2><A NAME="SEC66" HREF="gawk_toc.html#SEC66">Special File Names in <CODE>gawk</CODE></A></H2>
+<P>
+<A NAME="IDX276"></A>
+<A NAME="IDX277"></A>
+<A NAME="IDX278"></A>
+<A NAME="IDX279"></A>
+
+</P>
+<P>
+実行中のプログラムは、慣習的に三つの入出力ストリームを何もしなくても読み込み、
+書き込みのために使えるようになっている。それらは<STRONG>標準入力</STRONG>, <STRONG>標準出
+力</STRONG>, <STRONG>標準エラー出力</STRONG>として知られている。これらのストリームはデフォルト
+でターミナルの入出力に割り当てられている。しかし、しばしばシェルでのリダイレ
+クトによって（<SAMP>`&#60;'</SAMP>, <SAMP>`&#60;&#60;'</SAMP>,<SAMP>`&#62;'</SAMP>, <SAMP>`&#62;&#62;'</SAMP>, <SAMP>`&#62;&#38;'</SAMP> <SAMP>`|'</SAMP>と
+いったオペレータを使って）、変更される。標準エラー出力はエラーメッセージの出
+力にだけ使われる。それは、標準出力、標準エラー出力の二つのストリームがあり、
+別々にリダイレクトを行う事が可能であるからである。
+
+</P>
+<P>
+<A NAME="IDX280"></A>
+他の<CODE>awk</CODE>処理系では、次のような方法でしか <CODE>awk</CODE>プログラ
+ムから標準エラー出力にエラーメッセージを出力する事ができない。
+
+</P>
+
+<PRE>
+print "Serious error detected!" | "cat 1&#62;&#38;2"
+</PRE>
+
+<P>
+これは標準エラー出力にアクセスするためにパイプを開いて<CODE>awk</CODE>プロセスの出
+力を渡している。これはエレガントとは言い難いし、他のプロセスを必要とする非効
+率的なやり方である。多くの人はこの点にあまり気を使っていないような<CODE>awk</CODE>
+プログラムを書いている。こういったやり方に代えて、エラーメッセージを次のよう
+にしてターミナルに送る。
+
+</P>
+
+<PRE>
+print "Serious error detected!" &#62; "/dev/tty"
+</PRE>
+
+<P>
+これは多くの場合同じ結果となるだろうが、常に、ではない。標準エラー出力は通常
+ターミナルであるが、リダイレクトすることができ、その場合には出力はターミナル
+に対しては行われない。事実、<CODE>awk</CODE>をバックグラウンドジョブで実行すると、
+そのプロセスはターミナルを持っておらず、<TT>`/dev/tty'</TT>のオープンは失敗する。
+
+</P>
+<P>
+<CODE>gawk</CODE>は三つの標準ストリームにアクセスするために特殊なファイル名を持っ
+ている。<CODE>gawk</CODE>で入出力をリダイレクトするときにリダイレクト先のファイル
+名が次の特殊な名前の中にあれば、<CODE>gawk</CODE>は直接(定義されている)ストリー
+ムを使用する。
+
+</P>
+<P>
+<A NAME="IDX281"></A>
+<A NAME="IDX282"></A>
+<A NAME="IDX283"></A>
+<A NAME="IDX284"></A>
+<DL COMPACT>
+
+<DT><TT>`/dev/stdin'</TT>
+<DD>
+The standard input (file descriptor 0).
+標準入力(ファイルディスクリプタ0)。
+
+<DT><TT>`/dev/stdout'</TT>
+<DD>
+標準出力(ファイルディスクリプタ1)。
+
+<DT><TT>`/dev/stderr'</TT>
+<DD>
+標準エラー出力(ファイルディスクリプタ2)。
+
+<DT><TT>`/dev/fd/<VAR>N</VAR>'</TT>
+<DD>
+ファイルディスクリプタ<VAR>n</VAR>でアクセスされるファイル。このファイルは<CODE>awk</CODE>
+を実行しているプログラムによって(典型的なのはシェル)、オープンされていなけ
+ればならない。特別な操作をしない限り、ディスクリプタの0,1,2だけが使用可能で
+ある。
+</DL>
+
+<P>
+<TT>`/dev/stdin'</TT>, <TT>`/dev/stdout'</TT>, <TT>`/dev/stderr'</TT>等のファイル名は
+それぞれ<TT>`/dev/fd/0'</TT>, <BR> <TT>`/dev/fd/1'</TT>, <TT>`/dev/fd/2'</TT>の
+別名になっている。
+
+</P>
+<P>
+<CODE>gawk</CODE>プログラムでエラーメッセージを出力する適当な手段は次の様に
+<TT>`/dev/stderr'</TT>を利用することである。
+
+</P>
+
+<PRE>
+print "Serious error detected!" &#62; "/dev/stderr"
+</PRE>
+
+<P>
+<CODE>gawk</CODE>は<CODE>gawk</CODE>が実行されているプロセスの情報にアクセスするために特
+殊なファイル名を与えられている。これらの"ファイル"はそれぞれ、ひとつの情報
+のレコードを表わしている。これらのファイルを二度以上読み込むためには、
+最初に<CODE>close</CODE>をつかってクローズしなければならない。
+(セクション <A HREF="gawk_7.html#SEC67">Closing Input and Output Files and Pipes</A>を参照).
+ファイルの名前は
+
+</P>
+<P>
+<A NAME="IDX285"></A>
+<A NAME="IDX286"></A>
+<A NAME="IDX287"></A>
+<A NAME="IDX288"></A>
+<A NAME="IDX289"></A>
+<DL COMPACT>
+
+<DT><TT>`/dev/pid'</TT>
+<DD>
+このファイルを読むと、カレントプロセスのプロセスIDが
+十進数で、改行で終端されて返ってくる。
+
+<DT><TT>`/dev/ppid'</TT>
+<DD>
+このファイルを読むと、カレントプロセスの親プロセスIDが
+十進数で、改行で終端されて返ってくる。
+
+<DT><TT>`/dev/pgrpid'</TT>
+<DD>
+このファイルを読むと、カレントプロセスのプロセスグループIDが
+十進数で、改行で終端されて返ってくる。
+
+<DT><TT>`/dev/user'</TT>
+<DD>
+このファイルを読むと、改行で終端されスペースで区切られたフィールドを持つ
+一つのレコードが返ってくる。そのフィールドは以下のような情報を表している
+ものである。
+
+<DL COMPACT>
+
+<DT><CODE>$1</CODE>
+<DD>
+<CODE>getuid</CODE>システムコールの返す値(実ユーザーID番号)。
+
+<DT><CODE>$2</CODE>
+<DD>
+<CODE>geteuid</CODE>システムコールの返す値(実効ユーザーID番号)。
+
+<DT><CODE>$3</CODE>
+<DD>
+<CODE>getgid</CODE>システムコールの返す値(実グループID番号)。
+
+<DT><CODE>$4</CODE>
+<DD>
+<CODE>getgid</CODE>システムコールの返す値(実効グループID番号)。
+</DL>
+
+さらに追加のフィールドがあるなら、<CODE>getgroups</CODE>システムコールが返した
+グループIDである(Multiple グループはすべてのシステムでサポートされている
+わけではない)。
+
+</DL>
+
+<P>
+これらの特殊ファイルはコマンドライン上でデータファイルのように使ってもよ
+いし、<CODE>awk</CODE>プログラムの中で入出力のリダイレクトで使ってもよい。ただ
+し、<SAMP>`-f'</SAMP>オプションを伴ったソースファイルとしては使うことはできない。
+
+</P>
+<P>
+<CODE>gawK</CODE>が互換モード(セクション <A HREF="gawk_15.html#SEC135">コマンドラインオプション</A>を参照)
+で動作しているときには、これらの特殊ファイルの認識は禁止される。
+
+</P>
+<P>
+<STRONG>警告</STRONG>:   あなたの使うシステムが<TT>`/dev/fd'</TT>というディレクトリ 
+(あるいは先に述べたような特殊ファイル)を持っていないのであれば、これらのファ
+イル名を<CODE>gawk</CODE>それ自身が解釈する。例えば、 <SAMP>`/dev/fd/4'</SAMP>を使ってファ
+イルディスクリプタの4 番に出力しようとすると、ファイルディスクリプタの4番が
+<CODE>dup</CODE>され、その結果の新しいファイルディスクリプタに出力が行なわれる。こ
+のことはほとんどの場合重要なことではないが、重要なのはファイルディスクリプタ
+の0、1、2番に関係するファイルをクローズしないということである。もし、これら
+のうちどれかをクローズしてしまったならば、その結果は予測できないものとなる。
+
+</P>
+<P>
+プロセスに関連した情報を提供する特殊ファイルは、将来のバージョンの<CODE>gawk</CODE>
+ではなくなる可能性がある。
+セクション <A HREF="gawk_21.html#SEC227">将来予定されている拡張</A>を参照.
+
+</P>
+
+
+<H2><A NAME="SEC67" HREF="gawk_toc.html#SEC67">Closing Input and Output Files and Pipes</A></H2>
+<P>
+<A NAME="IDX290"></A>
+<A NAME="IDX291"></A>
+<A NAME="IDX292"></A>
+
+</P>
+<P>
+もし同じファイル名や同じシェルコマンドが、<CODE>awk</CODE>プログラムの実行中に二度
+以上<CODE>getline</CODE>
+(セクション <A HREF="gawk_6.html#SEC46"><CODE>getline</CODE>を使った入力</A>を参照)
+と一緒に使われた場合、ファイルのオープンやコマンドの実行は
+最初の一回だけ行われる。つまり最初にファイルやコマンドからレコードを読み込む
+ときである。次に<CODE>getline</CODE>を使って読むときは同一のファイル、コマンドから
+別のレコードを読み込む。
+
+</P>
+<P>
+同様にファイルやパイプが出力のためにオープンされたとき、
+<CODE>awk</CODE>は(オープンした情報を)そのファイル名やコマンド名と結び付け、
+後になって出力したときにその出力をそれまでのものに追加する形で行う。
+ファイルやパイプは<CODE>awk</CODE>が終了するまでオープンされている。
+
+</P>
+<P>
+このことによって、同じファイルを再び最初から読み始めたいときや、シェルコマン
+ドを再実行（コマンドの出力からもっと読みだしたいとき）したいようなときには特
+別な手順を踏まねばならない。つまり、次の例のように<CODE>close</CODE>関数を使わなけ
+ればならない。
+
+</P>
+
+<PRE>
+close(<VAR>filename</VAR>)
+</PRE>
+
+<P>
+or
+
+</P>
+
+<PRE>
+close(<VAR>command</VAR>)
+</PRE>
+
+<P>
+引数<VAR>filename</VAR>や<VAR>command</VAR>は任意の式であってよい。その値は、ファ 
+イルをオープンしたりコマンドを起動した文字列と(スペースや他の"irrelevant"
+(無関係)なキャラクタも含めて) <STRONG>正確に</STRONG>マッチしなければならない。例え
+ば、次のようにパイプをオープンしたら、
+
+</P>
+
+<PRE>
+"sort -r names" | getline foo
+</PRE>
+
+<P>
+次のようにクローズしなければならない。
+
+</P>
+
+<PRE>
+close("sort -r names")
+</PRE>
+
+<P>
+一度この関数呼びだしが実行されると、次のファイルやコマンドからの@code   
+{getline}や、ファイルやコマンドに対する<CODE>print</CODE>、<CODE>printf</CODE>は、フ
+ァイルの再オープンやコマンドの再実行を行う。
+
+</P>
+<P>
+ファイルやパイプをクローズするときの式は、それらをオープンしたり、コマ
+ンドを起動したときの文字列とまったく同じものでなければならない。これファ
+イル名やコマンドを格納するために変数を使ってみるのにいい題材である。例え
+ば、パイプを次のようにしてオープンしたならば、
+
+</P>
+<P>
+先程の例はこのように書くことができる。
+
+</P>
+
+<PRE>
+sortcom = "sort -r names"
+sortcom | getline foo
+...
+close(sortcom)
+</PRE>
+
+<P>
+これは、<CODE>awk</CODE>プログラムに見つけづらい打ち間違いのエラー
+(typographical errors)が入り込むのを防ぐのに役立つ。
+
+</P>
+<P>
+以下に出力ファイルをクローズする必要があるかもしれない理由を幾つか挙げる。
+
+</P>
+
+<UL>
+<LI>
+
+同一の<CODE>awk</CODE>プログラム中で、書き込みを行ったファイルを後で読み返すため。
+最後の出力が終わったときにファイルをクローズした後で、 <CODE>getline</CODE>を使って
+そのファイルから入力を始める事ができる
+
+<LI>
+
+同一の<CODE>awk</CODE>プログラム中で、連続的に複数のファイルに書き込みを行うため。も
+しファイルのクローズを行わないでいると、一つのプロセスでオープンできるシステ
+ムの限界数を越えてしまうかもしれない。それを避けるために書き込みが終了したとき
+にそれをクローズする。
+
+<LI>
+
+コマンドを終了させるため。パイプを通して出力をリダイレクトしているとき、パイ
+プから読み込みを行っているコマンドはパイプがオープンされていると通常通り入力
+を読み込もうとしつづける。多くの場合、コマンドはパイプがクローズされるまでそ
+の実行を停止できない。例えばリダイレクトで<CODE>mail</CODE>プログラムに出力を送る
+と、そのメッセージはパイプがクローズされるまで実際には送られない。
+
+<LI>
+
+同じプログラムを、同じ引数で再度実行させるため。これは最初に実行したときに続
+いて入力を与えるということではない。
+
+例えば、パイプの出力を<CODE>mail</CODE>プログラムに送ることを考えてみよう。クロー
+ズしないでこのパイプに数行の出力をリダイレクトすると、一つのメッセージに数行
+があるという結果となるだろう。対照的に、各行を出力した後にパイプをクローズす
+ると、それぞれの行は別々のメッセージに分割される。
+</UL>
+
+<P>
+<A NAME="IDX293"></A>
+<A NAME="IDX294"></A>
+<CODE>close</CODE>はクローズに成功した時0を返し、失敗したときに0以外を返す。
+失敗した場合には変数<CODE>ERRNO</CODE>にエラーの発生を示す文字列がセットされる。
+
+</P>
+<P>
+<A NAME="IDX295"></A>
+<A NAME="IDX296"></A>
+システムがオープンすることを許している以上の数のファイルを使おうした場合、
+<CODE>gawk</CODE>は使っているデータファイルの中で多重オープンを 試みる。
+<CODE>gawk</CODE>のこれをおこなう能力はあなたが使っているオペレーティングシステ
+ムの能力に依存する。したがって、ファイルを使いおわったら常に<CODE>close</CODE>
+するということがよいやり方であるし、移植性のためによいのである。
+
+</P>
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_6.html">前</A>, <A HREF="gawk_8.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

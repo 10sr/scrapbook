@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - Introduction</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_1.html">前</A>, <A HREF="gawk_3.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC5" HREF="gawk_toc.html#SEC5">Introduction</A></H1>
+
+<P>
+もしあなたが多くのコンピュータユーザと同じように、さまざまなテキストファイル
+をある特定のパターンが見付かったところで変更することをしなければならないとか、
+特定の行からデータを取り出してそのほかの部分は捨ててしまうといったことを繰り
+返し行なわなければならないのであれば、 CやPascalのようなプログラミング言語で
+そのようなプログラムを書くのは手間も時間もかかる。それは<CODE>awk</CODE>を
+使えば簡単にできるだろう。
+
+</P>
+<P>
+<CODE>awk</CODE>ユーティリティはほんの2、3行で単純なデータの整形を簡単に
+行なえるような特殊なプログラミング言語である。
+
+</P>
+<P>
+GNU の実装による <CODE>awk</CODE> は、<CODE>gawk</CODE> と呼ばれ、
+System V Release 4 version の <CODE>awk</CODE> に対して完全上位コンパチブルである。
+<CODE>gawk</CODE> はまた、POSIX の定めた <CODE>awk</CODE> 言語の規定に対しても上位互換
+である。これは、きちんと書かれた<CODE>awk</CODE> のプログラムは 
+<CODE>gawk</CODE>でも動作する。ということである。したがって、このマニュアルでは
+<CODE>gawk</CODE> と他の <CODE>awk</CODE>との実装上の違いを述べるようなことは
+しない。
+
+</P>
+<P>
+<A NAME="IDX25"></A>
+<CODE>awk</CODE>を使ってできることはたとえば、
+
+</P>
+
+<UL>
+<LI>
+
+小規模なパーソナルデータベースの管理
+
+<LI>
+
+レポートの作成
+
+<LI>
+
+データの検証
+
+<LI>
+
+インデクスの作成と他のドキュメントのための準備
+
+<LI>
+
+他のプログラミング言語で書く前のアルゴリズムの実験
+</UL>
+
+<P>
+などがある。
+
+</P>
+
+
+
+<H2><A NAME="SEC6" HREF="gawk_toc.html#SEC6">Using This Book</A></H2>
+<P>
+<A NAME="IDX26"></A>
+<A NAME="IDX27"></A>
+<A NAME="IDX28"></A>
+
+</P>
+<P>
+<CODE>awk</CODE>という語は特定のプログラムを示していると同時にあなたが実行しよ
+うとしているプログラムの言語を示している。気をつける必要がある場合には、
+プログラムを"<CODE>awk</CODE>ユーティリティ"と呼び、もう一方を"<CODE>awk</CODE>言
+語"と呼ぶ。<CODE>gawk</CODE>という語はGNUプロジェクトが開発した<CODE>awk</CODE>を表
+している。このマニュアルの目的は<CODE>awk</CODE>言語と、<CODE>awk</CODE>ユーテ
+ィリティの実行の仕方の両方を説明することである。
+
+</P>
+<P>
+このマニュアルの主な目的はPOSIXの標準で定められている<CODE>awk</CODE>の 
+機能を説明することである。それはある特定の実装や<CODE>gawk</CODE>を説明してい 
+るときに行っている。その説明では同様に、<CODE>gawk</CODE>と他の<CODE>awk</CODE>の実 
+装との重要な差違を説明することを試みる。さらに、POSIX標準の<CODE>awk</CODE>に 
+はないような<CODE>gawk</CODE>の機能を説明する。
+
+</P>
+<P>
+このマニュアルはチュートリアルとリファレンスの両方の役目を果たすという
+難しい立場のものであるが、もし、あなたが初心者ならば難しすぎると感じるような記
+述の部分は好きに読み飛ばしてかまわない。そういった部分はエキスパートユーザー
+と、このマニュアルのオンラインInfo バージョンで参照されるためのものだからだ。
+
+</P>
+<P>
+<STRONG><CODE>awk</CODE> プログラム</STRONG>という単語はあなたが
+プログラミング言語<CODE>awk</CODE>を使って作成したプログラムを指す。
+
+</P>
+<P>
+<CODE>awk</CODE>言語の感じを知るための便利な"一行野郎"は
+(セクション <A HREF="gawk_4.html#SEC24">便利な一行野郎</A>を参照)にある。
+
+</P>
+<P>
+多くの<CODE>awk</CODE>プログラムのサンプルがある
+(セクション <A HREF="gawk_16.html#SEC141"><CODE>awk</CODE>の関数ライブラリ</A>を参照。また、
+セクション <A HREF="gawk_17.html#SEC155">実用的な <CODE>awk</CODE> プログラム</A>を参照).
+
+</P>
+<P>
+<CODE>awk</CODE>言語全体はセクション <A HREF="gawk_19.html#SEC180"><CODE>gawk</CODE> に関するまとめ</A>を参照にクイックリ
+ファレンスとしてまとめられている。もし記憶に曖昧なところがあって、ある特
+定の機能を確かめたいときには参照して欲しい。
+
+</P>
+<P>
+見慣れないような単語があった場合、用語集(セクション <A HREF="gawk_22.html#SEC229">用語集</A>を参照)を参照してみて
+欲しい。
+
+</P>
+<P>
+ほとんどの例で、完全な<CODE>awk</CODE>プログラムが挙げられるが、
+一部の高レベルのセクションでは、説明している事柄の概念を説明する
+<CODE>awk</CODE>プログラムの一部分だけが挙げられている。
+
+</P>
+<P>
+このマニュアル全体は<CODE>awk</CODE>を知らない人のためのものであるが、
+特に、POSIXの<CODE>awk</CODE>に関する記述、
+セクション <A HREF="gawk_16.html#SEC141"><CODE>awk</CODE>の関数ライブラリ</A>を参照.や
+セクション <A HREF="gawk_17.html#SEC155">実用的な <CODE>awk</CODE> プログラム</A>を参照.
+にあるサンプルプログラムは、
+<CODE>awk</CODE>のエキスパートに対しても興味深いものであるはずだ。
+
+</P>
+
+
+<H3><A NAME="SEC7" HREF="gawk_toc.html#SEC7">Dark Corners</A></H3>
+
+<PRE>
+<I>Who opened that window shade?!?</I>
+Count Dracula
+</PRE>
+
+<P>
+
+<P>
+<A NAME="IDX29"></A>
+<A NAME="IDX30"></A>
+POSIXの標準(と<CITE>The Gawk Manual</CITE>)までは、<CODE>awk</CODE>の
+多くの機能はほとんどドキュメント化されていないか、あるいは
+あっても満足なものではなかった。このような機能の記述
+(しばしば"dark corners"と呼ばれる)は、このマニュアルでは
+"(d.c.)"をつけて説明されている。
+これらの機能は"dark corner"が先頭にある索引項目でも確認できる。
+
+</P>
+
+
+<H2><A NAME="SEC8" HREF="gawk_toc.html#SEC8">Typographical Conventions</A></H2>
+
+<P>
+このマニュアルはGNUのドキュメント整形言語であるTexinfoで記述されている。
+単一のTexinfoソースは、印刷ドキュメントとオンラインドキュメントの両方を
+作成するのに使われる。
+このため、あなたがこれまで読んだ他の本とは多少
+typographical conventionsが違っている。
+
+</P>
+<P>
+サンプルの中で、あなたが実際にシェルのコマンドラインから
+入力する行は、シェルの一次プロンプトや二次プロンプト
+(<SAMP>`$'</SAMP>と<SAMP>`&#62;'</SAMP>)を行の先頭に置いている。
+コマンドの出力はその前に"-|"をつける。
+大体はコマンドの標準出力を表わしている。
+エラーメッセージや、その他のコマンドの標準エラー出力に
+出力されるものはその前に"error-->"が付いている。
+例を挙げると、
+
+</P>
+
+<PRE>
+$ echo hi on stdout
+-| hi on stdout
+$ echo hello on stderr 1&#62;&#38;2
+error--> hello on stderr
+</PRE>
+
+<P>
+テキスト中では、コマンド名は<CODE>this font</CODE>のようなフォントで出力されていて、
+コードセグメント全体は<SAMP>`like this'</SAMP>のように同じフォントで、さらにクォ
+ートされる。何かを強調したときには<EM>like this</EM>のように、特に強調
+したい箇所は<STRONG>like this</STRONG>のようにされている。新しい単語が登場したと
+き、通常はそれが<STRONG>定義</STRONG>され、このセンテンスで前に"定義"がでてきたの
+と同じフォントで現れる。ファイル名は<TT>`/path/to/ourfile'</TT>のように表わ 
+される。
+
+</P>
+<P>
+キーボードからタイプするキャラクタは<KBD>like this</KBD>のように見える。特に、
+それが"コントロールキャラクタ"と呼ばれる場合には。コントロールキャラク
+タとは、<KBD>CONTROL</KBD>キーと別のキーを一度に押してタイプするものである。 
+例えば、<KBD>Control-d</KBD>は、最初に<KBD>CONTROL</KBD>を押し、押したまま<KBD>d</KBD>
+キーを押す。そして、両方のキーを離すという手順をとる。
+
+</P>
+
+
+<H2><A NAME="SEC9" HREF="gawk_toc.html#SEC9">例で使用するデータファイル</A></H2>
+
+<P>
+<A NAME="IDX31"></A>
+<A NAME="IDX32"></A>
+このマニュアルでの例の多くは、二つのサンプルデータファイルから入力を
+取る。一番目は <TT>`BBS-list'</TT>と呼ばれるものであり、BBSのリストとその情報
+が記述されているファイル。二番目のデータファイルは<TT>`inventory-shipped'</TT>
+と呼ばれるもので月毎の船積みの量が記述されているファイルである。
+これらのファイルの各行には、一つのレコードだけが置かれている。
+
+</P>
+<P>
+<TT>`BBS-list'</TT>中の各レコードは、BBSの名称とその電話番号、ボーレート、そし
+て運営時間を表すコードから構成される。最終カラムの <SAMP>`A'</SAMP>はBBSが終日運
+営されていることを示し、同様に <SAMP>`B'</SAMP>は BBSの運営が夜間と、週末のみである
+ことを、 <SAMP>`C'</SAMP>は週末のみの運営である事を示す。
+
+</P>
+
+<PRE>
+aardvark     555-5553     1200/300          B
+alpo-net     555-3412     2400/1200/300     A
+barfly       555-7685     1200/300          A
+bites        555-1675     2400/1200/300     A
+camelot      555-0542     300               C
+core         555-2912     1200/300          C
+fooey        555-1234     2400/1200/300     B
+foot         555-6699     1200/300          B
+macfoo       555-6480     1200/300          A
+sdace        555-3430     2400/1200/300     A
+sabafoo      555-2127     1200/300          C
+</PRE>
+
+<P>
+<A NAME="IDX33"></A>
+二番目のデータファイルは、<TT>`inventory-shipped'</TT>と呼ばれるもので、
+年間の積込量を記述したものである。
+各レコードは、月と、緑色のかごの積込量、赤い箱の積込量、オレンジ色の
+バッグの積込量、そして青い包みの積込量、から構成されている。
+ファイルには16のエントリがあり、ある年の12ヶ月と、その翌年の4ヶ月分の
+データが記述されている。
+
+</P>
+
+<PRE>
+Jan  13  25  15 115
+Feb  15  32  24 226
+Mar  15  24  34 228
+Apr  31  52  63 420
+May  16  34  29 208
+Jun  31  42  75 492
+Jul  24  34  67 436
+Aug  15  34  47 316
+Sep  13  55  37 277
+Oct  29  54  68 525
+Nov  20  87  82 577
+Dec  17  35  61 401
+
+Jan  21  36  64 620
+Feb  26  58  80 652
+Mar  24  75  70 495
+Apr  21  70  74 514
+</PRE>
+
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_1.html">前</A>, <A HREF="gawk_3.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>

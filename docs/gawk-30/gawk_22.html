@@ -1,0 +1,497 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0 Strict Level 2//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=iso-2022-jp">
+<!-- This HTML file has been created by texi2html 1.47
+     from gawk.tex on 10 文月 1999 -->
+
+<TITLE>The GNU Awk User's Guide - 用語集</TITLE>
+</HEAD>
+<BODY>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_21.html">前</A>, <A HREF="gawk_23.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+<HR>
+
+
+<H1><A NAME="SEC229" HREF="gawk_toc.html#SEC229">用語集</A></H1>
+
+<DL COMPACT>
+
+<DT>Amazing <CODE>awk</CODE> Assembler
+<DD>
+トロント大学(University of Toronto)のHenry Spencer が作成した全て<CODE>awk</CODE>
+で記述されている 移植可能なアセンブラ(retargetable assembler)。様々 
+な8ビットマイクロコンピュータのためのマシン記述を含み、数千行ある。別のプ 
+ログラミング言語で記述したほうがよいプログラムのよい実例である。
+
+<DT>Amazingly Workable Formatter (<CODE>awf</CODE>)
+<DD>
+トロント大学(University of Toronto)のHenry Spencerが作成した
+フォーマッターで、<CODE>awk</CODE>と<CODE>sh</CODE>によって作られており、
+<SAMP>`nroff -ms'</SAMP>フォーマットコマンド や 
+<SAMP>`nroff -man'</SAMP>フォーマットコマンドの大きなサブセットを受け付ける。
+
+<DT>ANSI
+<DD>
+American National Standards Instituteの略。この組織は多くの標準を制定し、
+C言語やC++に関する標準も制定している。
+
+<DT><CODE>awk</CODE> 言語
+<DD>
+<CODE>awk</CODE>プログラムを記述するのに用いられるプログラミング言語。
+
+<DT><CODE>awk</CODE> スクリプト
+<DD>
+<CODE>awk</CODE>プログラムの別名。
+
+<DT><CODE>awk</CODE> プログラム
+<DD>
+<CODE>awk</CODE> プログラムは、ルールとして知られるパターンとアクションの集合の並
+びからなる。プログラムに対して入力レコードが与えられる度に、プログラム中の
+ルールは入力レコードに対して適用される。 <CODE>awk</CODE> プログラムは関数定義を
+持つ場合もある。
+
+<DT>Bash
+<DD>
+GNUによる標準シェル(Bourne-Again shell)。"Bourne Shell"を参照のこと。
+
+<DT>BBS
+<DD>
+See "Bulletin Board System."
+
+<DT>Bourne Shell
+<DD>
+Unixやそれに似たシステムでの標準シェル (<TT>`/bin/sh'</TT>) 。オリジナルは    
+Steven R. Bourneによって作成され、多くのシェル(Bash, <CODE>ksh</CODE>, 
+<CODE>pdksh</CODE>,<CODE>zsh</CODE>) がBourneシェルに対する上位互換のシェルとして
+存在する。
+
+<DT>Bulletin Board System
+<DD>
+ユーザーがログインし、
+システムの他のユーザーのためのメッセージを置いたり、読んだり
+することができる、掲示板上の紙のようなコンピューターシステム。
+
+<DT>C
+<DD>
+ほとんどのGNUソフトウェアを記述するのに使われているシステムプログラム言語。
+プログラミング言語<CODE>awk</CODE>はCに似た文法を持っているので、この
+マニュアルでは <CODE>awk</CODE>とCの類似点を適当なところで指摘する。
+
+<DT>CHEM
+<DD>
+<CODE>pic</CODE> の為のプリプロセッサで、ある分子の記述を読み込み、その分子の図形
+を描画するための<CODE>pic</CODE> の入力コードを生成する。これは Brian Kernighanと
+Jon Bentleyによって作成され、<CODE>netlib@research.bell-labs.com</CODE> から入手できる。
+
+<DT>Dark Corner
+<DD>
+ほとんど明確にされていなかった(あるいはまだされていない)
+期待しない動作や、説明されていない動作などの言語の領域。
+このマニュアルではそのような部分は"(d.c.)" という目印がつい
+ていて、"dark corner"で索引から探し出せる。
+
+<DT>Format
+<DD>
+書式指定文字列は<CODE>printf</CODE> 文の出力を制御するのに使用する。
+例えば、数値を文字列に変換するデータ変換は、組み込み変数の
+<CODE>CONVFMT</CODE>中の書式文字列によって制御されている。
+セクション <A HREF="gawk_7.html#SEC62">書式制御文字</A>を参照.
+
+<DT>FSF
+<DD>
+"Free Software Foundation"を参照。
+
+<DT>Free Software Foundation
+<DD>
+自由に配布可能なソフトウェアの作成と配布を目的とする非営利団体。
+Emacsというエディターの原作者であるRichard M. Stallmanによって
+設立された。GNU Emacsは今日最も広く使われているEmacsである。
+
+<DT><CODE>gawk</CODE>
+<DD>
+GNUにより作成された<CODE>awk</CODE>。
+
+<DT>General Public License
+<DD>
+<CODE>gawk</CODE>とそのソースコードを配布するための条件が記述されている
+ドキュメント。(セクション <A HREF="gawk_23.html#SEC230">GNU GENERAL PUBLIC LICENSE</A>を参照)
+
+<DT>GNU 一般公有使用許諾書
+<DD>
+"General Public License"を参照。
+
+<DT>GNU
+<DD>
+"GNU's not Unix"。現在進行中のFree Software Foundationによる
+プロジェクトであり、完全に自由に配布可能なPOSIX準拠の環境の
+作成をめざしているものである。
+
+<DT>GPL
+<DD>
+See "General Public License."
+
+<DT>I/O
+<DD>
+"Input/Output" の略。実行中のプログラムからデータを出力したり、
+プログラムにデータを入力したりする動作。
+
+<A NAME="IDX776"></A>
+<A NAME="IDX777"></A>
+<DT>キャラクタセット(Character Set)
+<DD>
+特定の国や地域で使われるキャラクタ(文字、数字、句読点など)をコンピュータシ
+ステムで使用するために表した数値コードの集合。今日、最も広く使われているキ
+ャラクタセットはASCII (American Standard Code for Information Interchange)
+である。多くのヨーロッパ諸国では、ISO-8859-1 (ISO Latin-1)として知られる  
+ASCIIを拡張したものを使用している。
+
+<DT>Number
+<DD>
+数としての値を持つデータオブジェクト。<CODE>gawk</CODE>の実装では
+数を表すのに倍精度の浮動小数点が使用されている。
+非常に古い<CODE>awk</CODE>の実装では、単精度のものが使われている
+
+<DT>POSIX
+<DD>
+IEEEが策定を行っている可搬性のあるオペレーティングシステムインターフェース
+の標準規格の名称。"IX"はこれらの標準がUNIXを継承していることを          
+表している。<CODE>awk</CODE>ユーザーに深く関りがあるのは<CITE>IEEE Standard for 
+Information Technology, Standard 1003.2-1992, Portable Operating System   
+Interface (POSIX) Part 2: Shell and Utilities</CITE>.である。これは非公式にはし 
+ばしば"P1003.2"と表される。
+
+<DT>Private
+<DD>
+ライブラリ関数によって排他的に使用され、
+<CODE>awk</CODE>プログラムの主部分では使われないような
+変数や関数。このような変数や関数の名前付けには特別の注意を
+払う必要がある。
+セクション <A HREF="gawk_16.html#SEC154">Naming Library Function Global Variables</A>を参照.
+
+<DT>Range (of input lines)
+<DD>
+入力ファイルからの連続した行の並び。パターンは、<CODE>awk</CODE>に対する
+入力行の範囲を処理のために特定することができる。
+セクション <A HREF="gawk_9.html#SEC88">Pattern Elements</A>を参照.
+
+<DT><CODE>sed</CODE>
+<DD>
+"ストリームエディタ"を参照のこと。
+
+<DT>Unix
+<DD>
+1970年代の始めにAT&#38;Tのベル研究所でオリジナルが開発されたコンピュータオペレ
+ーティングシステム。まず初めに世界中の大学でポピュラーになり、ついでソフト
+ウェア開発システムやネットワークサーバーシステムとして商業環境に移行した。
+多くの商用バージョンのUnixが存在し、同様に幾つかの、ソースコードが自由に入
+手できる類似のシステム(Linux、NetBSD、FreeBSDなど)がある。
+
+<DT>アクション(Action)
+<DD>
+あるルールに適用する<CODE>awk</CODE> 言語の文の並び。ルールのパターンが入力レコー
+ドと一致したならば、<CODE>awk</CODE> はそのルールのアクションを実行する。アクショ
+ンは常にカーリーブレースで囲まれる。
+セクション <A HREF="gawk_9.html#SEC97">Overview of Actions</A>を参照.
+
+<DT>右辺値(Rvalue)
+<DD>
+代入演算子の右側に置くことのできる値。
+<CODE>awk</CODE>ではすべての式が値を持っており、これらの値は右辺値である。
+
+<DT>エスケープシーケンス(Escape Sequences)
+<DD>
+改行を<SAMP>`\n'</SAMP>としたり、ASCIIコードでのエスケープキャラクタ(ESC)を 
+<SAMP>`\033'</SAMP>とするような、直接印字できないキャラクタを記述するのに使われる
+特別なキャラクタ並び。 セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照.
+
+<DT>環境(Environment)
+<DD>
+<VAR>name<CODE>=</CODE>val</VAR>のような形式をしている各プログラムから参照することの 
+できる文字列の集合。ユーザーは一般的に様々なプログラムに情報を与えるために、
+環境に値を設定する。環境変数の典型的な例は<CODE>HOME</CODE>や<CODE>PATH</CODE>である。
+
+<DT>関数(Function)
+<DD>
+よく使われる処理やプログラムの明確なタスクの特殊なグループ。
+<CODE>awk</CODE> は多くの組み込み関数を持ち、またユーザーは任意に関数を
+定義できる
+セクション <A HREF="gawk_13.html#SEC123">組み込み関数</A>を参照. および
+セクション <A HREF="gawk_14.html#SEC129">ユーザー定義関数</A>を参照.
+
+<DT>キーワード(Keyword)
+<DD>
+<CODE>awk</CODE>言語では、キーワードは重要な意味を持つ単語である。
+キーワードはあらかじめ予約されており、変数名として使うことはできない。
+
+<CODE>gawk</CODE>でのキーワードは以下の通り。
+<CODE>BEGIN</CODE>,
+<CODE>END</CODE>,
+<CODE>if</CODE>,
+<CODE>else</CODE>,
+<CODE>while</CODE>,
+<CODE>do...while</CODE>,
+<CODE>for</CODE>,
+<CODE>for...in</CODE>,
+<CODE>break</CODE>,
+<CODE>continue</CODE>,
+<CODE>delete</CODE>,
+<CODE>next</CODE>,
+<CODE>nextfile</CODE>,
+<CODE>function</CODE>,
+<CODE>func</CODE>,
+<CODE>exit</CODE>.
+
+<DT>空白(Whitespace)
+<DD>
+入力レコード、もしくは文字列の中にあるスペースキャラクタ、タブキャラクタ
+もしくは改行の並び。
+
+<DT>組み込み関数(Built-in Function)
+<DD>
+<CODE>awk</CODE>言語は数値演算、タイムスタンプ関係、文字列操作などの組み込み関数
+を持っている。例えばある数値の平方根を計算する<CODE>sqrt</CODE> やある文字列から
+部分文字列を取り出す<CODE>sqrt</CODE> がある。 セクション <A HREF="gawk_13.html#SEC123">組み込み関数</A>を参照.
+
+<DT>組み込み変数(Built-in Variable)
+<DD>
+<CODE>ARGC</CODE>, <CODE>ARGIND</CODE>, <CODE>ARGV</CODE>, <CODE>CONVFMT</CODE>, <CODE>ENVIRON</CODE>,
+<CODE>ERRNO</CODE>, <CODE>FIELDWIDTHS</CODE>, <CODE>FILENAME</CODE>, <CODE>FNR</CODE>, <CODE>FS</CODE>,
+<CODE>IGNORECASE</CODE>, <CODE>NF</CODE>, <CODE>NR</CODE>, <CODE>OFMT</CODE>, <CODE>OFS</CODE>, <CODE>ORS</CODE>,
+<CODE>RLENGTH</CODE>, <CODE>RSTART</CODE>, <CODE>RS</CODE>, <CODE>RT</CODE>,  <CODE>SUBSEP</CODE>。
+これらは特別な役目をする変数である。これらの変数のうち一部のものは
+変更すると、 <CODE>awk</CODE>の動作する環境に影響を及ぼす。
+セクション <A HREF="gawk_11.html#SEC108">組み込み変数</A>を参照.
+
+<DT>Short-Circuit
+<DD>
+<CODE>awk</CODE>の論理演算子である<SAMP>`&#38;&#38;'</SAMP>と<SAMP>`||'</SAMP>の性質。
+これらの演算子の左側を評価するだけで式全体の値を
+決定できる場合、演算子の右側の部分にある部分式は評価されない。
+(セクション <A HREF="gawk_8.html#SEC83">Boolean Expressions</A>を参照).
+
+<DT>空文字列(Null String)
+<DD>
+何もキャラクタがない文字列。<CODE>awk</CODE>プログラムでは連続して
+二重引用符を置くことにより表す。これは入力データ中にフィールドセパレータ
+が連続して存在しているような場合に見掛ける。
+
+<DT>カーリーブレース(Curly Braces)
+<DD>
+<SAMP>`{'</SAMP>と<SAMP>`}'</SAMP>。カーリーブレースは<CODE>awk</CODE> プログラム中で、
+アクションや、複文、関数本体を区切るのに使用される。
+<DT>固定正規表現
+<DD>
+"正規表現定数"の項を参照。
+
+<DT>再帰(Recursion)
+<DD>
+直接、間接を問わず、関数の中で自分自身を関数呼び出しすること。もしこの説明
+で解らなければ"再帰"の項目を参照すること。
+
+<DT>左辺値(Lvalue)
+<DD>
+代入演算子の左辺に置くことのできる式。大部分の言語では、
+左辺値は変数か、配列の要素が持つ。<CODE>awk</CODE>では
+指定されたフィールドもまた左辺値を持つ。
+
+<DT>十六進(Hexadecimal)
+<DD>
+<CODE>0</CODE>から<CODE>9</CODE>と<CODE>A</CODE>から<CODE>F</CODE>(<SAMP>`A'</SAMP>は10、
+<SAMP>`B'</SAMP>は11を表し、<SAMP>`F'</SAMP>は15を表す)を数字として使う
+16を基数とする記法。十六進数はC言語では<SAMP>`0x'</SAMP>を先頭に
+つけることで明示する。したがって，<CODE>0x12</CODE>は18(16*1+2)である。
+
+<DT>条件演算子(Conditional Expression)
+<DD>
+三項演算子<SAMP>`?:'</SAMP>を使用した<CODE><VAR>expr1</VAR> ? <VAR>expr2</VAR> : <VAR>expr3</VAR></CODE>
+のような式。 <VAR>expr1</VAR> を評価し、その結果が真であれば <VAR>expr2</VAR> を評価し
+た値が式全体の値となり、結果が偽であれば <VAR>expr3</VAR> を評価した値が全体の値
+となる。 <VAR>expr2</VAR>と<VAR>expr3</VAR>のどちらかのみが評価される。
+セクション <A HREF="gawk_8.html#SEC84">Conditional Expressions</A>を参照.
+
+<DT>ストリームエディタ(Stream Editor)
+<DD>
+入力ストリームからレコードを読み取り、一度に一つ以上の処理を行うプログラム。
+これはなにかの操作を始める前に入力ファイルを完全に読み込むバッチプログラム
+や、ユーザーからの入力を要求する対話的プログラムとは対象的である。
+
+<DT>正規表現(Regexp, Regular Expression)
+<DD>
+正規表現は、文字列の集合を意味するパターンであり、無限集合である。例えば
+<SAMP>`R.*xp'</SAMP>という正規表現は、 <SAMP>`R'</SAMP>で始まり <SAMP>`xp'</SAMP>で終わる文字列全て
+にマッチする。 <CODE>awk</CODE>では、正規表現はパターンや条件式に使われている。
+正規表現はエスケープシーケンスを含むこともできる。
+セクション <A HREF="gawk_5.html#SEC25">正規表現</A>を参照.
+
+<DT>正規表現定数(Regular Expression Constant)
+<DD>
+正規表現定数とは<CODE>/foo/</CODE>のように、スラッシュで囲まれた
+正規表現である。この正規表現は<CODE>awk</CODE>プログラムを記述するときに
+選択され、実行時に変更することはできない。
+セクション <A HREF="gawk_5.html#SEC26">正規表現の使い方</A>を参照.
+
+<DT>整数(Integer)
+<DD>
+小数点以下の部分を持っていない数。
+
+<DT>代入(Assignment)
+<DD>
+ある変数やデータオブジェクトの値を変更する<CODE>awk</CODE> の式。
+代入できるオブジェクトは<STRONG>左辺値(lvalue)</STRONG>と呼ばれる。
+<STRONG>lvalue</STRONG>. セクション <A HREF="gawk_8.html#SEC79">代入式</A>を参照.
+
+<DT>タブ(Tab)
+<DD>
+キーボードの<KBD>TAB</KBD>キーを押すことにより生成されるキャラクタ。
+通常は、最大8個のスペースに展開されて出力される。
+
+<DT>単精度(Single Precision)
+<DD>
+小数部を持つことのできる数の内部表現方法。
+単精度の数値は倍精度のものよりも少ない桁しか保持できないが、
+その演算ではCPU時間の消費がすくない。単精度は一部の非常に古い<CODE>awk</CODE>
+で数値を格納するために用いられていた。これはCでの<CODE>float</CODE>に
+あたる。
+
+<DT>データオブジェクト(Data Objects)
+<DD>
+数値かキャラクタの並び。数値は必要に応じて文字列に変換される。
+逆の場合も同様である。
+セクション <A HREF="gawk_8.html#SEC76">Conversion of Strings and Numbers</A>を参照.
+
+<DT>動的正規表現(Dynamic Regular Expression)
+<DD>
+動的正規表現は通常の式と同じように記述された正規表現である。
+<CODE>"foo"</CODE>のような 文字列定数であっても良いが、
+その値は変更することが可能である。
+セクション <A HREF="gawk_5.html#SEC32">動的正規表現を使う</A>を参照.
+
+<DT>特殊ファイル(Special File)
+<DD>
+オペレーティングシステムの元で直接扱われる名前ではなく、
+<CODE>gawk</CODE>によって内部的に解釈される名前を持つファイル。
+たとえば、<TT>`/dev/stderr'</TT>がそうである。
+セクション <A HREF="gawk_7.html#SEC66">Special File Names in <CODE>gawk</CODE></A>を参照.
+
+<DT>入力レコード(Input Record)
+<DD>
+セクション <A HREF="gawk_6.html#SEC34">入力をレコードへと分割をするやりかた</A>を参照.
+<CODE>awk</CODE>が読み取ったデータの一つの塊。通常は
+<CODE>awk</CODE>の入力レコードはテキスト一行からなる。
+
+<DT>倍精度(Double Precision)
+<DD>
+小数点以下の部分を持つことのできる数の内部表現。倍精度実数は単精度実数より
+も多くの桁数の数値を保持することができるが、その演算は(単精度を使ったとき 
+よりも)高くつく。倍精度実数は<CODE>awk</CODE>が数値を格納するときに使用している。
+倍精度はまた、Cの型の<CODE>double</CODE>にあたる。
+
+<DT>パターン(Pattern)
+<DD>
+パターンは(そのパターンが属する)ルールが入力レコードを
+処理の対象にするかどうかを<CODE>awk</CODE>に通知する。
+
+パターンはまた、入力をテストする際に使われる任意の条件式である。
+条件が満足されたならば、パターンは入力レコードに対して<STRONG>マッチした</STRONG>
+と言われる。典型的なパターンは、入力レコードとある正規表現との
+比較であろう。セクション <A HREF="gawk_9.html#SEC88">Pattern Elements</A>を参照.
+
+<DT>八進(Octal)
+<DD>
+<CODE>0</CODE>から<CODE>7</CODE>までの数字を使う8を基数とした記法。
+八進数は、Cでは先頭に<SAMP>`0'</SAMP>をつけて八進数であることを明示する。
+したがって、(八進数の)<CODE>013</CODE>は(十進数の)11
+(8*1+3)である。
+
+<DT>比較式(Comparison Expression)
+<DD>
+<CODE>(a &#60; b)</CODE>の様に、真または偽のどちらかの値をとる関係。比較式は<CODE>if</CODE>
+文や<CODE>while</CODE>文、またはand <CODE>for</CODE>文、そして入力レコードの処理を選択す
+るパターンに使われている。
+セクション <A HREF="gawk_8.html#SEC82">Variable Typing and Comparison Expressions</A>を参照.
+
+<DT>フィールド(Field)
+<DD>
+<CODE>awk</CODE> が入力レコードを読んだとき、入力レコードは空白を区切りとして分
+割が行われる(もしくは<CODE>FS</CODE>に設定することによって変更された区切りを示す
+正規表現によって分割される)。分割された個々の固まりをフィールド、と呼ぶ。組
+み込み変数の  <CODE>FIELDWIDTHS</CODE>に長さを代入することでフィールドの長さを固定
+長とすることができる。 
+セクション <A HREF="gawk_6.html#SEC38">フィールドの分割方法の指定</A>を参照,
+およびセクション <A HREF="gawk_6.html#SEC44">固定長データの読み込み</A>を参照.
+
+<DT>複合文(Compound Statement)
+<DD>
+カーリーブレースで囲まれた文の並び。複合文はネストさせることもできる。
+セクション <A HREF="gawk_10.html#SEC98">アクション中の制御文</A>を参照.
+
+<DT>副作用(Side Effect)
+<DD>
+副作用はある式がもつ作用に伴って作り出す値。
+代入式、インクリメント式、デクリメント式、そして関数呼び出しが
+副作用を持つ。
+セクション <A HREF="gawk_8.html#SEC79">代入式</A>を参照.
+
+<DT>浮動小数点数(Floating Point Number)
+<DD>
+数学用語ではしばしば"rational number"とされているもの。
+これは単に小数点以下の部分を持つ数のことである。 
+"単精度"と"倍精度"を参照のこと。
+
+<DT>ブール式(Boolean Expression)
+<DD>
+イギリスの数学者Booleから命名された。"論理式"を見よ。
+
+<DT>ブレース(Braces)
+<DD>
+"カーリーブレース"を見よ。
+
+<DT>Space
+<DD>
+キーボードのスペースバーを押すことにより生成されるキャラクタ。
+
+<DT>文字列(String)
+<DD>
+<SAMP>`I am a string'</SAMP>のような、キャラクタの並びからなるデータ。
+<CODE>awk</CODE>言語では文字列定数は二重引用符で括られ、
+エスケープシーケンスを含めることもできる。
+セクション <A HREF="gawk_5.html#SEC27">エスケープシーケンス</A>を参照.
+
+<DT>リダイレクト(Redirection)
+<DD>
+標準入力ストリーム以外から入力を行ったり、標準出力ストリーム以外に出力を行
+うこと。
+
+<SAMP>`&#62;'</SAMP>や<SAMP>`&#62;&#62;'</SAMP>、あるいは<SAMP>`|'</SAMP>といった演算子を使用して
+<CODE>print</CODE>文や<CODE>printf</CODE>文の出力をリダイレクトすることが出来る。また、
+<SAMP>`&#60;'</SAMP>演算子や <SAMP>`|'</SAMP>演算子を使用して <CODE>getline</CODE>文で読み込む
+入力をリダイレクトすることができる。
+セクション <A HREF="gawk_7.html#SEC65">Redirecting Output of <CODE>print</CODE> and <CODE>printf</CODE></A>を参照,
+and セクション <A HREF="gawk_6.html#SEC46"><CODE>getline</CODE>を使った入力</A>を参照.
+
+<DT>ルール(Rule)
+<DD>
+<CODE>awk</CODE>プログラムのsegment。一つの入力レコードに対してどのように処理する
+かが記述されている。一つのルールは、一つの<STRONG>pattern</STRONG>と一つの<STRONG>action</STRONG>
+から構成される。 <CODE>awk</CODE> は入力レコードを読み込むと、各ルールに対して、
+入力されたレコードがルールの持つパターンを満足したときに、そのルールのアク
+ション部を実行する。ということを繰り返す。そうでなければ、ルールは入力レコー
+ドに対して何も行わない。
+
+<DT>連接(Concatenation)
+<DD>
+あるの文字列の後ろにもう一つの文字列を連結して、二つの文字列を一つにまとめ
+ること。たとえば、 <SAMP>`foo'</SAMP> という文字列に <SAMP>`bar'</SAMP>という文字列を連結す
+ると <SAMP>`foobar'</SAMP>という文字列になる。
+セクション <A HREF="gawk_8.html#SEC78">String Concatenation</A>を参照.
+
+<DT>論理式(Logical Expression)
+<DD>
+<CODE>awk</CODE>での論理演算子、<SAMP>`&#38;&#38;'</SAMP>, <SAMP>`||'</SAMP>, <SAMP>`!'</SAMP> を使った式。
+その数学的論理を確立した数学者にちなんで、しばしばブール式と呼ばれる。
+
+</DL>
+
+<HR>
+移動先 <A HREF="gawk_1.html">先頭</A>, <A HREF="gawk_21.html">前</A>, <A HREF="gawk_23.html">次</A>, <A HREF="gawk_25.html">末尾</A> セクション, <A HREF="gawk_toc.html">目次</A>.
+</BODY>
+</HTML>
